@@ -70,7 +70,7 @@ export const DecisionPanel: React.FC = () => {
             {isIntervened ? 'Approved & Executing' : isApproving ? 'Authorizing...' : 'Approve Plan'}
           </button>
           {!isIntervened && !isApproving && (
-            <button className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#1F2937] text-slate-400 hover:bg-[#1F2937] hover:text-white transition-all">
+            <button className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#27272a] text-slate-400 hover:bg-[#27272a] hover:text-white transition-all">
               Reject
             </button>
           )}

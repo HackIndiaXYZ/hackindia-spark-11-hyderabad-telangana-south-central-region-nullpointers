@@ -93,10 +93,10 @@ export const DigitalTwin: React.FC = () => {
   if (!telemetry) return null;
 
   return (
-    <div className="relative w-full h-full glass-panel flex flex-col overflow-hidden font-sans bg-[#050A15]">
+    <div className="relative w-full h-full flex flex-col overflow-hidden font-sans bg-[#09090b]">
       
       {/* HUD Header */}
-      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center border-b border-white/5 z-20 bg-gradient-to-b from-[#050A15] to-transparent pointer-events-none">
+      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center border-b border-[#27272a] z-20 pointer-events-none">
         <div className="flex items-center gap-3">
           <Crosshair className="w-5 h-5 text-blue-500 animate-pulse" />
           <span className="font-bold text-sm uppercase tracking-widest text-slate-200">Palantir Digital Twin</span>
@@ -110,7 +110,7 @@ export const DigitalTwin: React.FC = () => {
       {/* Dynamic Warning Alert Overlay */}
       {lastIngestedPacket && (lastIngestedPacket.type === 'warning' || lastIngestedPacket.type === 'critical') && (
         <div className="absolute top-16 left-4 z-20 flex flex-col gap-2 pointer-events-none">
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${lastIngestedPacket.type === 'critical' ? 'bg-red-500/10 border border-red-500/30 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-orange-500/10 border border-orange-500/30 text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.2)]'} text-xs font-mono font-semibold backdrop-blur-md`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${lastIngestedPacket.type === 'critical' ? 'bg-red-500/10 border border-red-500/30 text-red-500' : 'bg-orange-500/10 border border-orange-500/30 text-orange-500'} text-xs font-mono font-semibold`}>
               <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse" />
               <span>{lastIngestedPacket.source} // {lastIngestedPacket.message}</span>
             </div>
@@ -135,17 +135,14 @@ export const DigitalTwin: React.FC = () => {
         >
           {/* FLOOR GRID LAYER */}
           <div 
-            className="absolute inset-0 border border-blue-900/30 rounded-3xl"
+            className="absolute inset-0 border border-[#27272a] rounded-xl"
             style={{ 
-              background: 'linear-gradient(to right, rgba(30,58,138,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(30,58,138,0.05) 1px, transparent 1px)',
+              background: 'linear-gradient(to right, rgba(39,39,42,0.3) 1px, transparent 1px), linear-gradient(to bottom, rgba(39,39,42,0.3) 1px, transparent 1px)',
               backgroundSize: '40px 40px',
-              backgroundColor: '#070C1A',
-              boxShadow: '0 0 100px rgba(15,23,42,0.8) inset, 0 20px 50px rgba(0,0,0,0.5)',
+              backgroundColor: '#18181b',
               transform: 'translateZ(0px)'
             }}
           >
-            {/* Base glowing effect */}
-            <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full" />
           </div>
 
           {/* TRACKS LAYER (Recessed) */}
@@ -160,7 +157,7 @@ export const DigitalTwin: React.FC = () => {
 
             {/* MOVING TRAIN */}
             <div 
-              className="absolute top-[360px] h-[30px] w-[250px] rounded bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 shadow-[0_0_20px_rgba(56,189,248,0.6)]"
+              className="absolute top-[360px] h-[30px] w-[250px] rounded bg-blue-500"
               style={{ 
                 left: `${trainPos}px`,
                 transform: 'translateZ(10px)', // Train sits on tracks
@@ -181,7 +178,7 @@ export const DigitalTwin: React.FC = () => {
             style={{ 
               transform: 'translateZ(40px)',
               transformStyle: 'preserve-3d',
-              backgroundColor: '#111827',
+              backgroundColor: '#18181b',
               borderTop: '2px solid rgba(255,255,255,0.1)',
               borderLeft: '2px solid rgba(255,255,255,0.1)',
               boxShadow: '-10px 10px 20px rgba(0,0,0,0.5)',
@@ -197,15 +194,15 @@ export const DigitalTwin: React.FC = () => {
 
             {/* AFC Gates */}
             <div className="absolute top-[20px] right-[40px] flex gap-4">
-              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded" />
-              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded" />
+              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 rounded" />
+              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 rounded" />
             </div>
           </div>
 
           {/* PLATFORM 2 (South) LAYER - Elevated & Dynamic */}
           <div 
             className={`absolute top-[450px] left-[200px] w-[400px] h-[200px] rounded-lg transition-all duration-1000 ${
-              isCritical ? 'bg-red-950/40 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.3)]' : 'bg-[#111827]'
+              isCritical ? 'bg-red-950/40 border-red-500/50' : 'bg-[#18181b]'
             }`}
             style={{ 
               transform: 'translateZ(40px)',
@@ -226,7 +223,7 @@ export const DigitalTwin: React.FC = () => {
             {/* Context Tooltip pops up in 3D space when highlighted */}
             {isCritical && (
               <div 
-                className="absolute top-1/2 left-1/2 bg-black/80 border border-red-500 px-4 py-2 rounded-xl backdrop-blur-md shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                className="absolute top-1/2 left-1/2 bg-black/80 border border-red-500 px-4 py-2 rounded-xl backdrop-blur-md"
                 style={{ 
                   transform: 'translate(-50%, -50%) translateZ(100px) rotateX(-55deg) rotateZ(30deg)', 
                   transformOrigin: 'bottom'
@@ -270,7 +267,7 @@ export const DigitalTwin: React.FC = () => {
             {particles.map(p => (
               <div 
                 key={p.id}
-                className="absolute w-[4px] h-[4px] rounded-full shadow-[0_0_5px_currentColor]"
+                className="absolute w-[4px] h-[4px] rounded-full"
                 style={{
                   left: `${p.x}px`,
                   top: `${p.y}px`,

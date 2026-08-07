@@ -52,10 +52,10 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-8 font-sans">
-      <div className="bg-[#050A15] border border-[#1F2937] rounded-xl w-full max-w-6xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
+      <div className="bg-[#09090b] border border-[#27272a] rounded-xl w-full max-w-6xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#1F2937] bg-gradient-to-r from-[#0F172A] to-[#050A15]">
+        <div className="flex items-center justify-between p-4 border-b border-[#27272a] bg-gradient-to-r from-[#18181b] to-[#09090b]">
           <div className="flex items-center gap-3">
             <Camera className="w-5 h-5 text-indigo-400" />
             <div>
@@ -75,7 +75,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
         <div className="flex-1 flex overflow-hidden">
           
           {/* Main Visualizer */}
-          <div className="flex-1 border-r border-[#1F2937] bg-black relative overflow-hidden group p-4">
+          <div className="flex-1 border-r border-[#27272a] bg-black relative overflow-hidden group p-4">
             {feed.id === 'cctv' ? (
               <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800">
                 {/* Background Image */}
@@ -123,7 +123,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#050A15] flex flex-col">
+              <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col">
                 <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-6 font-mono p-8 text-center">
                   <div className="relative">
@@ -153,7 +153,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
           </div>
 
           {/* AI Output Panel */}
-          <div className="w-80 bg-[#0A0F1C] flex flex-col p-6 overflow-y-auto">
+          <div className="w-80 bg-[#09090b] flex flex-col p-6 overflow-y-auto">
             <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">
               <Brain className="w-4 h-4 text-indigo-400" />
               Inference Engine
@@ -174,7 +174,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               {feed.id === 'cctv' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Real-time Detections</span>
-                  <div className="bg-[#111827] border border-[#1F2937] p-4 rounded-lg flex flex-col gap-3">
+                  <div className="bg-[#18181b] border border-[#27272a] p-4 rounded-lg flex flex-col gap-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Persons in view</span>
                       <span className="text-lg font-bold text-slate-200">
@@ -200,7 +200,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               {feed.id !== 'cctv' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Live Telemetry Stats</span>
-                  <div className="bg-[#111827] border border-[#1F2937] p-4 rounded-lg flex flex-col gap-3">
+                  <div className="bg-[#18181b] border border-[#27272a] p-4 rounded-lg flex flex-col gap-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Signal Integrity</span>
                       <span className="text-lg font-bold text-[#10B981]">99.9%</span>
@@ -214,7 +214,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               )}
 
               {/* Actionable Intelligence / Predictions */}
-              <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#1F2937]">
+              <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#27272a]">
                 <span className="text-[10px] text-slate-500 font-bold uppercase flex items-center gap-2">
                   <Target className="w-3 h-3 text-emerald-400" />
                   Actionable Intelligence
@@ -222,23 +222,23 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                 
                 {recentEvent ? (
                   <div className="flex flex-col gap-3">
-                    <div className="bg-[#111827] border border-[#1F2937] p-3 rounded-lg flex flex-col gap-1">
+                    <div className="bg-[#18181b] border border-[#27272a] p-3 rounded-lg flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Extracted Insights</span>
                       <span className="text-xs text-slate-300">{recentEvent.extractedInsights || recentEvent.message}</span>
                     </div>
-                    <div className="bg-[#111827] border border-blue-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
+                    <div className="bg-[#18181b] border border-blue-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
                       <div className="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none" />
                       <span className="text-[9px] text-blue-400 font-bold uppercase tracking-wider">Prediction</span>
                       <span className="text-xs text-blue-100 font-semibold">{recentEvent.prediction || 'Normal operation predicted.'}</span>
                     </div>
-                    <div className="bg-[#111827] border border-emerald-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
+                    <div className="bg-[#18181b] border border-emerald-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
                       <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay pointer-events-none" />
                       <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">System Action</span>
                       <span className="text-xs text-emerald-100 font-bold">{recentEvent.decision || 'Continue standard monitoring.'}</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-500 font-mono italic p-4 text-center border border-[#1F2937] border-dashed rounded-lg">
+                  <div className="text-xs text-slate-500 font-mono italic p-4 text-center border border-[#27272a] border-dashed rounded-lg">
                     Awaiting anomaly detection...
                   </div>
                 )}

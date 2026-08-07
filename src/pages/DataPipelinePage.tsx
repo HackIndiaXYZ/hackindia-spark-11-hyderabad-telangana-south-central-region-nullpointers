@@ -33,7 +33,7 @@ export const DataPipelinePage: React.FC = () => {
 
   const FeedTable = ({ title, data }: { title: string, data: typeof feeds }) => (
     <div className="mb-8">
-      <div className="flex items-center gap-3 mb-4 border-b border-[#1F2937] pb-2">
+      <div className="flex items-center gap-3 mb-4 border-b border-[#27272a] pb-2">
         <Server className="w-5 h-5 text-slate-400" />
         <h2 className="text-lg font-bold text-slate-200">{title}</h2>
       </div>
@@ -68,7 +68,7 @@ export const DataPipelinePage: React.FC = () => {
               <span className={`font-bold text-sm ${feed.trust > 85 ? 'text-[#10B981]' : feed.trust > 50 ? 'text-[#F59E0B]' : 'text-[#EF4444]'}`}>
                 {feed.trust}%
               </span>
-              <div className="flex-1 h-1.5 bg-[#1F2937] rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-[#27272a] rounded-full overflow-hidden">
                 <div 
                   className={`h-full rounded-full ${feed.trust > 85 ? 'bg-[#10B981]' : feed.trust > 50 ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`}
                   style={{ width: `${feed.trust}%` }}
@@ -105,7 +105,7 @@ export const DataPipelinePage: React.FC = () => {
                 <button 
                   onClick={() => setViewOffset(prev => Math.min(liveEventsLog.length - 1, prev + 1))}
                   disabled={viewOffset >= liveEventsLog.length - 1 || liveEventsLog.length === 0}
-                  className="p-1 rounded bg-[#1F2937] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
+                  className="p-1 rounded bg-[#27272a] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -115,7 +115,7 @@ export const DataPipelinePage: React.FC = () => {
                 <button 
                   onClick={() => setViewOffset(prev => Math.max(0, prev - 1))}
                   disabled={viewOffset === 0}
-                  className="p-1 rounded bg-[#1F2937] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
+                  className="p-1 rounded bg-[#27272a] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -140,10 +140,10 @@ export const DataPipelinePage: React.FC = () => {
 
                 {/* AI Pipeline Mini View */}
                 {displayedPacket.rawInput && (
-                  <div className="flex flex-col gap-3 bg-[#0F172A] border border-[#1F2937] rounded-lg p-4 mt-2">
+                  <div className="flex flex-col gap-3 bg-[#09090b] border border-[#27272a] rounded-lg p-4 mt-2">
                     <div className="flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Raw Input</span>
-                      <span className="text-xs font-mono text-slate-300 bg-[#111827] px-2 py-1 rounded border border-[#374151]">{displayedPacket.rawInput}</span>
+                      <span className="text-xs font-mono text-slate-300 bg-[#18181b] px-2 py-1 rounded border border-[#374151]">{displayedPacket.rawInput}</span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
@@ -181,28 +181,28 @@ export const DataPipelinePage: React.FC = () => {
               Pipeline Health
             </h2>
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
+              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Queue Size</div>
                 <div className="text-3xl font-bold text-[#10B981]">{pipelineMetrics.queueSize}</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
                   Healthy
                 </div>
               </div>
-              <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
+              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Average Latency</div>
                 <div className="text-3xl font-bold text-[#3B82F6]">{pipelineMetrics.avgLatency} ms</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
                   <Clock className="w-3 h-3" /> P99: {pipelineMetrics.avgLatency + 85}ms
                 </div>
               </div>
-              <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
+              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Events / Sec</div>
                 <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
                   +12% vs avg
                 </div>
               </div>
-              <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
+              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Messages Processed</div>
                 <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.packetsProcessed.toLocaleString()}</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
@@ -220,24 +220,24 @@ export const DataPipelinePage: React.FC = () => {
             </h2>
             <div className="flex-1 flex flex-col justify-center items-center text-[10px] font-bold uppercase tracking-widest text-slate-400 gap-2">
               
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Raw Input' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#1F2937] border-[#374151]'}`}>Raw Input</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Raw Input' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#27272a] border-[#374151]'}`}>Raw Input</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Validated' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Validated</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Validated' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Validated</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Normalized' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Normalized</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Normalized' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Normalized</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Kafka Event Bus' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30'}`}>Kafka Event Bus</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Kafka Event Bus' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30'}`}>Kafka Event Bus</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Context Fusion' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'}`}>Context Fusion</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Context Fusion' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'}`}>Context Fusion</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Prediction Engine' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30'}`}>Prediction Engine</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Prediction Engine' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30'}`}>Prediction Engine</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Decision Intelligence' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'}`}>Decision Intelligence</div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Decision Intelligence' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'}`}>Decision Intelligence</div>
               <ArrowDown className="text-slate-600 w-4 h-4" />
               
               <div className="flex gap-4 w-64 justify-center">
-                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Digital Twin Updated' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#14B8A6]/10 text-[#14B8A6] border-[#14B8A6]/30'}`}>Digital Twin Updated</div>
-                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Replay Logged' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#6366F1]/10 text-[#6366F1] border-[#6366F1]/30'}`}>Replay Logged</div>
+                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Digital Twin Updated' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#14B8A6]/10 text-[#14B8A6] border-[#14B8A6]/30'}`}>Digital Twin Updated</div>
+                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Replay Logged' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#6366F1]/10 text-[#6366F1] border-[#6366F1]/30'}`}>Replay Logged</div>
               </div>
             </div>
           </div>

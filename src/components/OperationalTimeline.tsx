@@ -7,7 +7,7 @@ export const OperationalTimeline: React.FC = () => {
 
   return (
     <div className="glass-panel w-full flex flex-col p-5 h-full overflow-y-auto">
-      <div className="flex justify-between items-center border-b border-[#1F2937] pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-[#27272a] pb-3 mb-4">
         <span className="font-semibold text-sm tracking-wide text-slate-200">Live Operational Timeline</span>
       </div>
       <div className="flex flex-col gap-0">

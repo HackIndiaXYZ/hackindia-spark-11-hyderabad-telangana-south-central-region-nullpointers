@@ -34,10 +34,10 @@ export const DashboardPage: React.FC = () => {
   const recommendations = activeScenario !== 'normal' ? 1 : 0;
 
   return (
-    <div className="w-full min-h-screen bg-[#0B1220] text-slate-200 flex flex-col p-4 md:p-6 select-none font-sans">
+    <div className="w-full min-h-screen bg-[#09090b] text-slate-200 flex flex-col p-4 md:p-6 select-none font-sans">
       
       {/* ENTERPRISE 7-TAB NAVIGATION */}
-      <nav className="flex flex-wrap items-center gap-2 mb-6 border-b border-[#1F2937] pb-4">
+      <nav className="flex flex-wrap items-center gap-2 mb-6 border-b border-[#27272a] pb-4">
         {[
           { id: 'vision-intelligence', label: 'Metro Vision Intelligence', icon: Camera, highlight: true },
           { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -53,14 +53,14 @@ export const DashboardPage: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-all border cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors border cursor-pointer ${
                 isActive
                   ? tab.highlight 
-                    ? 'bg-gradient-to-r from-cyan-950 to-indigo-950 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/10'
-                    : 'bg-[#111827] text-white border-[#1F2937] shadow-sm'
+                    ? 'bg-[#18181b] text-cyan-400 border-cyan-500/50'
+                    : 'bg-[#18181b] text-slate-200 border-[#27272a]'
                   : tab.highlight
-                    ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20'
-                    : 'bg-transparent text-slate-500 border-transparent hover:text-slate-200 hover:bg-[#111827]/50'
+                    ? 'bg-transparent text-cyan-500/70 border-transparent hover:bg-[#18181b] hover:text-cyan-400'
+                    : 'bg-transparent text-slate-400 border-transparent hover:bg-[#18181b] hover:text-slate-300'
               }`}
             >
               <Icon className={`w-4 h-4 ${tab.highlight ? 'text-cyan-400 animate-pulse' : ''}`} />
@@ -87,7 +87,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 glass-panel px-6 py-3">
-                <div className="flex items-center gap-4 border-r border-[#1F2937] pr-6">
+                <div className="flex items-center gap-4 border-r border-[#27272a] pr-6">
                   <Activity className="w-8 h-8 text-[#10B981]" />
                   <div>
                     <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Operational Health</div>
@@ -103,12 +103,12 @@ export const DashboardPage: React.FC = () => {
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Active Incidents</span>
                 </div>
 
-                <div className="flex flex-col px-4 text-center border-l border-[#1F2937]">
+                <div className="flex flex-col px-4 text-center border-l border-[#27272a]">
                   <span className="text-xl font-bold text-[#F59E0B]">{predictions}</span>
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Predictions</span>
                 </div>
 
-                <div className="flex flex-col pl-6 text-center border-l border-[#1F2937]">
+                <div className="flex flex-col pl-6 text-center border-l border-[#27272a]">
                   <span className="text-xl font-bold text-[#2563EB]">{recommendations}</span>
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Recommendation Waiting</span>
                 </div>
@@ -124,21 +124,21 @@ export const DashboardPage: React.FC = () => {
                   <Database className="w-4 h-4 text-[#10B981]" />
                   1. Data Pipeline
                 </h3>
-                <div className="flex-1 bg-[#0F172A] rounded-lg border border-[#1F2937] flex flex-col p-4 gap-4 overflow-hidden relative">
+                <div className="flex-1 bg-[#09090b] rounded-lg border border-[#27272a] flex flex-col p-4 gap-4 overflow-hidden relative">
                   {/* Pipeline Metrics Mini */}
                   <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div className="bg-[#111827] p-2 rounded border border-[#1F2937]">
+                    <div className="bg-[#18181b] p-2 rounded border border-[#27272a]">
                       <div className="text-[9px] text-slate-500 font-bold uppercase">Events/sec</div>
                       <div className="text-sm font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
                     </div>
-                    <div className="bg-[#111827] p-2 rounded border border-[#1F2937]">
+                    <div className="bg-[#18181b] p-2 rounded border border-[#27272a]">
                       <div className="text-[9px] text-slate-500 font-bold uppercase">Latency</div>
                       <div className="text-sm font-bold text-blue-400">{pipelineMetrics.avgLatency}ms</div>
                     </div>
                   </div>
 
                   {/* Latest Event Mini */}
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-[#1F2937] pb-1">Latest Telemetry</div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-[#27272a] pb-1">Latest Telemetry</div>
                   
                   {lastIngestedPacket ? (
                     <div className="flex flex-col gap-2">
@@ -153,7 +153,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
                       
                       {/* AI Pulse Indicator */}
-                      <div className="mt-2 flex items-center justify-between bg-[#111827] p-2 rounded border border-[#1F2937]">
+                      <div className="mt-2 flex items-center justify-between bg-[#18181b] p-2 rounded border border-[#27272a]">
                          <span className="text-[9px] text-slate-400 uppercase font-bold">AI Inference Pipeline</span>
                          <div className="flex gap-2 items-center">
                            <span className="text-[8px] text-indigo-400 font-mono tracking-widest">{currentPulseModule || 'IDLE'}</span>
@@ -169,14 +169,14 @@ export const DashboardPage: React.FC = () => {
 
                   <button 
                     onClick={() => setActiveTab('data-pipeline')}
-                    className="mt-auto w-full py-2 bg-[#1F2937] hover:bg-[#374151] rounded text-xs font-bold text-slate-300 transition-colors"
+                    className="mt-auto w-full py-2 bg-[#27272a] hover:bg-[#3f3f46] rounded text-xs font-bold text-slate-300 transition-colors"
                   >
                     View Full Pipeline
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-center text-[#1F2937]">
+              <div className="flex items-center justify-center text-[#3f3f46]">
                 <ArrowRight className="w-6 h-6" />
               </div>
 
@@ -186,12 +186,12 @@ export const DashboardPage: React.FC = () => {
                   <MapIcon className="w-4 h-4 text-[#3B82F6]" />
                   2. Digital Twin Observation
                 </h3>
-                <div className="flex-1 mt-8 w-full rounded-lg overflow-hidden border border-[#1F2937]">
+                <div className="flex-1 mt-8 w-full rounded-lg overflow-hidden border border-[#27272a]">
                   <DigitalTwin />
                 </div>
               </div>
 
-              <div className="flex items-center justify-center text-[#1F2937]">
+              <div className="flex items-center justify-center text-[#3f3f46]">
                 <ArrowRight className="w-6 h-6" />
               </div>
 
@@ -201,7 +201,7 @@ export const DashboardPage: React.FC = () => {
                   <Zap className="w-4 h-4 text-[#F59E0B]" />
                   3. Decision Intelligence
                 </h3>
-                <div className="flex-1 bg-[#0F172A] rounded-lg border border-[#1F2937] flex flex-col items-center justify-center p-4 text-center">
+                <div className="flex-1 bg-[#09090b] rounded-lg border border-[#27272a] flex flex-col items-center justify-center p-4 text-center">
                    <div className="w-12 h-12 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-4">
                      <AlertTriangle className="w-6 h-6 text-[#F59E0B]" />
                    </div>

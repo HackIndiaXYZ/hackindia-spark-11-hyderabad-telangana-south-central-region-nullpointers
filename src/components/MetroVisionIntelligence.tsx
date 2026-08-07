@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Camera, Eye, Activity, TrendingUp, 
-  HelpCircle, Shield, Layers, Radio, Compass, Users, Flame, 
-  Play, Pause, BarChart2
+  HelpCircle, Shield, Layers,
+  Play, Pause
 } from 'lucide-react';
 import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
 
@@ -23,7 +23,6 @@ interface TrackedPassenger {
 export const MetroVisionIntelligence: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showZonalGrid, setShowZonalGrid] = useState<boolean>(true);
-  const [showFlowFields, setShowFlowFields] = useState<boolean>(true);
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
   const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
 
@@ -200,53 +199,45 @@ export const MetroVisionIntelligence: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 p-4 md:p-6 bg-[#070B14] text-slate-200 font-sans select-none overflow-y-auto">
+    <div className="w-full h-full flex flex-col gap-6 p-4 md:p-6 bg-[#09090b] text-slate-200 font-sans select-none overflow-y-auto">
       
       {/* HEADER HUD BAR */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#0D1424] p-4 rounded-2xl border border-[#1E293B] shadow-xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#18181b] p-4 rounded-lg border border-[#27272a]">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-            <Camera className="w-6 h-6 animate-pulse" />
+          <div className="p-2.5 rounded-md bg-[#27272a] text-cyan-400">
+            <Camera className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] uppercase font-bold tracking-widest text-cyan-400">
-                Metro Vision Intelligence // OCC Surveillance
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-400">
+                OCC Surveillance
               </span>
-              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-red-500/10 text-red-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" />
-                LIVE CCTV
+                LIVE
               </span>
             </div>
-            <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="text-xl font-semibold text-slate-200 tracking-tight">
               Ameerpet Station • Platform 2 Feed
             </h1>
           </div>
         </div>
 
         {/* Live Surveillance Specs */}
-        <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="bg-[#0A0F1D] px-3 py-2 rounded-xl border border-[#1E293B] flex flex-col items-end">
-            <span className="text-[9px] text-slate-500 font-bold uppercase">Vision AI Engine</span>
-            <span className={`${isModelLoading ? 'text-amber-400' : 'text-emerald-400'} font-bold flex items-center gap-1.5`}>
-              {!isModelLoading && <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />}
-              {isModelLoading && <span className="w-2 h-2 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />}
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <div className="bg-[#09090b] px-3 py-2 rounded-md border border-[#27272a] flex flex-col items-end">
+            <span className="text-[9px] text-slate-500 font-semibold uppercase">Vision AI</span>
+            <span className={`${isModelLoading ? 'text-amber-400' : 'text-emerald-400'} font-medium flex items-center gap-1.5`}>
+              {!isModelLoading && <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />}
+              {isModelLoading && <span className="w-1.5 h-1.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />}
               {aiEngineName}
             </span>
           </div>
 
-          <div className="bg-[#0A0F1D] px-3 py-2 rounded-xl border border-[#1E293B] flex flex-col items-end">
-            <span className="text-[9px] text-slate-500 font-bold uppercase">Frame Rate</span>
-            <span className="text-cyan-300 font-bold">{fps} FPS</span>
+          <div className="bg-[#09090b] px-3 py-2 rounded-md border border-[#27272a] flex flex-col items-end">
+            <span className="text-[9px] text-slate-500 font-semibold uppercase">FPS</span>
+            <span className="text-cyan-400 font-medium">{fps}</span>
           </div>
-
-          <button
-            onClick={() => setShowExplainModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all transform hover:scale-105 cursor-pointer"
-          >
-            <HelpCircle className="w-4 h-4" />
-            WHY THIS DECISION?
-          </button>
         </div>
       </div>
 
@@ -257,7 +248,7 @@ export const MetroVisionIntelligence: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col gap-4">
           
           {/* CCTV SURVEILLANCE PANEL CONTAINER */}
-          <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border-2 border-[#1E293B] shadow-2xl group">
+          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-[#27272a] group">
             
             {/* HTML5 VIDEO PLAYER WITH ATTACHED CCTV FOOTAGE */}
             <video
@@ -359,24 +350,7 @@ export const MetroVisionIntelligence: React.FC = () => {
                       );
                     })}
 
-                    {/* 3. FLOW VECTOR FIELDS */}
-                    {showFlowFields && zones.map(z => {
-                      if (z.count === 0 || (Math.abs(z.avgVx) < 0.1 && Math.abs(z.avgVy) < 0.1)) return null;
-                      
-                      // Scale vector for visibility
-                      const scale = 20; 
-                      return (
-                        <line
-                          key={`flow-${z.id}`}
-                          x1={`${z.cx}%`} y1={`${z.cy}%`}
-                          x2={`${z.cx + z.avgVx * scale}%`} y2={`${z.cy + z.avgVy * scale}%`}
-                          stroke="#8B5CF6"
-                          strokeWidth="3"
-                          markerEnd="url(#arrow)"
-                          opacity="0.8"
-                        />
-                      );
-                    })}
+
                   </>
                 );
               })()}
@@ -429,15 +403,15 @@ export const MetroVisionIntelligence: React.FC = () => {
           </div>
 
           {/* AI VISION OVERLAY CONTROLS BAR */}
-          <div className="bg-[#0D1424] p-4 rounded-xl border border-[#1E293B] flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-              Vision Overlay Layers:
+          <div className="bg-[#18181b] p-3 rounded-lg border border-[#27272a] flex flex-wrap items-center justify-between gap-4">
+            <span className="font-semibold text-slate-400 text-xs">
+              Vision Overlay Layers
             </span>
-            <div className="flex flex-wrap items-center gap-2 font-mono">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowHeatmap(!showHeatmap)}
-                className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                  showHeatmap ? 'bg-red-500/20 border-red-500 text-red-300' : 'bg-white/5 border-white/10 text-slate-500'
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  showHeatmap ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'bg-[#09090b] border border-[#27272a] text-slate-400 hover:bg-[#27272a]'
                 }`}
               >
                 Density Heatmap
@@ -445,250 +419,168 @@ export const MetroVisionIntelligence: React.FC = () => {
 
               <button
                 onClick={() => setShowZonalGrid(!showZonalGrid)}
-                className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                  showZonalGrid ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300' : 'bg-white/5 border-white/10 text-slate-500'
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  showZonalGrid ? 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400' : 'bg-[#09090b] border border-[#27272a] text-slate-400 hover:bg-[#27272a]'
                 }`}
               >
                 Zonal Grid
               </button>
-
-              <button
-                onClick={() => setShowFlowFields(!showFlowFields)}
-                className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                  showFlowFields ? 'bg-purple-500/20 border-purple-500 text-purple-300' : 'bg-white/5 border-white/10 text-slate-500'
-                }`}
-              >
-                Flow Fields
-              </button>
             </div>
           </div>
 
-          {/* REAL-TIME ANALYTICS TILES */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Passenger Count
-                <Users className="w-3.5 h-3.5 text-cyan-400" />
-              </span>
-              <span className="text-xl font-black text-white font-mono">{passengerCount}</span>
-              <span className="text-[9px] text-emerald-400 font-semibold font-mono">LIVE TRACKING</span>
-            </div>
-
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Platform Occupancy
-                <BarChart2 className="w-3.5 h-3.5 text-orange-400" />
-              </span>
-              <span className="text-xl font-black text-orange-400 font-mono">{platformOccupancy}%</span>
-              <span className="text-[9px] text-orange-400 font-semibold font-mono">DENSITY LIVE</span>
-            </div>
-
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Queue Length
-                <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
-              </span>
-              <span className="text-xl font-black text-purple-300 font-mono">{queueLength} m</span>
-              <span className="text-[9px] text-purple-400 font-semibold font-mono">ESTIMATED</span>
-            </div>
-
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Walking Speed
-                <Activity className="w-3.5 h-3.5 text-yellow-400" />
-              </span>
-              <span className="text-xl font-black text-white font-mono">{walkingSpeed} m/s</span>
-              <span className="text-[9px] text-yellow-400 font-semibold font-mono">AVERAGE PACE</span>
-            </div>
-
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Crowd Density
-                <Shield className="w-3.5 h-3.5 text-blue-400" />
-              </span>
-              <span className="text-xl font-black text-blue-300 font-mono">{crowdDensity} /m²</span>
-              <span className="text-[9px] text-blue-400 font-semibold font-mono">DYNAMIC SCORE</span>
-            </div>
-
-            <div className="bg-[#0D1424] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-0.5">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                Congestion Score
-                <Flame className="w-3.5 h-3.5 text-red-400" />
-              </span>
-              <span className="text-xl font-black text-red-400 font-mono">{congestionScore} / 100</span>
-              <span className="text-[9px] text-red-400 font-semibold font-mono">LIVE THREAT</span>
-            </div>
-
-          </div>
-
+          {/* (Moved Fusion Card to right sidebar) */}
         </div>
 
-        {/* RIGHT / SIDEBAR: FLOW, ZONES, REASONING & FUSION (5 COLS) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        {/* RIGHT / SIDEBAR: ACTION & LIVE METRICS (5 COLS) */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
           
-          {/* FLOW DIRECTION ANALYSIS CARD */}
-          <div className="bg-[#0D1424] p-5 rounded-2xl border border-[#1E293B] flex flex-col gap-4 shadow-xl">
-            <div className="flex justify-between items-center border-b border-[#1E293B] pb-3">
+          {/* FUSION DECISION (CLEAN ALERT) */}
+          <div className="bg-[#18181b] p-5 rounded-lg border border-[#27272a] flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-[#27272a] pb-3">
               <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-purple-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Passenger Directional Flow
-                </h3>
+                <Shield className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-semibold text-slate-200">Fusion Decision</h3>
               </div>
-              <span className="text-[10px] font-mono text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                DOMINANT: PLATFORM 2
-              </span>
+              <span className="text-[10px] font-mono text-slate-400 uppercase">OCC Directive</span>
             </div>
 
-            <div className="space-y-3 font-mono">
-              {[
-                { label: '→ Towards Platform 2', val: 61, color: 'bg-cyan-500 text-cyan-300' },
-                { label: '← Towards Exit B', val: 19, color: 'bg-emerald-500 text-emerald-300' },
-                { label: '↑ Towards Escalators', val: 13, color: 'bg-yellow-500 text-yellow-300' },
-                { label: '↓ Towards Concourse', val: 7, color: 'bg-purple-500 text-purple-300' },
-              ].map((flow, i) => (
-                <div key={i} className="flex flex-col gap-1">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-300">{flow.label}</span>
-                    <span className={flow.color.split(' ')[1]}>{flow.val}%</span>
-                  </div>
-                  <div className="w-full h-2.5 bg-[#070B14] rounded-full overflow-hidden border border-[#1E293B]">
-                    <div 
-                      className={`h-full ${flow.color.split(' ')[0]} rounded-full transition-all duration-500`}
-                      style={{ width: `${flow.val}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ZONE ANALYSIS GRID CARD */}
-          <div className="bg-[#0D1424] p-5 rounded-2xl border border-[#1E293B] flex flex-col gap-4 shadow-xl">
-            <div className="flex justify-between items-center border-b border-[#1E293B] pb-3">
-              <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Station Zone Analysis
-                </h3>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 font-bold">
-                6 ZONES MONITORED
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { name: 'Entry Gates', occ: 42, risk: 'Low', trend: '→ Stable', status: 'normal' },
-                { name: 'Ticket Hall', occ: 38, risk: 'Low', trend: '→ Stable', status: 'normal' },
-                { name: 'Escalators', occ: 64, risk: 'Moderate', trend: '↑ +8%', status: 'warning' },
-                { name: 'Lift Area', occ: 28, risk: 'Low', trend: '→ Stable', status: 'normal' },
-                { name: 'Platform 2', occ: 84, risk: 'Critical', trend: '↑ +14%', status: 'critical' },
-                { name: 'Exit B', occ: 52, risk: 'Moderate', trend: '↑ +5%', status: 'warning' },
-              ].map((zone, i) => {
-                const isCritical = zone.status === 'critical';
-                const isWarning = zone.status === 'warning';
-                return (
-                  <div 
-                    key={i} 
-                    className={`p-3 rounded-xl border flex flex-col gap-1 transition-all ${
-                      isCritical
-                        ? 'bg-red-950/40 border-red-500/60 text-red-200 shadow-[0_0_15px_rgba(239,68,68,0.2)] animate-pulse'
-                        : isWarning
-                        ? 'bg-amber-950/30 border-amber-500/40 text-amber-200'
-                        : 'bg-[#070B14] border-[#1E293B] text-slate-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center text-xs font-bold">
-                      <span>{zone.name}</span>
-                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded uppercase ${
-                        isCritical ? 'bg-red-500 text-white' : isWarning ? 'bg-amber-500/30 text-amber-300' : 'bg-emerald-500/20 text-emerald-400'
-                      }`}>
-                        {zone.risk}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-baseline mt-1 font-mono">
-                      <span className="text-lg font-black">{zone.occ}%</span>
-                      <span className="text-[10px] font-semibold opacity-80">{zone.trend}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* VISION AI REASONING ENGINE CARD */}
-          <div className="bg-[#0D1424] p-5 rounded-2xl border border-[#1E293B] flex flex-col gap-4 shadow-xl">
-            <div className="flex justify-between items-center border-b border-[#1E293B] pb-3">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Vision AI Reasoning Engine
-                </h3>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                LIVE INFERENCE
-              </span>
-            </div>
-
-            <div className="bg-[#070B14] p-4 rounded-xl border border-[#1E293B] flex flex-col gap-2 font-mono text-xs text-slate-300">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold border-b border-[#1E293B] pb-1.5">
-                <Radio className="w-3.5 h-3.5 animate-pulse" />
-                <span>VISION ENGINE INFERENCE LOG</span>
-              </div>
-              <ul className="space-y-1.5 list-disc list-inside text-slate-300">
-                <li>Crowd density aggregated via <strong className="text-cyan-400">Heatmap & Zonal Arrays</strong>.</li>
-                <li>Grid Sector 0-1 experiencing <strong className="text-amber-400">elevated occupancy</strong>.</li>
-                <li>Flow fields indicate <strong className="text-purple-400">strong directional pull</strong> towards Platform edge.</li>
-                <li>Walking speed reduced by <strong className="text-orange-400">18%</strong> in high-density zones.</li>
-                <li className="text-red-400 font-bold">Predicted severe congestion within 4 minutes.</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* MULTI-SOURCE FUSION & RECOMMENDATION CARD */}
-          <div className="bg-[#0D1424] p-5 rounded-2xl border border-indigo-500/40 bg-gradient-to-b from-[#0D1424] to-[#121B30] flex flex-col gap-4 shadow-2xl relative overflow-hidden">
-            <div className="flex justify-between items-center border-b border-[#1E293B] pb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Multi-Source Fusion Decision
-                </h3>
-              </div>
-              <span className="text-[10px] font-mono text-indigo-300 font-bold bg-indigo-500/20 px-2.5 py-0.5 rounded border border-indigo-500/40">
-                OCC DIRECTIVE
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Recommended Action:</div>
-              <div className="text-lg font-extrabold text-white tracking-tight leading-snug">
-                Deploy two supervisors to Platform 2 & Open Exit C
+            <div className="flex flex-col gap-2">
+              <div className="text-[11px] text-slate-400 uppercase font-semibold">Recommended Action</div>
+              <div className="text-lg text-slate-200 leading-snug">
+                Deploy <strong className="font-medium text-indigo-300">two supervisors</strong> to Platform 2 & <strong className="font-medium text-indigo-300">Open Exit C</strong>
               </div>
 
-              <div className="bg-[#070B14] p-3 rounded-xl border border-[#1E293B] flex flex-col gap-2 mt-1">
-                <span className="text-[10px] font-mono text-slate-400 uppercase font-bold">Source Contribution Reason:</span>
-                <div className="space-y-1 text-xs font-mono">
-                  <div className="flex justify-between"><span className="text-slate-300">Vision AI (CCTV Feed)</span><span className="font-bold text-cyan-400">47%</span></div>
-                  <div className="flex justify-between"><span className="text-slate-300">AFC Gate Entries</span><span className="font-bold text-emerald-400">21%</span></div>
-                  <div className="flex justify-between"><span className="text-slate-300">Metro ATS Delay</span><span className="font-bold text-yellow-400">16%</span></div>
-                  <div className="flex justify-between"><span className="text-slate-300">Weather Radar API</span><span className="font-bold text-blue-400">9%</span></div>
-                  <div className="flex justify-between"><span className="text-slate-300">Security Feed</span><span className="font-bold text-purple-400">7%</span></div>
+              <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] mt-2">
+                <span className="text-[10px] text-slate-500 uppercase font-semibold block mb-2">Source Weights</span>
+                <div className="grid grid-cols-5 gap-2 text-center text-xs font-mono">
+                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">AI</span><span className="text-cyan-400">47%</span></div>
+                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">AFC</span><span className="text-emerald-400">21%</span></div>
+                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">ATS</span><span className="text-yellow-400">16%</span></div>
+                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">WXR</span><span className="text-blue-400">9%</span></div>
+                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">SEC</span><span className="text-purple-400">7%</span></div>
                 </div>
               </div>
 
               <button
                 onClick={() => setShowExplainModal(true)}
-                className="w-full mt-2 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02]"
+                className="w-full mt-2 py-2 bg-[#27272a] hover:bg-[#3f3f46] text-slate-200 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <HelpCircle className="w-4 h-4" />
-                WHY THIS DECISION? (INSPECT PIPELINE)
+                <HelpCircle className="w-3.5 h-3.5" />
+                Inspect Pipeline
               </button>
             </div>
           </div>
 
+          {/* LIVE METRICS PANEL */}
+          <div className="bg-[#18181b] p-5 rounded-lg border border-[#27272a] flex flex-col gap-4 flex-1">
+            <div className="flex justify-between items-center border-b border-[#27272a] pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-sm font-semibold text-slate-200">Live Metrics</h3>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400">
+                <span>Sync</span>
+                <span className="text-emerald-400">● 100ms</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'Passenger Count', val: passengerCount, unit: 'pax', color: 'text-cyan-400', progress: Math.min(100, (passengerCount / 300) * 100) },
+                { label: 'Platform Occ.', val: platformOccupancy, unit: '%', color: 'text-orange-400', progress: platformOccupancy },
+                { label: 'Queue Length', val: queueLength, unit: 'm', color: 'text-purple-400', progress: Math.min(100, (queueLength / 80) * 100) },
+                { label: 'Walking Speed', val: walkingSpeed, unit: 'm/s', color: 'text-yellow-400', progress: Math.min(100, (walkingSpeed / 2.0) * 100) },
+                { label: 'Crowd Density', val: crowdDensity, unit: '/m²', color: 'text-blue-400', progress: Math.min(100, (crowdDensity / 5.0) * 100) },
+                { label: 'Congestion Score', val: congestionScore, unit: '/100', color: 'text-red-400', progress: congestionScore },
+              ].map((stat, i) => (
+                <div key={i} className="p-3 bg-[#09090b] rounded-md border border-[#27272a] flex flex-col gap-1.5">
+                  <span className="text-[11px] text-slate-400 font-medium">{stat.label}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-semibold text-slate-200 font-sans">{stat.val}</span>
+                    <span className={`text-xs ${stat.color}`}>{stat.unit}</span>
+                  </div>
+                  <div className="w-full bg-[#27272a] h-1 rounded-full overflow-hidden mt-1">
+                    <div className={`h-full bg-slate-400 transition-all duration-700`} style={{ width: `${stat.progress}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECONDARY ROW: SPATIAL ZONES & AI REASONING */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        
+        {/* ZONE ANALYSIS GRID CARD */}
+        <div className="bg-[#18181b] p-4 rounded-lg border border-[#27272a] flex flex-col gap-3">
+          <div className="flex justify-between items-center border-b border-[#27272a] pb-2">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-slate-400" />
+              <h3 className="text-sm font-semibold text-slate-200">Spatial Zones</h3>
+            </div>
+            <span className="text-[10px] font-mono text-slate-500">6 ZONES ACTIVE</span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { name: 'Entry Gates', occ: 42, risk: 'Low', trend: '→', status: 'normal' },
+              { name: 'Ticket Hall', occ: 38, risk: 'Low', trend: '→', status: 'normal' },
+              { name: 'Escalators', occ: 64, risk: 'Mod', trend: '↑', status: 'warning' },
+              { name: 'Lift Area', occ: 28, risk: 'Low', trend: '→', status: 'normal' },
+              { name: 'Platform 2', occ: 84, risk: 'Crit', trend: '↑', status: 'critical' },
+              { name: 'Exit B', occ: 52, risk: 'Mod', trend: '↑', status: 'warning' },
+            ].map((zone, i) => {
+              const isCritical = zone.status === 'critical';
+              const isWarning = zone.status === 'warning';
+              return (
+                <div 
+                  key={i} 
+                  className={`p-2 rounded border flex flex-col gap-1 ${
+                    isCritical
+                      ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                      : isWarning
+                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                      : 'bg-[#09090b] border-[#27272a] text-slate-400'
+                  }`}
+                >
+                  <div className="flex justify-between items-center text-[9px] font-semibold uppercase">
+                    <span className="truncate">{zone.name}</span>
+                  </div>
+                  <div className="flex justify-between items-baseline font-sans">
+                    <span className={`text-lg font-bold ${isCritical ? 'text-red-400' : isWarning ? 'text-amber-400' : 'text-slate-200'}`}>
+                      {zone.occ}<span className="text-[10px] text-slate-500">%</span>
+                    </span>
+                    <span className="text-xs">{zone.trend}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* VISION AI REASONING ENGINE CARD */}
+        <div className="bg-[#18181b] p-4 rounded-lg border border-[#27272a] flex flex-col gap-3">
+          <div className="flex justify-between items-center border-b border-[#27272a] pb-2">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-slate-400" />
+              <h3 className="text-sm font-semibold text-slate-200">AI Reasoning</h3>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              LIVE
+            </div>
+          </div>
+
+          <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] flex flex-col gap-2 font-mono text-xs text-slate-400 h-full">
+            <ul className="space-y-2 list-none tracking-tight">
+              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Crowd density aggregated via <strong className="text-slate-300 font-medium">Heatmap & Zonal Arrays</strong>.</span></li>
+              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Grid Sector 0-1 experiencing <strong className="text-slate-300 font-medium">elevated occupancy</strong>.</span></li>
+              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Flow fields indicate <strong className="text-slate-300 font-medium">strong directional pull</strong> towards Platform edge.</span></li>
+              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Walking speed reduced by <strong className="text-slate-300 font-medium">18%</strong> in high-density zones.</span></li>
+              <li className="flex gap-2 items-start text-red-400"><span className="mt-0.5">▸</span><span className="font-semibold">Predicted severe congestion within 4 minutes.</span></li>
+            </ul>
+          </div>
         </div>
 
       </div>

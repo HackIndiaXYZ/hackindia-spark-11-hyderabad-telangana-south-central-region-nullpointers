@@ -34,7 +34,7 @@ export const DecisionCenterPage: React.FC = () => {
           </h2>
           <div className="flex flex-col gap-4">
             
-            <div className="flex flex-col gap-2 border-b border-[#1F2937] pb-4">
+            <div className="flex flex-col gap-2 border-b border-[#27272a] pb-4">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] uppercase font-bold tracking-wider text-[#EF4444]">High Priority</span>
                 <span className="text-[10px] font-mono text-slate-400">Predicted • 6 min</span>
@@ -42,7 +42,7 @@ export const DecisionCenterPage: React.FC = () => {
               <div className="font-bold text-slate-200 text-sm">Platform 2 Congestion</div>
             </div>
 
-            <div className="flex flex-col gap-2 border-b border-[#1F2937] pb-4">
+            <div className="flex flex-col gap-2 border-b border-[#27272a] pb-4">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] uppercase font-bold tracking-wider text-[#F59E0B]">Medium Priority</span>
                 <span className="text-[10px] font-mono text-slate-400">Active</span>
@@ -50,7 +50,7 @@ export const DecisionCenterPage: React.FC = () => {
               <div className="font-bold text-slate-200 text-sm">Escalator B Failure</div>
             </div>
 
-            <div className="flex flex-col gap-2 border-b border-[#1F2937] pb-4">
+            <div className="flex flex-col gap-2 border-b border-[#27272a] pb-4">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] uppercase font-bold tracking-wider text-[#3B82F6]">Low Priority</span>
                 <span className="text-[10px] font-mono text-slate-400">Advisory</span>
@@ -77,7 +77,7 @@ export const DecisionCenterPage: React.FC = () => {
           </h2>
           <div className="flex flex-col gap-4">
             {officers.map(officer => (
-              <div key={officer.id} className="flex items-center justify-between p-3 rounded-lg border border-[#1F2937] bg-[#0F172A]">
+              <div key={officer.id} className="flex items-center justify-between p-3 rounded-lg border border-[#27272a] bg-[#09090b]">
                 <div className="flex flex-col">
                   <div className="font-bold text-slate-200 text-sm">{officer.name}</div>
                   <div className="text-[10px] text-slate-400 font-mono mt-0.5">{officer.role} • {officer.location}</div>
@@ -157,7 +157,7 @@ export const DecisionCenterPage: React.FC = () => {
                     </button>
                   </div>
                   
-                  <div className="bg-[#111827] border border-[#1F2937] rounded-lg p-4 flex flex-col gap-4">
+                  <div className="bg-[#18181b] border border-[#27272a] rounded-lg p-4 flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Reasoning Chain</span>
                       <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside marker:text-indigo-500">
@@ -168,7 +168,7 @@ export const DecisionCenterPage: React.FC = () => {
                       </ul>
                     </div>
                     
-                    <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#1F2937]">
+                    <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#27272a]">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Models Triggered</span>
                       <div className="flex flex-wrap gap-2 mt-1">
                         <span className="text-[10px] font-bold px-2 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded">YOLOv11 Person Detection</span>
@@ -182,7 +182,7 @@ export const DecisionCenterPage: React.FC = () => {
                 <div className="flex flex-col gap-4">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Expected Impact</h3>
                   
-                  <div className="bg-[#111827] border border-[#1F2937] rounded-lg p-4 flex flex-col gap-4">
+                  <div className="bg-[#18181b] border border-[#27272a] rounded-lg p-4 flex flex-col gap-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-slate-300">Platform Density</span>
                       <div className="flex items-center gap-3">
@@ -210,7 +210,7 @@ export const DecisionCenterPage: React.FC = () => {
             <div className="flex flex-col gap-6 mt-12">
               <div className="flex flex-col gap-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Alternatives Assessed</h3>
-                <div className="flex items-center justify-between bg-[#0F172A] border border-[#1F2937] p-4 rounded-lg opacity-60">
+                <div className="flex items-center justify-between bg-[#09090b] border border-[#27272a] p-4 rounded-lg opacity-60">
                   <div className="flex items-center gap-3">
                     <XCircle className="w-5 h-5 text-[#EF4444]" />
                     <span className="font-bold text-slate-300">Close Gate B</span>
@@ -220,7 +220,7 @@ export const DecisionCenterPage: React.FC = () => {
               </div>
 
               {/* Action Bar */}
-              <div className="mt-8 flex items-center justify-between p-6 bg-[#111827] border border-[#1F2937] rounded-xl shadow-2xl">
+              <div className="mt-8 flex items-center justify-between p-6 bg-[#18181b] border border-[#27272a] rounded-xl shadow-2xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-white">Execute Operational Plan</span>
                   <span className="text-xs text-slate-400">Requires Commander Auth</span>

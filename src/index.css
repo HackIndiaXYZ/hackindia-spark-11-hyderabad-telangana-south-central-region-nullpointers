@@ -12,7 +12,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #0B1220; /* Requested Enterprise Background */
+  background-color: #09090b; /* Zinc 950 */
   color: #e2e8f0;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
@@ -20,31 +20,29 @@ html, body, #root {
 
 /* Clean Enterprise Cards (Minimal Visual Noise) */
 .glass-panel {
-  background: #111827; /* Requested Card Background */
-  border: 1px solid #1F2937; /* Requested Border */
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #18181b; /* Zinc 900 */
+  border: 1px solid #27272a; /* Zinc 800 */
+  border-radius: 8px;
   transition: all 0.2s ease-in-out;
 }
 
 .glass-panel:hover {
-  border-color: #2563EB; /* Requested Blue */
+  border-color: #3f3f46;
 }
 
 .glass-panel-heavy {
-  background: #111827;
-  border: 1px solid #1F2937;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 8px;
 }
 
 .glass-panel-heavy:hover {
-  border-color: #2563EB;
+  border-color: #3f3f46;
 }
 
 .glass-panel-light {
-  background: rgba(17, 24, 39, 0.5);
-  border: 1px solid rgba(31, 41, 55, 0.5);
+  background: #18181b;
+  border: 1px solid #27272a;
 }
 
 /* No glowing borders (purely informational color accents) */
@@ -96,8 +94,8 @@ html, body, #root {
 
 /* Recharts Tooltip Overrides - Solid Enterprise Styles */
 .recharts-default-tooltip {
-  background-color: #111827 !important;
-  border: 1px solid #1F2937 !important;
+  background-color: #18181b !important;
+  border: 1px solid #27272a !important;
   border-radius: 8px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   color: #fff !important;

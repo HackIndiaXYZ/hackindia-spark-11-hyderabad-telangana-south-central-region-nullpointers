@@ -25,7 +25,7 @@ export const DataSourcesPage: React.FC = () => {
       <div className="w-full overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#1F2937] text-xs uppercase tracking-wider text-slate-500 font-semibold">
+            <tr className="border-b border-[#27272a] text-xs uppercase tracking-wider text-slate-500 font-semibold">
               <th className="pb-3 px-4">Source</th>
               <th className="pb-3 px-4">Status</th>
               <th className="pb-3 px-4">Trust</th>
@@ -33,9 +33,9 @@ export const DataSourcesPage: React.FC = () => {
               <th className="pb-3 px-4">Refresh</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1F2937]">
+          <tbody className="divide-y divide-[#27272a]">
             {feeds.map((feed) => (
-              <tr key={feed.id} className="hover:bg-[#111827]/80 transition-colors">
+              <tr key={feed.id} className="hover:bg-[#18181b]/80 transition-colors">
                 <td className="py-4 px-4">
                   <div className="font-semibold text-slate-200">{feed.name}</div>
                   <div className="text-xs text-slate-500 font-mono mt-1">{feed.productionSource}</div>
@@ -50,7 +50,7 @@ export const DataSourcesPage: React.FC = () => {
                     <span className={`font-bold text-sm ${feed.trust > 85 ? 'text-[#10B981]' : feed.trust > 50 ? 'text-[#F59E0B]' : 'text-[#EF4444]'}`}>
                       {feed.trust}%
                     </span>
-                    <div className="w-16 h-1.5 bg-[#1F2937] rounded-full overflow-hidden">
+                    <div className="w-16 h-1.5 bg-[#27272a] rounded-full overflow-hidden">
                       <div 
                         className={`h-full rounded-full ${feed.trust > 85 ? 'bg-[#10B981]' : feed.trust > 50 ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`}
                         style={{ width: `${feed.trust}%` }}

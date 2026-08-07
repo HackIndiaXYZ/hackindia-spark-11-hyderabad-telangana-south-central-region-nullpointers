@@ -83,9 +83,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="relative w-full h-full min-h-screen grid-bg flex flex-col justify-between p-8 md:p-16 overflow-hidden">
       
-      {/* Background glowing rings */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* Background elements removed for flat enterprise look */}
 
       {/* Ticker HUD line */}
       <div className="flex justify-between items-center border-b border-white/5 pb-6 z-10">
@@ -121,7 +119,7 @@ export const LandingPage: React.FC = () => {
               animate={{ letterSpacing: '-0.02em' }}
               className="text-6xl sm:text-8xl font-bold tracking-tight text-white mb-6 leading-none"
             >
-              CROWD<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">OS</span>
+              CROWD<span className="text-indigo-400">OS</span>
             </motion.h1>
 
             <motion.p className="text-xl sm:text-2xl text-white/50 font-light mb-12 max-w-2xl leading-relaxed">
@@ -132,7 +130,7 @@ export const LandingPage: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowRoleSelector(true)}
-              className="group flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-semibold shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 cursor-pointer"
+              className="group flex items-center gap-3 px-8 py-4 rounded-lg bg-white text-black font-semibold transition-all duration-300 cursor-pointer"
             >
               INITIALIZE SYSTEM 
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -164,9 +162,9 @@ export const LandingPage: React.FC = () => {
                   <motion.div
                     key={role.id}
                     variants={itemVariants}
-                    whileHover={{ y: -8, scale: 1.02 }}
+                    whileHover={{ y: -4 }}
                     onClick={() => setRole(role.id)}
-                    className={`flex flex-col justify-between p-6 rounded-2xl border glass-panel transition-all duration-300 cursor-pointer group ${role.color}`}
+                    className={`flex flex-col justify-between p-6 rounded-lg border glass-panel transition-all duration-300 cursor-pointer group ${role.color}`}
                   >
                     <div>
                       <div className="p-3 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">

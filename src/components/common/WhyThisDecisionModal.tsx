@@ -158,7 +158,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
       subtitle: 'Autonomous OCC Action Dispatch Protocol',
       icon: Sparkles,
       badge: 'ACTION DISPATCH',
-      badgeColor: 'bg-emerald-500/30 text-emerald-300 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]',
+      badgeColor: 'bg-emerald-500/30 text-emerald-300 border-emerald-500/50 shadow-sm',
       latency: '5ms',
       model: 'OCC Rules & Safety Dispatch Matrix',
       description: 'Generates high-priority OCC operational plan: Deploy two supervisors to Platform 2 and open Exit C to reroute incoming passenger crowd.',
@@ -176,10 +176,10 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md font-sans select-none animate-in fade-in duration-200">
-      <div className="relative w-full max-w-6xl max-h-[92vh] bg-[#090D16] border border-[#1F2937] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-200">
+      <div className="relative w-full max-w-6xl max-h-[92vh] bg-[#09090b] border border-[#27272a] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F2937] bg-[#0D1322]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#27272a] bg-[#18181b]">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
               <ShieldAlert className="w-5 h-5" />
@@ -211,7 +211,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
         <div className="flex-1 flex overflow-hidden">
           
           {/* Left: 8-Stage Pipeline Navigation Tree */}
-          <div className="w-1/3 border-r border-[#1F2937] bg-[#070A12] p-4 overflow-y-auto flex flex-col gap-2">
+          <div className="w-1/3 border-r border-[#27272a] bg-[#09090b] p-4 overflow-y-auto flex flex-col gap-2">
             <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">
               End-to-End Pipeline Stages (Click to Inspect)
             </div>
@@ -224,8 +224,8 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
                   onClick={() => setActiveStep(idx)}
                   className={`group relative flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#111827] border-indigo-500/60 shadow-lg text-white'
-                      : 'bg-[#090E1A]/60 border-[#1F2937]/60 text-slate-400 hover:bg-[#0E1526] hover:text-slate-200'
+                      ? 'bg-[#18181b] border-indigo-500/60 shadow-lg text-white'
+                      : 'bg-[#18181b]/60 border-[#27272a]/60 text-slate-400 hover:bg-[#27272a] hover:text-slate-200'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -254,10 +254,10 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
           </div>
 
           {/* Right: Detailed Stage Inspector & Multi-Source Weights */}
-          <div className="flex-1 p-6 overflow-y-auto bg-[#090D16] flex flex-col gap-6">
+          <div className="flex-1 p-6 overflow-y-auto bg-[#09090b] flex flex-col gap-6">
             
             {/* Stage Header Card */}
-            <div className="p-5 rounded-2xl bg-[#0F172A] border border-[#1F2937] flex flex-col gap-4 relative overflow-hidden">
+            <div className="p-5 rounded-2xl bg-[#09090b] border border-[#27272a] flex flex-col gap-4 relative overflow-hidden">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
@@ -291,7 +291,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
               {/* Metrics Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
                 {currentStep.metrics.map((m, idx) => (
-                  <div key={idx} className="bg-[#090E1A] p-3 rounded-xl border border-[#1F2937]">
+                  <div key={idx} className="bg-[#18181b] p-3 rounded-xl border border-[#27272a]">
                     <div className="text-[10px] font-mono text-slate-500 uppercase font-bold">{m.label}</div>
                     <div className="text-sm font-bold text-white font-mono mt-0.5">{m.val}</div>
                   </div>
@@ -303,8 +303,8 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* CCTV Visual Snapshot Card */}
-              <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-4 flex flex-col gap-3">
-                <div className="flex justify-between items-center border-b border-[#1F2937] pb-2">
+              <div className="bg-[#09090b] border border-[#27272a] rounded-2xl p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-center border-b border-[#27272a] pb-2">
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-cyan-400" />
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Analysed CCTV Source Frame</span>
@@ -314,7 +314,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
                   </span>
                 </div>
 
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-[#1F2937] group">
+                <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-[#27272a] group">
                   <video 
                     src={videoSrc}
                     autoPlay
@@ -349,9 +349,9 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
               </div>
 
               {/* Multi-Source Fusion Contribution Weights Card */}
-              <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl p-4 flex flex-col justify-between">
+              <div className="bg-[#09090b] border border-[#27272a] rounded-2xl p-4 flex flex-col justify-between">
                 <div>
-                  <div className="flex justify-between items-center border-b border-[#1F2937] pb-2 mb-3">
+                  <div className="flex justify-between items-center border-b border-[#27272a] pb-2 mb-3">
                     <div className="flex items-center gap-2">
                       <Activity className="w-4 h-4 text-purple-400" />
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Multi-Source Contribution Weights</span>
@@ -372,7 +372,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
                           <span>{item.source}</span>
                           <span className="font-mono font-bold text-white">{item.weight}%</span>
                         </div>
-                        <div className="w-full h-2 bg-[#090E1A] rounded-full overflow-hidden border border-[#1F2937]">
+                        <div className="w-full h-2 bg-[#18181b] rounded-full overflow-hidden border border-[#27272a]">
                           <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.weight}%` }} />
                         </div>
                       </div>
@@ -380,7 +380,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#1F2937] flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <div className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-[11px] text-slate-400 font-mono">
                   <span>Audit Signature: 0x9F42A7C</span>
                   <span className="text-emerald-400 font-bold">Traceability Verified ✓</span>
                 </div>
@@ -389,7 +389,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
             </div>
 
             {/* Bottom Pipeline Progress Bar */}
-            <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-[#09090b] border border-[#27272a] flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>8 / 8 Stages Verified across live Ameerpet CCTV Feed</span>
