@@ -1,146 +1,74 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Clock, CheckSquare, XCircle, Scale, ChevronDown, ChevronUp } from 'lucide-react';
-
+import { Clock, ShieldCheck, AlertTriangle, Zap, CheckCircle, ArrowDown } from 'lucide-react';
 
 export const DecisionReplay: React.FC = () => {
-  const { replayHistory } = useAppState();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { replayHistory, activeScenario } = useAppState();
 
-  const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
+  const mockTimeline = [
+    { time: '08:45', title: 'Train delayed', desc: 'Metro transit logs indicate 6 min delay.', icon: AlertTriangle, color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/20', border: 'border-[#F59E0B]/40' },
+    { time: '08:46', title: 'Platform reaches 82%', desc: 'Context Fusion Engine detects density spike.', icon: Clock, color: 'text-[#EF4444]', bg: 'bg-[#EF4444]/20', border: 'border-[#EF4444]/40' },
+    { time: '08:47', title: 'AI predicts congestion', desc: 'Prediction engine forecasts stampede risk.', icon: Zap, color: 'text-[#3B82F6]', bg: 'bg-[#3B82F6]/20', border: 'border-[#3B82F6]/40' },
+    { time: '08:48', title: 'Recommendation generated', desc: 'Confidence 94% to open Exit C.', icon: ShieldCheck, color: 'text-[#8B5CF6]', bg: 'bg-[#8B5CF6]/20', border: 'border-[#8B5CF6]/40' },
+    { time: '08:49', title: 'Operator approved', desc: 'Action executed by Commander.', icon: CheckCircle, color: 'text-[#10B981]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/40' },
+    { time: '08:51', title: 'Exit C opened', desc: 'Turnstile logs show outflow increased.', icon: CheckCircle, color: 'text-[#10B981]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/40' },
+    { time: '08:54', title: 'Occupancy reduced', desc: 'Platform density down to 74%.', icon: CheckCircle, color: 'text-[#10B981]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/40' },
+  ];
 
   return (
-    <div className="w-full glass-panel rounded-2xl flex flex-col p-5 overflow-hidden font-sans">
+    <div className="w-full max-w-4xl mx-auto h-full flex flex-col p-6 overflow-hidden font-sans">
       
-      {/* HUD Ticker */}
-      <div className="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-blue-500" />
-          <span className="font-mono text-xs uppercase tracking-widest text-slate-400 font-bold">Action Replay & Decision Log</span>
+      <div className="flex items-center gap-3 mb-8 border-b border-[#1F2937] pb-4">
+        <Clock className="w-6 h-6 text-[#3B82F6]" />
+        <div>
+          <h2 className="text-xl font-bold text-slate-200">Incident Replay: Platform 2 Congestion</h2>
+          <p className="text-sm text-slate-400">Chronological lifecycle of a mitigated event</p>
         </div>
-        <span className="font-mono text-[9px] text-slate-500 font-bold uppercase">
-          {replayHistory.length} Logged
-        </span>
       </div>
 
-      {/* History Timeline */}
-      <div className="flex-1 overflow-y-auto max-h-[460px] pr-1 space-y-4">
-        {replayHistory.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/5 rounded-xl text-white/20 font-mono text-xs">
-            <Scale className="w-8 h-8 mb-3 text-slate-700" />
-            <span>System Standby: No Actions Taken Yet</span>
-            <span className="text-[10px] mt-1 text-slate-500">Select a scenario above and execute a mitigation plan to record decisions.</span>
+      <div className="flex-1 overflow-y-auto pr-4 pb-12 flex flex-col items-center">
+        {replayHistory.length === 0 && activeScenario === 'normal' ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <Clock className="w-12 h-12 mb-4 text-[#1F2937]" />
+            <span className="font-bold text-slate-400 text-lg">No decisions recorded yet</span>
+            <span className="text-sm mt-2 text-slate-500">Run a scenario and execute a decision to view its lifecycle.</span>
           </div>
         ) : (
-          replayHistory.map((item) => {
-            const isExpanded = expandedId === item.id;
-
-            return (
-              <div 
-                key={item.id} 
-                className={`rounded-xl border transition-all duration-200 ${
-                  isExpanded 
-                    ? 'border-blue-500/30 bg-[#151722]' 
-                    : 'border-zinc-800/40 bg-[#11131c] hover:border-zinc-700'
-                }`}
-              >
-                {/* Header Collapsible Toggle */}
-                <div 
-                  onClick={() => toggleExpand(item.id)}
-                  className="flex justify-between items-center p-4 cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs font-bold text-blue-400">{item.id}</span>
-                    <span className="text-zinc-800 font-mono text-xs">|</span>
-                    <div className="text-left font-sans">
-                      <span className="font-mono text-[9px] uppercase text-slate-500 block tracking-wider font-bold">
-                        {item.timestamp} // {item.scenario.replace('-', ' ').toUpperCase()}
-                      </span>
-                      <span className="text-xs font-bold text-slate-200">
-                        {item.recommendationTitle}
-                      </span>
+          <div className="flex flex-col items-center w-full max-w-lg">
+            {mockTimeline.map((step, idx) => {
+              const Icon = step.icon;
+              return (
+                <React.Fragment key={idx}>
+                  
+                  {/* Timeline Node */}
+                  <div className="flex items-center gap-6 w-full group">
+                    <div className="w-16 text-right font-mono text-sm font-bold text-slate-400 group-hover:text-slate-200 transition-colors">
+                      {step.time}
+                    </div>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border ${step.bg} ${step.border} shadow-lg z-10`}>
+                      <Icon className={`w-5 h-5 ${step.color}`} />
+                    </div>
+                    <div className="flex-1 bg-[#0F172A] border border-[#1F2937] p-4 rounded-lg group-hover:border-slate-700 transition-colors">
+                      <div className="font-bold text-slate-200 text-sm mb-1">{step.title}</div>
+                      <div className="text-xs text-slate-400">{step.desc}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-mono text-green-400 font-bold hidden sm:inline">
-                      IMPACT: {item.expectedImpact.split(',')[0]}
-                    </span>
-                    {isExpanded ? (
-                      <ChevronUp className="w-4 h-4 text-white/40" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-white/40" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Expanded Comparison Sandbox */}
-                {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-white/5 pt-4 text-left">
-                    <p className="text-xs text-white/60 font-light leading-relaxed mb-4">
-                      <span className="font-semibold text-white block mb-1">Approved Protocol:</span>
-                      {item.recommendationDesc}
-                    </p>
-
-                    {/* Side-by-side sandbox comparison */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-2">
-                      
-                      {/* Intervened State */}
-                      <div className="p-3.5 rounded-xl bg-[#141d1a] border border-emerald-800/30">
-                        <div className="flex justify-between items-center border-b border-emerald-800/20 pb-2 mb-3">
-                          <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
-                            <CheckSquare className="w-3.5 h-3.5" />
-                            Actual Action Approved
-                          </span>
-                          <span className="text-[9px] font-mono text-emerald-500/60">ACTION TAKEN</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-2 text-center">
-                          <div className="p-2 rounded bg-black/30 border border-emerald-800/20">
-                            <span className="text-[9px] font-mono text-slate-500 block uppercase font-bold">Operational Health</span>
-                            <span className="text-xl font-bold text-emerald-400">{item.actualHealth}%</span>
-                            <span className="text-[9px] font-mono text-emerald-500/70 block font-bold">STABLE</span>
-                          </div>
-                          <div className="p-2 rounded bg-black/30 border border-emerald-800/20">
-                            <span className="text-[9px] font-mono text-slate-500 block uppercase font-bold">Risk Factor</span>
-                            <span className="text-xl font-bold text-emerald-400">{Math.round(item.actualRisk * 100)}%</span>
-                            <span className="text-[9px] font-mono text-emerald-500/70 block font-bold">MINIMIZED</span>
-                          </div>
-                        </div>
+                  {/* Connector Line */}
+                  {idx < mockTimeline.length - 1 && (
+                    <div className="w-full flex items-center gap-6 py-2">
+                      <div className="w-16" />
+                      <div className="w-12 flex justify-center">
+                        <ArrowDown className="w-4 h-4 text-[#1F2937]" />
                       </div>
-
-                      {/* Counterfactual (No Intervention) */}
-                      <div className="p-3.5 rounded-xl bg-[#241315] border border-red-900/30">
-                        <div className="flex justify-between items-center border-b border-red-900/20 pb-2 mb-3">
-                          <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
-                            <XCircle className="w-3.5 h-3.5" />
-                            No Action (What If?)
-                          </span>
-                          <span className="text-[9px] font-mono text-red-500/60">SIMULATED RISK</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-2 text-center">
-                          <div className="p-2 rounded bg-black/30 border border-red-900/20">
-                            <span className="text-[9px] font-mono text-slate-500 block uppercase font-bold">Operational Health</span>
-                            <span className="text-xl font-bold text-red-400">{item.counterfactualHealth}%</span>
-                            <span className="text-[9px] font-mono text-red-500/70 block font-bold">CRITICAL SPIKE</span>
-                          </div>
-                          <div className="p-2 rounded bg-black/30 border border-red-900/20">
-                            <span className="text-[9px] font-mono text-slate-500 block uppercase font-bold">Risk Factor</span>
-                            <span className="text-xl font-bold text-red-400">{Math.round(item.counterfactualRisk * 100)}%</span>
-                            <span className="text-[9px] font-mono text-red-500/70 block font-bold">STAMPEDE RISK</span>
-                          </div>
-                        </div>
-                      </div>
-
+                      <div className="flex-1" />
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })
+                  )}
+
+                </React.Fragment>
+              );
+            })}
+          </div>
         )}
       </div>
 

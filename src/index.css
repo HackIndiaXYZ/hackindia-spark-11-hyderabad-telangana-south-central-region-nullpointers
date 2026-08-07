@@ -12,7 +12,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #08090d; /* Solid premium graphite slate */
+  background-color: #0B1220; /* Requested Enterprise Background */
   color: #e2e8f0;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
@@ -20,63 +20,41 @@ html, body, #root {
 
 /* Clean Enterprise Cards (Minimal Visual Noise) */
 .glass-panel {
-  background: #11131c; /* Solid graphite card */
-  border: 1px solid #1d202d; /* Crisp thin border */
+  background: #111827; /* Requested Card Background */
+  border: 1px solid #1F2937; /* Requested Border */
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease-in-out;
 }
 
 .glass-panel:hover {
-  border-color: #3b82f6; /* Muted corporate blue highlight for interactivity */
+  border-color: #2563EB; /* Requested Blue */
 }
 
 .glass-panel-heavy {
-  background: #0f1016;
-  border: 1px solid #232738;
+  background: #111827;
+  border: 1px solid #1F2937;
   border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 .glass-panel-heavy:hover {
-  border-color: #3b82f6;
+  border-color: #2563EB;
 }
 
 .glass-panel-light {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(17, 24, 39, 0.5);
+  border: 1px solid rgba(31, 41, 55, 0.5);
 }
 
 /* No glowing borders (purely informational color accents) */
-.glow-green {
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-.glow-yellow {
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-
-.glow-red {
-  border-color: rgba(239, 68, 68, 0.3) !important;
-}
-
-.glow-blue {
-  border-color: rgba(59, 130, 246, 0.3) !important;
-}
-
-.glow-indigo {
-  border-color: rgba(99, 102, 241, 0.3) !important;
-}
-
-/* scanline bypass */
 .scanline {
   position: relative;
 }
 
+/* Background is completely clean, no grids */
 .grid-bg {
-  /* Minimal background grids */
-  background-image: radial-gradient(#1f2937 0.75px, transparent 0.75px);
-  background-size: 24px 24px;
+  background: transparent;
 }
 
 /* Animations */
@@ -118,10 +96,10 @@ html, body, #root {
 
 /* Recharts Tooltip Overrides - Solid Enterprise Styles */
 .recharts-default-tooltip {
-  background-color: #0f1016 !important;
-  border: 1px solid #232738 !important;
+  background-color: #111827 !important;
+  border: 1px solid #1F2937 !important;
   border-radius: 8px !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   color: #fff !important;
   padding: 8px 12px !important;
 }

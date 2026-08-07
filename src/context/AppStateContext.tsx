@@ -70,8 +70,8 @@ interface AppStateContextType {
   missionControlTimer: number;
   
   // New Ingestion & Context Fusion state
-  activeTab: 'dashboard' | 'sources';
-  setActiveTab: (tab: 'dashboard' | 'sources') => void;
+  activeTab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings';
+  setActiveTab: (tab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings') => void;
   lineageModalData: LineageData | null;
   setLineageModalData: (data: LineageData | null) => void;
   getIngestFeeds: () => IngestFeed[];
@@ -100,7 +100,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [missionControlTimer, setMissionControlTimer] = useState<number>(0);
   
   // Ingest state overrides
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'sources'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('overview');
   const [lineageModalData, setLineageModalData] = useState<LineageData | null>(null);
 
   const simIntervalRef = useRef<any>(null);
@@ -138,7 +138,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsSimulating(true);
     setActiveScenarioState('normal');
     stopMissionControl();
-    setActiveTab('dashboard');
+    setActiveTab('overview');
   };
 
   // 1. Ticking simulation logic
@@ -450,7 +450,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setReplayHistory([]);
     setApprovalLogs([]);
     setIsApproving(false);
-    setActiveTab('dashboard');
+    setActiveTab('overview');
   };
 
   const stopMissionControl = () => {
