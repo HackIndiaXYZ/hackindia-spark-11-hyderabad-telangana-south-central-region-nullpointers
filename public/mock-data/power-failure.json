@@ -1,0 +1,143 @@
+{
+  "scenario": "power-failure",
+  "name": "Power Grid Failure",
+  "baseRiskLevel": 0.72,
+  "baseOperationalHealth": 68,
+  "statusText": "CRITICAL",
+  "briefing": "A local substation transformer failure has blacked out Sector A concourse lights and turnstile systems. Spectators are stalled in dark corridors, creating secondary slip-and-fall incidents and high localized anxiety. Backup generators are currently stabilizing life-safety loops.",
+  "recommendation": {
+    "title": "Initiate Auxiliary Lighting & Reroute via Sector B",
+    "description": "Trigger emergency power channel 2 to override light loops in Sector A. Dispatch security details equipped with high-intensity mobile lights to stairwell A, and command volunteers to redirect all egress traffic toward the illuminated Sector B corridors.",
+    "confidence": 93,
+    "alternative": "Perform full evacuation of the stadium bowl immediately.",
+    "expectedImpact": "Illuminates dark access corridors in 30 seconds, disperses localized crowd pockets, and increases Operational Health by +36%.",
+    "resolutionModifiers": {
+      "operationalHealth": 36,
+      "riskLevel": -0.42,
+      "gates": {
+        "A": { "status": "RECOVERING", "occupancy": -0.30, "throughput": 10 }
+      },
+      "crowd": { "concourseDensity": -0.25 },
+      "medical": { "activeIncidents": -1 }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 94,
+      "riskLevel": 0.08,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 55000, "concourseDensity": 0.25, "standsDensity": 0.65, "flowRate": 95, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.30, "throughput": 45, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.28, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.45, "throughput": 38, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.22, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.31, "throughput": 41, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.12 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 40 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 68,
+      "riskLevel": 0.45,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 56000, "concourseDensity": 0.48, "standsDensity": 0.68, "flowRate": 70, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OFFLINE", "occupancy": 0.65, "throughput": 5, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.45, "throughput": 38, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.48, "throughput": 35, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.25, "throughput": 42, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.32, "throughput": 38, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 255, "fatigue": 0.18 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 1, "stationOccupancy": 0.15, "responseTimeSec": 130 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 45 },
+      "incidents": [
+        { "id": "INC-601", "type": "SECURITY", "location": "Sector A Concourse", "severity": "HIGH", "description": "Power substation blackout. Lights and ticket scanners offline.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 53,
+      "riskLevel": 0.68,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 56500, "concourseDensity": 0.68, "standsDensity": 0.70, "flowRate": 45, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OFFLINE", "occupancy": 0.85, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.58, "throughput": 30, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.40, "throughput": 38, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.50, "throughput": 30, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.28, "throughput": 40, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.35, "throughput": 32, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 270, "fatigue": 0.25 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "CRITICAL" },
+      "medical": { "activeIncidents": 2, "triageQueue": 1, "stationOccupancy": 0.22, "responseTimeSec": 150 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 48 },
+      "incidents": [
+        { "id": "INC-601", "type": "SECURITY", "location": "Sector A Concourse", "severity": "HIGH", "description": "Power substation blackout. Lights and ticket scanners offline.", "status": "RESPONDING" },
+        { "id": "INC-602", "type": "MEDICAL", "location": "Stairwell Sector A", "severity": "MEDIUM", "description": "Crowd congestion in dark staircase. Minor crushing alert.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 48,
+      "riskLevel": 0.74,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 57000, "concourseDensity": 0.76, "standsDensity": 0.72, "flowRate": 30, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OFFLINE", "occupancy": 0.90, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.68, "throughput": 20, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.45, "throughput": 35, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.52, "throughput": 24, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.30, "throughput": 38, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.38, "throughput": 28, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 285, "fatigue": 0.32 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "CRITICAL" },
+      "medical": { "activeIncidents": 3, "triageQueue": 2, "stationOccupancy": 0.35, "responseTimeSec": 170 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-601", "type": "SECURITY", "location": "Sector A Concourse", "severity": "HIGH", "description": "Power substation blackout. Lights and ticket scanners offline.", "status": "RESPONDING" },
+        { "id": "INC-602", "type": "MEDICAL", "location": "Stairwell Sector A", "severity": "MEDIUM", "description": "Crowd congestion in dark staircase. Minor crushing alert.", "status": "RESPONDING" },
+        { "id": "INC-603", "type": "MEDICAL", "location": "Sector A Food Court", "severity": "LOW", "description": "Minor fall in dark corridor.", "status": "RESOLVED" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 45,
+      "riskLevel": 0.78,
+      "weather": { "condition": "Clear", "temp": 21, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 57200, "concourseDensity": 0.82, "standsDensity": 0.74, "flowRate": 20, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OFFLINE", "occupancy": 0.95, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.75, "throughput": 15, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.48, "throughput": 32, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.55, "throughput": 20, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.32, "throughput": 35, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.40, "throughput": 25, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 290, "fatigue": 0.40 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "CRITICAL" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.38, "responseTimeSec": 185 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-601", "type": "SECURITY", "location": "Sector A Concourse", "severity": "HIGH", "description": "Power substation blackout. Lights and ticket scanners offline.", "status": "RESPONDING" },
+        { "id": "INC-602", "type": "MEDICAL", "location": "Stairwell Sector A", "severity": "MEDIUM", "description": "Crowd congestion in dark staircase. Minor crushing alert.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}

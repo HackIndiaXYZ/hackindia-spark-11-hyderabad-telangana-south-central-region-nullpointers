@@ -1,0 +1,144 @@
+{
+  "scenario": "gate-failure",
+  "name": "Gate Scanner Failure",
+  "baseRiskLevel": 0.62,
+  "baseOperationalHealth": 70,
+  "statusText": "CRITICAL",
+  "briefing": "Automated turnstiles at Gate D have suffered a local network outage, going offline. A crowd of 8,000 fans is building up in the outer plaza, causing localized crushing hazards and high thermal stress. Security has been deployed to set up physical blockades.",
+  "recommendation": {
+    "title": "Open Manual Overrides & Divert Inbound Flow",
+    "description": "Instruct Gate D security teams to open manual emergency swing gates for manual ticket checks. Re-route 40% of oncoming spectators approaching Gate D toward Gates C and E using dynamic display boards and mobile volunteer coordinators.",
+    "confidence": 94,
+    "alternative": "Divert all Gate D traffic to Gate A (uncovered) and shut Gate D completely.",
+    "expectedImpact": "Reduces Gate D queue pressure from critical to moderate in 3 minutes, increases scan throughput, and restores Operational Health by +32%.",
+    "resolutionModifiers": {
+      "operationalHealth": 32,
+      "riskLevel": -0.38,
+      "gates": {
+        "D": { "status": "RECOVERING", "occupancy": -0.45, "throughput": 25 },
+        "C": { "occupancy": 0.15, "throughput": 10 },
+        "E": { "occupancy": 0.15, "throughput": 10 }
+      },
+      "security": { "activeAlerts": -1, "posture": "STANDARD" }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 92,
+      "riskLevel": 0.10,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 58000, "concourseDensity": 0.28, "standsDensity": 0.68, "flowRate": 90, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.32, "throughput": 45, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.30, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.40, "throughput": 41, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.25, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.32, "throughput": 40, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.12 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 40 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 70,
+      "riskLevel": 0.38,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 59500, "concourseDensity": 0.42, "standsDensity": 0.70, "flowRate": 65, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.28, "throughput": 40, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.30, "throughput": 38, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.35, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OFFLINE", "occupancy": 0.82, "throughput": 5, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.28, "throughput": 44, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.28, "throughput": 38, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 260, "fatigue": 0.16 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.12, "responseTimeSec": 120 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 45 },
+      "incidents": [
+        { "id": "INC-401", "type": "SECURITY", "location": "Gate D Lobby", "severity": "HIGH", "description": "Gate D automated scanners offline. Localized crowd building.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 59,
+      "riskLevel": 0.58,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 60500, "concourseDensity": 0.52, "standsDensity": 0.72, "flowRate": 45, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.25, "throughput": 35, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.28, "throughput": 35, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.40, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OFFLINE", "occupancy": 0.95, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.32, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.24, "throughput": 32, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 280, "fatigue": 0.24 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 1, "stationOccupancy": 0.20, "responseTimeSec": 130 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 48 },
+      "incidents": [
+        { "id": "INC-401", "type": "SECURITY", "location": "Gate D Lobby", "severity": "HIGH", "description": "Gate D scanners offline. Plaza crowd estimate: 8,000.", "status": "RESPONDING" },
+        { "id": "INC-402", "type": "MEDICAL", "location": "Gate D Plaza", "severity": "LOW", "description": "Spectator experiencing heat exhaustion in queue.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 54,
+      "riskLevel": 0.64,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 61200, "concourseDensity": 0.58, "standsDensity": 0.74, "flowRate": 30, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.20, "throughput": 28, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.24, "throughput": 30, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.45, "throughput": 38, "coverType": "COVERED" },
+        { "id": "D", "status": "OFFLINE", "occupancy": 0.98, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.38, "throughput": 40, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.20, "throughput": 25, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 290, "fatigue": 0.30 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "CRITICAL" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.28, "responseTimeSec": 140 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-401", "type": "SECURITY", "location": "Gate D Lobby", "severity": "HIGH", "description": "Gate D scanners offline. Crush danger detected due to sway movements.", "status": "RESPONDING" },
+        { "id": "INC-402", "type": "MEDICAL", "location": "Gate D Plaza", "severity": "LOW", "description": "Spectator experiencing heat exhaustion in queue.", "status": "RESOLVED" },
+        { "id": "INC-403", "type": "MEDICAL", "location": "Gate D Outer Plaza", "severity": "MEDIUM", "description": "Fainting due to queue density.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 51,
+      "riskLevel": 0.68,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 61800, "concourseDensity": 0.60, "standsDensity": 0.75, "flowRate": 20, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.15, "throughput": 20, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.20, "throughput": 22, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.48, "throughput": 35, "coverType": "COVERED" },
+        { "id": "D", "status": "OFFLINE", "occupancy": 0.99, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.42, "throughput": 38, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.18, "throughput": 20, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 295, "fatigue": 0.35 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "CRITICAL" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.32, "responseTimeSec": 150 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-401", "type": "SECURITY", "location": "Gate D Lobby", "severity": "HIGH", "description": "Gate D scanners offline. Crush danger detected due to sway movements.", "status": "RESPONDING" },
+        { "id": "INC-403", "type": "MEDICAL", "location": "Gate D Outer Plaza", "severity": "MEDIUM", "description": "Fainting due to queue density.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}

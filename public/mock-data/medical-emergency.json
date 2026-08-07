@@ -1,0 +1,138 @@
+{
+  "scenario": "medical-emergency",
+  "name": "Medical Emergency",
+  "baseRiskLevel": 0.48,
+  "baseOperationalHealth": 76,
+  "statusText": "CAUTION",
+  "briefing": "A spectator has suffered a suspected cardiac event in Sector C Stand Row 14. First responders are blocked by high density in the stairwell. Response times are exceeding 4 minutes, triggering alarms.",
+  "recommendation": {
+    "title": "Clear Access Corridor & Dispatch Backup Squad",
+    "description": "Instruct Sector C volunteer stewards to clear the stairwell buffer zone immediately. Dispatch Medical Backup Team 3 from the pitch-level standby bay, and flash a visual 'Keep Stairs Clear' message on the Sector C concourse displays.",
+    "confidence": 97,
+    "alternative": "Deploy stadium security forces to physically push the crowd out of the stairwell.",
+    "expectedImpact": "Clears medical access route within 45 seconds, reduces rescue response time to under 90 seconds, and increases Operational Health by +26%.",
+    "resolutionModifiers": {
+      "operationalHealth": 26,
+      "riskLevel": -0.32,
+      "medical": { "activeIncidents": -1, "stationOccupancy": -0.15, "responseTimeSec": -75 },
+      "crowd": { "standsDensity": -0.10 }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 94,
+      "riskLevel": 0.08,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 64000, "concourseDensity": 0.28, "standsDensity": 0.72, "flowRate": 80, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.25, "throughput": 40, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.30, "throughput": 42, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.28, "throughput": 41, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.35, "throughput": 38, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.22, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.29, "throughput": 40, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.12 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 40 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 76,
+      "riskLevel": 0.28,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 64500, "concourseDensity": 0.32, "standsDensity": 0.85, "flowRate": 70, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.22, "throughput": 35, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.28, "throughput": 38, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.32, "throughput": 30, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.32, "throughput": 35, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.20, "throughput": 40, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.25, "throughput": 36, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 250, "fatigue": 0.16 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 1, "triageQueue": 1, "stationOccupancy": 0.18, "responseTimeSec": 160 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 45 },
+      "incidents": [
+        { "id": "INC-301", "type": "MEDICAL", "location": "Sector C Stands", "severity": "HIGH", "description": "Spectator cardiac collapse reported. CPR in progress.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 64,
+      "riskLevel": 0.42,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 64800, "concourseDensity": 0.35, "standsDensity": 0.90, "flowRate": 55, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.18, "throughput": 28, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.25, "throughput": 30, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.35, "throughput": 18, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.28, "throughput": 30, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.18, "throughput": 35, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.22, "throughput": 32, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 265, "fatigue": 0.20 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 1, "triageQueue": 1, "stationOccupancy": 0.22, "responseTimeSec": 240 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 48 },
+      "incidents": [
+        { "id": "INC-301", "type": "MEDICAL", "location": "Sector C Stands", "severity": "HIGH", "description": "Cardiac collapse. Medical response team access blocked in stairway C.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 59,
+      "riskLevel": 0.48,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 65000, "concourseDensity": 0.36, "standsDensity": 0.92, "flowRate": 40, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.12, "throughput": 18, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.20, "throughput": 24, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.38, "throughput": 10, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.22, "throughput": 24, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.15, "throughput": 28, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.18, "throughput": 25, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 280, "fatigue": 0.25 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.35, "responseTimeSec": 300 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-301", "type": "MEDICAL", "location": "Sector C Stands", "severity": "HIGH", "description": "Cardiac collapse. Medical response team access blocked in stairway C.", "status": "RESPONDING" },
+        { "id": "INC-302", "type": "MEDICAL", "location": "Sector C Concourse", "severity": "LOW", "description": "Minor panic response - heat exhaustion.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 55,
+      "riskLevel": 0.52,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 65100, "concourseDensity": 0.38, "standsDensity": 0.94, "flowRate": 30, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.08, "throughput": 10, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.15, "throughput": 15, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.40, "throughput": 5, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.18, "throughput": 18, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.12, "throughput": 20, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.15, "throughput": 15, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 290, "fatigue": 0.30 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.40, "responseTimeSec": 320 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-301", "type": "MEDICAL", "location": "Sector C Stands", "severity": "HIGH", "description": "Cardiac collapse. Medical response team access blocked in stairway C.", "status": "RESPONDING" },
+        { "id": "INC-302", "type": "MEDICAL", "location": "Sector C Concourse", "severity": "LOW", "description": "Minor panic response - heat exhaustion.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}

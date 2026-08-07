@@ -1,0 +1,140 @@
+{
+  "scenario": "metro-delay",
+  "name": "Metro Transit Delay",
+  "baseRiskLevel": 0.52,
+  "baseOperationalHealth": 74,
+  "statusText": "CAUTION",
+  "briefing": "A signalling failure on Metro Line 1 has halted trains. Over 15,000 egressing fans are backing up into the East Transit Plaza. Platforms are at maximum capacity, and the crowd is spilling back toward the stadium perimeter gates.",
+  "recommendation": {
+    "title": "Activate Egress Holding & Plaza Reroute",
+    "description": "Establish holding pens at Sector East Plaza to meter subway access. Open auxiliary bus boarding loops and deploy volunteer teams with megaphones to direct 40% of traffic to the West Shuttle hub.",
+    "confidence": 95,
+    "alternative": "Temporarily lock down all stadium egress gates to hold fans inside the bowl.",
+    "expectedImpact": "Reduces East Plaza density by 35%, stops subway platform crowd spillage, and increases Operational Health by +19%.",
+    "resolutionModifiers": {
+      "operationalHealth": 19,
+      "riskLevel": -0.20,
+      "transport": { "metroStatus": "RECOVERING", "busTerminalQueue": -40 },
+      "crowd": { "concourseDensity": -0.20, "flowRate": 25 }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 90,
+      "riskLevel": 0.12,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 68000, "concourseDensity": 0.40, "standsDensity": 0.60, "flowRate": 110, "egressActive": true },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.40, "throughput": 55, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.45, "throughput": 52, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.42, "throughput": 50, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.48, "throughput": 58, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.41, "throughput": 54, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.44, "throughput": 51, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 250, "fatigue": 0.22 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.10, "responseTimeSec": 120 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 3, "busTerminalQueue": 80 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 74,
+      "riskLevel": 0.30,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 55000, "concourseDensity": 0.62, "standsDensity": 0.40, "flowRate": 90, "egressActive": true },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.50, "throughput": 48, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.60, "throughput": 45, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.58, "throughput": 44, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.65, "throughput": 50, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.70, "throughput": 32, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.62, "throughput": 45, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 270, "fatigue": 0.30 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.12, "responseTimeSec": 122 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 12, "busTerminalQueue": 140 },
+      "incidents": [
+        { "id": "INC-201", "type": "TRANSPORT", "location": "East Metro Plaza", "severity": "MEDIUM", "description": "Metro signaling error. Transit operations halted on Line 1.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 62,
+      "riskLevel": 0.45,
+      "weather": { "condition": "Clear", "temp": 22, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 45000, "concourseDensity": 0.78, "standsDensity": 0.25, "flowRate": 70, "egressActive": true },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.55, "throughput": 40, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.65, "throughput": 38, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.62, "throughput": 35, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.78, "throughput": 42, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.88, "throughput": 18, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.70, "throughput": 38, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 280, "fatigue": 0.38 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 1, "stationOccupancy": 0.18, "responseTimeSec": 130 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 15, "busTerminalQueue": 210 },
+      "incidents": [
+        { "id": "INC-201", "type": "TRANSPORT", "location": "East Metro Plaza", "severity": "MEDIUM", "description": "Metro signaling error. Transit operations halted on Line 1.", "status": "RESPONDING" },
+        { "id": "INC-202", "type": "SECURITY", "location": "Plaza East Buffer", "severity": "LOW", "description": "Minor arguments breaking out due to queues.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 59,
+      "riskLevel": 0.52,
+      "weather": { "condition": "Clear", "temp": 21, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 38000, "concourseDensity": 0.86, "standsDensity": 0.15, "flowRate": 45, "egressActive": true },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.60, "throughput": 30, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.70, "throughput": 28, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.68, "throughput": 25, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.85, "throughput": 30, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.95, "throughput": 10, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.75, "throughput": 30, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 290, "fatigue": 0.45 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.25, "responseTimeSec": 145 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 18, "busTerminalQueue": 280 },
+      "incidents": [
+        { "id": "INC-201", "type": "TRANSPORT", "location": "East Metro Plaza", "severity": "HIGH", "description": "Metro signaling error. Platform overcrowding hazard.", "status": "RESPONDING" },
+        { "id": "INC-202", "type": "SECURITY", "location": "Plaza East Buffer", "severity": "LOW", "description": "Minor arguments breaking out due to queues.", "status": "RESOLVED" },
+        { "id": "INC-203", "type": "MEDICAL", "location": "Plaza East Queue", "severity": "LOW", "description": "Exhaustion and heat stress report.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 55,
+      "riskLevel": 0.58,
+      "weather": { "condition": "Clear", "temp": 21, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 32000, "concourseDensity": 0.92, "standsDensity": 0.08, "flowRate": 30, "egressActive": true },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.65, "throughput": 20, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.75, "throughput": 18, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.72, "throughput": 15, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.90, "throughput": 22, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.98, "throughput": 5, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.80, "throughput": 20, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 295, "fatigue": 0.50 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 2, "triageQueue": 2, "stationOccupancy": 0.30, "responseTimeSec": 150 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 20, "busTerminalQueue": 340 },
+      "incidents": [
+        { "id": "INC-201", "type": "TRANSPORT", "location": "East Metro Plaza", "severity": "HIGH", "description": "Metro signaling error. Platform overcrowding hazard.", "status": "RESPONDING" },
+        { "id": "INC-203", "type": "MEDICAL", "location": "Plaza East Queue", "severity": "LOW", "description": "Exhaustion and heat stress report.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}

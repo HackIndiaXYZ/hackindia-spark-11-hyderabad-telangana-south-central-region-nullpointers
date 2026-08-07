@@ -1,0 +1,127 @@
+{
+  "scenario": "normal",
+  "name": "Normal Operations",
+  "baseRiskLevel": 0.08,
+  "baseOperationalHealth": 94,
+  "statusText": "NOMINAL",
+  "briefing": "Stadium operations are running at nominal status. Crowd flow at gates is well within expected thresholds. Weather is clear, and transport corridors are operating on standard intervals.",
+  "recommendation": {
+    "title": "Optimise Gate D Throughput",
+    "description": "Standard flow optimization. Rotate gate volunteers at Gate D to maintain peak scan speeds.",
+    "confidence": 98,
+    "alternative": "No operational changes required.",
+    "expectedImpact": "Maintains gate queue wait times below 3 minutes.",
+    "resolutionModifiers": {
+      "operationalHealth": 2,
+      "riskLevel": -0.01,
+      "gates": { "D": { "occupancy": -0.05, "throughput": 5 } }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 94,
+      "riskLevel": 0.08,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 55000, "concourseDensity": 0.25, "standsDensity": 0.65, "flowRate": 95, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.30, "throughput": 45, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.28, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.45, "throughput": 38, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.22, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.31, "throughput": 41, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.12 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 40 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 94,
+      "riskLevel": 0.08,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 58000, "concourseDensity": 0.28, "standsDensity": 0.68, "flowRate": 98, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.32, "throughput": 48, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.37, "throughput": 42, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.30, "throughput": 44, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.48, "throughput": 40, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.25, "throughput": 48, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.34, "throughput": 43, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.14 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 45 },
+      "incidents": []
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 95,
+      "riskLevel": 0.07,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 61000, "concourseDensity": 0.30, "standsDensity": 0.72, "flowRate": 90, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.28, "throughput": 42, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.34, "throughput": 39, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.26, "throughput": 40, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.42, "throughput": 41, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.20, "throughput": 40, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.29, "throughput": 38, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.16 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.09, "responseTimeSec": 112 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 38 },
+      "incidents": []
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 95,
+      "riskLevel": 0.07,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 63000, "concourseDensity": 0.27, "standsDensity": 0.75, "flowRate": 70, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.20, "throughput": 30, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.25, "throughput": 32, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.22, "throughput": 30, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.30, "throughput": 28, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.18, "throughput": 32, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.21, "throughput": 29, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.18 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.07, "responseTimeSec": 112 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 25 },
+      "incidents": []
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 96,
+      "riskLevel": 0.06,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 65000, "concourseDensity": 0.20, "standsDensity": 0.78, "flowRate": 30, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.10, "throughput": 15, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.12, "throughput": 18, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.11, "throughput": 16, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.15, "throughput": 12, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.10, "throughput": 14, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.12, "throughput": 15, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 180, "fatigue": 0.20 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.05, "responseTimeSec": 110 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 10 },
+      "incidents": []
+    }
+  ]
+}

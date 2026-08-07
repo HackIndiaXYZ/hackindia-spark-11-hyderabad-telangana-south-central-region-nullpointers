@@ -1,0 +1,144 @@
+{
+  "scenario": "heavy-rain",
+  "name": "Heavy Rain Deluge",
+  "baseRiskLevel": 0.58,
+  "baseOperationalHealth": 78,
+  "statusText": "CAUTION",
+  "briefing": "Heavy rain deluge (15mm/h) started. Spectators are bottlenecking at covered gates B, C, and E, while avoiding uncovered gates A, D, and F. Wet concourses have resulted in slippery steps, driving a spike in minor medical incidents.",
+  "recommendation": {
+    "title": "Deploy Shelter & Reroute Flow",
+    "description": "Deploy emergency pop-up shelters at uncovered Gates A & D. Instruct volunteer teams to redirect 30% of Gate B queue to Gate C/E corridor and apply non-slip mats in Sector B steps.",
+    "confidence": 92,
+    "alternative": "Open stadium interior logistics gates for immediate bypass.",
+    "expectedImpact": "Reduces Gate B queue by 25%, lowers slip hazard probability, and restores Operational Health by +18%.",
+    "resolutionModifiers": {
+      "operationalHealth": 18,
+      "riskLevel": -0.22,
+      "gates": {
+        "B": { "occupancy": -0.25, "throughput": 15 },
+        "A": { "occupancy": 0.15, "throughput": 10 }
+      },
+      "medical": { "activeIncidents": -2, "responseTimeSec": -20 }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 92,
+      "riskLevel": 0.15,
+      "weather": { "condition": "Light Rain", "temp": 21, "precipitation": "4mm/h", "wind": "12 km/h" },
+      "crowd": { "totalInside": 58000, "concourseDensity": 0.35, "standsDensity": 0.65, "flowRate": 85, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.25, "throughput": 35, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.50, "throughput": 42, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.40, "throughput": 40, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.28, "throughput": 32, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.38, "throughput": 41, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.27, "throughput": 34, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.15 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 1, "triageQueue": 0, "stationOccupancy": 0.10, "responseTimeSec": 120 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 42 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 78,
+      "riskLevel": 0.32,
+      "weather": { "condition": "Heavy Rain", "temp": 19, "precipitation": "12mm/h", "wind": "18 km/h" },
+      "crowd": { "totalInside": 62000, "concourseDensity": 0.58, "standsDensity": 0.60, "flowRate": 70, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.15, "throughput": 15, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.75, "throughput": 30, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.65, "throughput": 32, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.14, "throughput": 12, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.60, "throughput": 35, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.16, "throughput": 15, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 250, "fatigue": 0.20 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 2, "triageQueue": 1, "stationOccupancy": 0.20, "responseTimeSec": 135 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 6, "busTerminalQueue": 65 },
+      "incidents": [
+        { "id": "INC-101", "type": "WEATHER", "location": "Gates A/D/F", "severity": "MEDIUM", "description": "Rain avoidance routing causing uneven gate congestion.", "status": "MONITORING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 65,
+      "riskLevel": 0.48,
+      "weather": { "condition": "Heavy Rain", "temp": 18, "precipitation": "16mm/h", "wind": "20 km/h" },
+      "crowd": { "totalInside": 65000, "concourseDensity": 0.72, "standsDensity": 0.58, "flowRate": 55, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.10, "throughput": 8, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.90, "throughput": 20, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.82, "throughput": 22, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.08, "throughput": 6, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.78, "throughput": 25, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.09, "throughput": 8, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 270, "fatigue": 0.28 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 3, "triageQueue": 2, "stationOccupancy": 0.35, "responseTimeSec": 150 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 8, "busTerminalQueue": 80 },
+      "incidents": [
+        { "id": "INC-101", "type": "WEATHER", "location": "Gates A/D/F", "severity": "MEDIUM", "description": "Rain avoidance routing causing uneven gate congestion.", "status": "MONITORING" },
+        { "id": "INC-102", "type": "MEDICAL", "location": "Sector B Concourse", "severity": "LOW", "description": "Spectator slipped on wet concourse steps.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 58,
+      "riskLevel": 0.58,
+      "weather": { "condition": "Heavy Rain", "temp": 18, "precipitation": "18mm/h", "wind": "22 km/h" },
+      "crowd": { "totalInside": 68000, "concourseDensity": 0.85, "standsDensity": 0.55, "flowRate": 35, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.08, "throughput": 5, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.96, "throughput": 12, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.88, "throughput": 18, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.06, "throughput": 4, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.85, "throughput": 20, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.07, "throughput": 5, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 280, "fatigue": 0.35 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 4, "triageQueue": 3, "stationOccupancy": 0.50, "responseTimeSec": 175 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 9, "busTerminalQueue": 95 },
+      "incidents": [
+        { "id": "INC-101", "type": "WEATHER", "location": "Gates A/D/F", "severity": "MEDIUM", "description": "Rain avoidance routing causing uneven gate congestion.", "status": "MONITORING" },
+        { "id": "INC-102", "type": "MEDICAL", "location": "Sector B Concourse", "severity": "LOW", "description": "Spectator slipped on wet concourse steps.", "status": "RESOLVED" },
+        { "id": "INC-103", "type": "MEDICAL", "location": "Gate B Concourse", "severity": "MEDIUM", "description": "Crowd crushing pressure at entrance lobby.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 56,
+      "riskLevel": 0.60,
+      "weather": { "condition": "Heavy Rain", "temp": 18, "precipitation": "18mm/h", "wind": "22 km/h" },
+      "crowd": { "totalInside": 70000, "concourseDensity": 0.88, "standsDensity": 0.53, "flowRate": 25, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.08, "throughput": 4, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.98, "throughput": 10, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.92, "throughput": 15, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.05, "throughput": 3, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.88, "throughput": 18, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.07, "throughput": 4, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 290, "fatigue": 0.40 },
+      "security": { "total": 180, "activeAlerts": 2, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 4, "triageQueue": 4, "stationOccupancy": 0.55, "responseTimeSec": 190 },
+      "transport": { "metroStatus": "DELAYED", "metroIntervalMin": 10, "busTerminalQueue": 110 },
+      "incidents": [
+        { "id": "INC-101", "type": "WEATHER", "location": "Gates A/D/F", "severity": "MEDIUM", "description": "Rain avoidance routing causing uneven gate congestion.", "status": "MONITORING" },
+        { "id": "INC-103", "type": "MEDICAL", "location": "Gate B Concourse", "severity": "MEDIUM", "description": "Crowding density pressure at entrance lobby.", "status": "RESPONDING" },
+        { "id": "INC-104", "type": "MEDICAL", "location": "Sector E Ramp", "severity": "LOW", "description": "Slip and fall reporting.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}

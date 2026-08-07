@@ -1,0 +1,141 @@
+{
+  "scenario": "vip-arrival",
+  "name": "VIP Motorcade Arrival",
+  "baseRiskLevel": 0.38,
+  "baseOperationalHealth": 79,
+  "statusText": "CAUTION",
+  "briefing": "VIP motorcade arriving at Gate A VIP entrance. Internal security protocol requires locking down Sector A concourse corridors for 10 minutes. Spectators are bottlenecking in Sector B walkways, creating high crowd density pockets.",
+  "recommendation": {
+    "title": "Establish Bypass Corridors & Manage Sector B Flow",
+    "description": "Deploy volunteer units to form human guide corridors in the Sector B concourse, rerouting oncoming fans into the stadium outer ring. Pause Gate A turnstiles for 5 minutes to hold incoming spectators in the plaza buffer.",
+    "confidence": 91,
+    "alternative": "Delay VIP motorcade arrival at the external checkpoint until concourse is clear.",
+    "expectedImpact": "Reduces Sector B hallway density by 40%, stops crowd pressure build-up, and increases Operational Health by +22%.",
+    "resolutionModifiers": {
+      "operationalHealth": 22,
+      "riskLevel": -0.20,
+      "gates": {
+        "A": { "status": "RECOVERING", "occupancy": -0.20, "throughput": 15 }
+      },
+      "crowd": { "concourseDensity": -0.15 }
+    }
+  },
+  "telemetrySteps": [
+    {
+      "step": 0,
+      "timestamp": "18:00:00",
+      "operationalHealth": 94,
+      "riskLevel": 0.08,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 55000, "concourseDensity": 0.25, "standsDensity": 0.65, "flowRate": 95, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "OPEN", "occupancy": 0.30, "throughput": 45, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.28, "throughput": 42, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.45, "throughput": 38, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.22, "throughput": 45, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.31, "throughput": 41, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 240, "fatigue": 0.12 },
+      "security": { "total": 180, "activeAlerts": 0, "posture": "STANDARD" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.08, "responseTimeSec": 115 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 40 },
+      "incidents": []
+    },
+    {
+      "step": 1,
+      "timestamp": "18:02:00",
+      "operationalHealth": 79,
+      "riskLevel": 0.22,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "8 km/h" },
+      "crowd": { "totalInside": 56000, "concourseDensity": 0.45, "standsDensity": 0.68, "flowRate": 80, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "CLOSED", "occupancy": 0.50, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.45, "throughput": 35, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.35, "throughput": 40, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.48, "throughput": 36, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.25, "throughput": 42, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.32, "throughput": 38, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 250, "fatigue": 0.15 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 0, "triageQueue": 0, "stationOccupancy": 0.10, "responseTimeSec": 120 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 45 },
+      "incidents": [
+        { "id": "INC-501", "type": "SECURITY", "location": "VIP Corridor A", "severity": "MEDIUM", "description": "Sector A concourse lock down active for VIP arrival.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 2,
+      "timestamp": "18:04:00",
+      "operationalHealth": 68,
+      "riskLevel": 0.35,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 57000, "concourseDensity": 0.65, "standsDensity": 0.70, "flowRate": 60, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "CLOSED", "occupancy": 0.68, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.58, "throughput": 28, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.40, "throughput": 38, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.50, "throughput": 32, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.28, "throughput": 40, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.35, "throughput": 35, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 260, "fatigue": 0.18 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 0, "stationOccupancy": 0.15, "responseTimeSec": 125 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 48 },
+      "incidents": [
+        { "id": "INC-501", "type": "SECURITY", "location": "VIP Corridor A", "severity": "MEDIUM", "description": "Sector A concourse lock down active for VIP arrival.", "status": "RESPONDING" },
+        { "id": "INC-502", "type": "SECURITY", "location": "Concourse Sector B", "severity": "MEDIUM", "description": "Localized spectator bottlenecking due to corridor closure.", "status": "MONITORING" }
+      ]
+    },
+    {
+      "step": 3,
+      "timestamp": "18:06:00",
+      "operationalHealth": 63,
+      "riskLevel": 0.40,
+      "weather": { "condition": "Clear", "temp": 24, "precipitation": "0%", "wind": "7 km/h" },
+      "crowd": { "totalInside": 57800, "concourseDensity": 0.72, "standsDensity": 0.72, "flowRate": 40, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "CLOSED", "occupancy": 0.75, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.68, "throughput": 20, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.45, "throughput": 35, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.52, "throughput": 28, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.30, "throughput": 38, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.38, "throughput": 30, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 275, "fatigue": 0.22 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 0, "stationOccupancy": 0.18, "responseTimeSec": 130 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-501", "type": "SECURITY", "location": "VIP Corridor A", "severity": "MEDIUM", "description": "Sector A concourse lock down active for VIP arrival.", "status": "RESPONDING" },
+        { "id": "INC-502", "type": "SECURITY", "location": "Concourse Sector B", "severity": "MEDIUM", "description": "Localized spectator bottlenecking due to corridor closure.", "status": "RESPONDING" }
+      ]
+    },
+    {
+      "step": 4,
+      "timestamp": "18:08:00",
+      "operationalHealth": 59,
+      "riskLevel": 0.45,
+      "weather": { "condition": "Clear", "temp": 23, "precipitation": "0%", "wind": "6 km/h" },
+      "crowd": { "totalInside": 58500, "concourseDensity": 0.78, "standsDensity": 0.74, "flowRate": 30, "egressActive": false },
+      "gates": [
+        { "id": "A", "status": "CLOSED", "occupancy": 0.80, "throughput": 0, "coverType": "UNCOVERED" },
+        { "id": "B", "status": "OPEN", "occupancy": 0.75, "throughput": 15, "coverType": "COVERED" },
+        { "id": "C", "status": "OPEN", "occupancy": 0.48, "throughput": 32, "coverType": "COVERED" },
+        { "id": "D", "status": "OPEN", "occupancy": 0.55, "throughput": 24, "coverType": "UNCOVERED" },
+        { "id": "E", "status": "OPEN", "occupancy": 0.32, "throughput": 35, "coverType": "COVERED" },
+        { "id": "F", "status": "OPEN", "occupancy": 0.40, "throughput": 28, "coverType": "UNCOVERED" }
+      ],
+      "volunteers": { "total": 300, "deployed": 285, "fatigue": 0.28 },
+      "security": { "total": 180, "activeAlerts": 1, "posture": "ELEVATED" },
+      "medical": { "activeIncidents": 1, "triageQueue": 0, "stationOccupancy": 0.20, "responseTimeSec": 130 },
+      "transport": { "metroStatus": "NORMAL", "metroIntervalMin": 4, "busTerminalQueue": 50 },
+      "incidents": [
+        { "id": "INC-501", "type": "SECURITY", "location": "VIP Corridor A", "severity": "MEDIUM", "description": "Sector A concourse lock down active for VIP arrival.", "status": "RESPONDING" },
+        { "id": "INC-502", "type": "SECURITY", "location": "Concourse Sector B", "severity": "MEDIUM", "description": "Localized spectator bottlenecking due to corridor closure.", "status": "RESPONDING" }
+      ]
+    }
+  ]
+}
