@@ -20,7 +20,10 @@ export const DashboardPage: React.FC = () => {
     setActiveTab,
     lineageModalData,
     setLineageModalData,
-    activeScenario
+    activeScenario,
+    pipelineMetrics,
+    lastIngestedPacket,
+    currentPulseModule
   } = useAppState();
 
   if (!telemetry) return null;
@@ -110,8 +113,55 @@ export const DashboardPage: React.FC = () => {
                   <Database className="w-4 h-4 text-[#10B981]" />
                   1. Data Pipeline
                 </h3>
-                <div className="flex-1 bg-[#0F172A] rounded-lg border border-[#1F2937] flex items-center justify-center text-slate-500">
-                  Healthy - 15 Feeds Active
+                <div className="flex-1 bg-[#0F172A] rounded-lg border border-[#1F2937] flex flex-col p-4 gap-4 overflow-hidden relative">
+                  {/* Pipeline Metrics Mini */}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="bg-[#111827] p-2 rounded border border-[#1F2937]">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase">Events/sec</div>
+                      <div className="text-sm font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
+                    </div>
+                    <div className="bg-[#111827] p-2 rounded border border-[#1F2937]">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase">Latency</div>
+                      <div className="text-sm font-bold text-blue-400">{pipelineMetrics.avgLatency}ms</div>
+                    </div>
+                  </div>
+
+                  {/* Latest Event Mini */}
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-[#1F2937] pb-1">Latest Telemetry</div>
+                  
+                  {lastIngestedPacket ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono text-blue-400">{lastIngestedPacket.time}</span>
+                        <span className="text-[9px] font-bold text-blue-300 bg-blue-500/20 px-1.5 py-0.5 rounded border border-blue-500/30 uppercase">
+                          {lastIngestedPacket.source}
+                        </span>
+                      </div>
+                      <div className="text-xs text-white font-semibold line-clamp-2 leading-relaxed">
+                        {lastIngestedPacket.message}
+                      </div>
+                      
+                      {/* AI Pulse Indicator */}
+                      <div className="mt-2 flex items-center justify-between bg-[#111827] p-2 rounded border border-[#1F2937]">
+                         <span className="text-[9px] text-slate-400 uppercase font-bold">AI Inference Pipeline</span>
+                         <div className="flex gap-2 items-center">
+                           <span className="text-[8px] text-indigo-400 font-mono tracking-widest">{currentPulseModule || 'IDLE'}</span>
+                           <div className={`w-1.5 h-1.5 rounded-full ${currentPulseModule ? 'bg-indigo-500 animate-ping' : 'bg-slate-600'}`} />
+                         </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center text-xs text-slate-500 font-mono">
+                      Awaiting Stream...
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={() => setActiveTab('data-pipeline')}
+                    className="mt-auto w-full py-2 bg-[#1F2937] hover:bg-[#374151] rounded text-xs font-bold text-slate-300 transition-colors"
+                  >
+                    View Full Pipeline
+                  </button>
                 </div>
               </div>
 

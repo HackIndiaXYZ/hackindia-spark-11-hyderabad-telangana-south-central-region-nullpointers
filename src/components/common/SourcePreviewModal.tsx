@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { X, Camera, ScanLine, Activity, Target, Brain } from 'lucide-react';
+import { X, Camera, ScanLine, Target, Brain, Cpu, Waves } from 'lucide-react';
+import { useAppState } from '../../context/AppStateContext';
 import type { IngestFeed } from '../../context/AppStateContext';
 
 interface SourcePreviewModalProps {
@@ -9,6 +10,9 @@ interface SourcePreviewModalProps {
 
 export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, onClose }) => {
   const [boxes, setBoxes] = useState<Array<{id: number, x: number, y: number, w: number, h: number, label: string, conf: number}>>([]);
+  const { liveEventsLog } = useAppState();
+
+  const recentEvent = feed ? liveEventsLog.find(e => e.source === feed.name) : null;
 
   useEffect(() => {
     if (!feed || feed.id !== 'cctv') return;
@@ -119,10 +123,31 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-4 font-mono">
-                <Activity className="w-12 h-12 opacity-50" />
-                <p>Data visualization for {feed.name} not implemented in preview.</p>
-                <p className="text-xs">Connecting to raw stream {feed.productionSource}...</p>
+              <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#050A15] flex flex-col">
+                <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-6 font-mono p-8 text-center">
+                  <div className="relative">
+                    <Waves className="w-16 h-16 text-blue-500 opacity-50 animate-pulse" />
+                    <div className="absolute inset-0 animate-ping opacity-20 bg-blue-500 rounded-full" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm font-bold text-slate-300">STREAM ACTIVE</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-widest">{feed.productionSource}</p>
+                  </div>
+                  <div className="w-full max-w-md h-32 bg-black border border-zinc-800 rounded flex items-end p-2 gap-1 overflow-hidden opacity-50">
+                    {/* Simulated live chart bars */}
+                    {Array.from({length: 30}).map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 bg-blue-500/40 rounded-t" 
+                        style={{ 
+                          height: `${20 + Math.random() * 80}%`,
+                          animation: `pulse ${1 + Math.random()}s infinite`
+                        }} 
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -134,19 +159,19 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               Inference Engine
             </h3>
 
-            {feed.id === 'cctv' ? (
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-2">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase">Active Model</span>
-                  <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/30 p-3 rounded-lg text-indigo-400">
-                    <Target className="w-5 h-5" />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-bold">YOLOv11 CrowdTracker</span>
-                      <span className="text-[10px] font-mono">Latency: 14ms</span>
-                    </div>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] text-slate-500 font-bold uppercase">Active Model</span>
+                <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/30 p-3 rounded-lg text-indigo-400">
+                  <Cpu className="w-5 h-5" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">{feed.hackathonSource}</span>
+                    <span className="text-[10px] font-mono">Latency: {Math.floor(12 + Math.random() * 20)}ms</span>
                   </div>
                 </div>
+              </div>
 
+              {feed.id === 'cctv' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Real-time Detections</span>
                   <div className="bg-[#111827] border border-[#1F2937] p-4 rounded-lg flex flex-col gap-3">
@@ -164,23 +189,56 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                     </div>
                   </div>
                 </div>
+              )}
 
+              {feed.id !== 'cctv' && (
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase">Raw Tensor Output</span>
-                  <div className="bg-black border border-zinc-800 p-3 rounded-lg font-mono text-[9px] text-zinc-500 h-32 overflow-hidden flex flex-col">
-                    {Array.from({length: 6}).map((_, i) => (
-                      <div key={i} className="whitespace-nowrap">
-                        tensor([{Math.random().toFixed(4)}, {Math.random().toFixed(4)}, {Math.random().toFixed(4)}, {Math.random().toFixed(4)}], device='cuda:0')
-                      </div>
-                    ))}
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Live Telemetry Stats</span>
+                  <div className="bg-[#111827] border border-[#1F2937] p-4 rounded-lg flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-slate-400">Signal Integrity</span>
+                      <span className="text-lg font-bold text-[#10B981]">99.9%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-slate-400">Data Throughput</span>
+                      <span className="text-lg font-bold text-slate-200">{(Math.random() * 5 + 1).toFixed(1)} MB/s</span>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {/* Actionable Intelligence / Predictions */}
+              <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#1F2937]">
+                <span className="text-[10px] text-slate-500 font-bold uppercase flex items-center gap-2">
+                  <Target className="w-3 h-3 text-emerald-400" />
+                  Actionable Intelligence
+                </span>
+                
+                {recentEvent ? (
+                  <div className="flex flex-col gap-3">
+                    <div className="bg-[#111827] border border-[#1F2937] p-3 rounded-lg flex flex-col gap-1">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Extracted Insights</span>
+                      <span className="text-xs text-slate-300">{recentEvent.extractedInsights || recentEvent.message}</span>
+                    </div>
+                    <div className="bg-[#111827] border border-blue-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none" />
+                      <span className="text-[9px] text-blue-400 font-bold uppercase tracking-wider">Prediction</span>
+                      <span className="text-xs text-blue-100 font-semibold">{recentEvent.prediction || 'Normal operation predicted.'}</span>
+                    </div>
+                    <div className="bg-[#111827] border border-emerald-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay pointer-events-none" />
+                      <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">System Action</span>
+                      <span className="text-xs text-emerald-100 font-bold">{recentEvent.decision || 'Continue standard monitoring.'}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-500 font-mono italic p-4 text-center border border-[#1F2937] border-dashed rounded-lg">
+                    Awaiting anomaly detection...
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="text-xs text-slate-500 font-mono">
-                No active inference pipelines configured for this data source.
-              </div>
-            )}
+
+            </div>
           </div>
         </div>
       </div>
