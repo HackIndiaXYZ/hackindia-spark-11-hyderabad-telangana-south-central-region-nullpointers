@@ -39,7 +39,9 @@ export const DashboardPage: React.FC = () => {
     setActiveTab,
     lineageModalData,
     setLineageModalData,
-    getIngestFeeds
+    getIngestFeeds,
+    activeScenario,
+    approvedScenarios
   } = useAppState();
 
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
@@ -49,38 +51,30 @@ export const DashboardPage: React.FC = () => {
   const currentRoleDetails = ROLE_INFO[currentRole || 'commander'];
   const CurrentRoleIcon = currentRoleDetails.icon;
 
-  // Operational Health Color mapping
-  const getHealthStatus = (health: number) => {
-    if (health >= 88) return { label: 'NOMINAL', color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5 glow-green' };
-    if (health >= 70) return { label: 'CAUTION', color: 'text-amber-400 border-amber-500/20 bg-amber-500/5 glow-yellow' };
-    return { label: 'CRITICAL', color: 'text-red-400 border-red-500/20 bg-red-500/5 glow-red animate-pulse' };
-  };
-
-  const healthStatus = getHealthStatus(telemetry.operationalHealth);
   const activeFeeds = getIngestFeeds();
 
   return (
-    <div className="w-full min-h-screen bg-[#020205] text-white flex flex-col p-4 md:p-6 select-none grid-bg scanline">
+    <div className="w-full min-h-screen bg-[#08090d] text-slate-200 flex flex-col p-4 md:p-6 select-none grid-bg">
       
       {/* 1. STADIUM HUD HEADER */}
-      <header className="w-full grid grid-cols-1 lg:grid-cols-3 items-center justify-between gap-4 border-b border-white/5 pb-4 mb-4 z-35">
+      <header className="w-full grid grid-cols-1 xl:grid-cols-3 items-center justify-between gap-4 border-b border-white/5 pb-4 mb-4 z-35">
         
         {/* Left: Role Switcher Dropdown */}
         <div className="flex items-center gap-3 justify-start">
           <div className="relative">
             <button
               onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-              className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#11131c] border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer text-slate-200"
             >
-              <CurrentRoleIcon className={`w-4 h-4 ${currentRoleDetails.color}`} />
-              <span className="font-mono text-xs font-bold tracking-wide text-white/95">
+              <CurrentRoleIcon className="w-4 h-4 text-blue-400" />
+              <span className="font-mono text-xs font-semibold tracking-wide">
                 {currentRoleDetails.title}
               </span>
               <ChevronDown className="w-4 h-4 text-white/40" />
             </button>
 
-            {roleDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-56 rounded-xl border border-white/10 bg-[#07070e] p-1.5 shadow-2xl z-50">
+          {roleDropdownOpen && (
+            <div className="absolute left-0 mt-2 w-56 rounded-xl border border-zinc-800 bg-[#11131c] p-1.5 shadow-2xl z-50">
                 {(Object.keys(ROLE_INFO) as RoleType[]).map((rKey) => {
                   if (!rKey) return null;
                   const item = ROLE_INFO[rKey];
@@ -127,50 +121,95 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Center: Operational Health gauge */}
-        <div className="flex justify-center">
-          <div className={`flex items-center gap-4 px-6 py-2 rounded-xl border ${healthStatus.color} transition-all duration-500`}>
-            <div className="text-left">
-              <span className="text-[9px] font-mono text-white/40 block uppercase tracking-widest">OPERATIONAL HEALTH</span>
-              <span className="text-2xl font-bold tracking-tight">{telemetry.operationalHealth}%</span>
+        {/* Center: Executive Summary stats strip */}
+        <div className="flex justify-center flex-1 max-w-4xl mx-auto">
+          <div className="flex items-center justify-around w-full px-6 py-2.5 rounded-xl border border-zinc-800 bg-[#11131c] text-xs font-mono">
+            
+            {/* 1. Operational Health */}
+            <div className="text-center px-4">
+              <span className="text-[9px] text-slate-500 uppercase block tracking-wider font-bold">OPERATIONAL HEALTH</span>
+              <span className={`text-sm font-bold mt-0.5 block ${
+                telemetry.operationalHealth >= 88 ? 'text-emerald-400' :
+                telemetry.operationalHealth >= 70 ? 'text-amber-400' : 'text-red-400 animate-pulse'
+              }`}>{telemetry.operationalHealth}%</span>
             </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="text-left font-mono">
-              <span className="text-[9px] text-white/40 block uppercase tracking-widest">STATUS</span>
-              <span className="text-xs font-bold">{healthStatus.label}</span>
+            
+            <div className="w-px h-6 bg-zinc-800" />
+            
+            {/* 2. Active Alerts */}
+            <div className="text-center px-4">
+              <span className="text-[9px] text-slate-500 uppercase block tracking-wider font-bold">ACTIVE ALERTS</span>
+              <span className={`text-sm font-bold mt-0.5 block ${
+                telemetry.incidents.length > 0 ? 'text-red-400 font-extrabold' : 'text-slate-400'
+              }`}>
+                {telemetry.incidents.length}
+              </span>
             </div>
+            
+            <div className="w-px h-6 bg-zinc-800" />
+            
+            {/* 3. Actions Approved */}
+            <div className="text-center px-4">
+              <span className="text-[9px] text-slate-500 uppercase block tracking-wider font-bold">ACTIONS APPROVED</span>
+              <span className="text-sm font-bold text-blue-400 mt-0.5 block">
+                {7 + Object.keys(approvedScenarios).length}
+              </span>
+            </div>
+            
+            <div className="w-px h-6 bg-zinc-800" />
+            
+            {/* 4. Critical Risk */}
+            <div className="text-center px-4">
+              <span className="text-[9px] text-slate-500 uppercase block tracking-wider font-bold">CRITICAL RISKS</span>
+              <span className={`text-sm font-bold mt-0.5 block ${
+                activeScenario !== 'normal' ? 'text-red-400 font-extrabold' : 'text-slate-400'
+              }`}>
+                {activeScenario !== 'normal' ? '1' : '0'}
+              </span>
+            </div>
+            
+            <div className="w-px h-6 bg-zinc-800" />
+            
+            {/* 5. Staff Online */}
+            <div className="text-center px-4">
+              <span className="text-[9px] text-slate-500 uppercase block tracking-wider font-bold">STAFF ONLINE</span>
+              <span className="text-sm font-bold text-emerald-400 mt-0.5 block">
+                {telemetry.volunteers.deployed || 842}
+              </span>
+            </div>
+            
           </div>
         </div>
 
         {/* Right: Mission Control Mode & Global Simulation Controllers */}
         <div className="flex items-center justify-end gap-3.5">
-          {/* Mission Control mode button */}
+          {/* Start Auto-Play Presentation button */}
           <button
             onClick={isMissionControlActive ? stopMissionControl : startMissionControl}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 font-mono text-xs font-bold cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 font-sans text-xs font-semibold cursor-pointer ${
               isMissionControlActive
-                ? 'bg-amber-500 text-black border-amber-400 animate-pulse glow-yellow'
-                : 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-400'
+                ? 'bg-amber-600 text-white border-amber-500 shadow-md shadow-amber-600/10'
+                : 'bg-blue-600 text-white border-transparent hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/10'
             }`}
           >
-            <Radio className={`w-4 h-4 ${isMissionControlActive ? 'animate-spin' : ''}`} />
+            <Radio className="w-4 h-4" />
             {isMissionControlActive ? `Auto-Play [ ${missionControlTimer}s ]` : 'Start Auto-Play Presentation'}
           </button>
 
           {/* Ticking Controls */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#11131c] border border-zinc-800">
             <button
               onClick={() => setIsSimulating(!isSimulating)}
               disabled={isMissionControlActive}
-              className={`p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white cursor-pointer ${isMissionControlActive ? 'opacity-50 cursor-not-allowed' : ''}`}
-              title={isSimulating ? "Pause Telemetry Tick" : "Play Telemetry Tick"}
+              className={`p-2 rounded-lg hover:bg-zinc-800 text-slate-400 hover:text-white cursor-pointer ${isMissionControlActive ? 'opacity-30 cursor-not-allowed' : ''}`}
+              title={isSimulating ? "Pause Simulation" : "Start Simulation"}
             >
               {isSimulating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             </button>
             <button
               onClick={resetSimulation}
-              className="p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white cursor-pointer"
-              title="Reset Simulation State"
+              className="p-2 rounded-lg hover:bg-zinc-800 text-slate-400 hover:text-white cursor-pointer"
+              title="Reset Simulation"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -180,13 +219,13 @@ export const DashboardPage: React.FC = () => {
       </header>
 
       {/* 2. SUB-HEADER: SLEEK SYSTEM TABS */}
-      <div className="flex gap-2 mb-6 border-b border-white/5 pb-3 justify-start shrink-0">
+      <div className="flex gap-2 mb-6 border-b border-zinc-800 pb-3 justify-start shrink-0">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wide transition-all border cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-sans font-semibold tracking-wide transition-all border cursor-pointer ${
             activeTab === 'dashboard'
-              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30 glow-indigo'
-              : 'bg-transparent text-white/50 border-transparent hover:text-white hover:bg-white/5'
+              ? 'bg-[#181a24] text-white border-zinc-800 shadow-sm'
+              : 'bg-transparent text-slate-500 border-transparent hover:text-slate-200 hover:bg-zinc-800/40'
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
@@ -194,10 +233,10 @@ export const DashboardPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('sources')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wide transition-all border cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-sans font-semibold tracking-wide transition-all border cursor-pointer ${
             activeTab === 'sources'
-              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30 glow-indigo'
-              : 'bg-transparent text-white/50 border-transparent hover:text-white hover:bg-white/5'
+              ? 'bg-[#181a24] text-white border-zinc-800 shadow-sm'
+              : 'bg-transparent text-slate-500 border-transparent hover:text-slate-200 hover:bg-zinc-800/40'
           }`}
         >
           <Database className="w-4 h-4" />
@@ -213,7 +252,7 @@ export const DashboardPage: React.FC = () => {
       ) : (
         <>
           {/* Main Grid View */}
-          <main className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-stretch mb-6">
+          <main className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch mb-6">
             
             {/* Left Column: Role Details Overlay + Scenario Selector */}
             <section className="col-span-1 flex flex-col gap-6">
@@ -221,12 +260,12 @@ export const DashboardPage: React.FC = () => {
               <ScenarioSimulator />
             </section>
 
-            {/* Center Hero Column: Digital Twin stadium */}
-            <section className="lg:col-span-2 flex flex-col items-stretch">
+            {/* Center Hero Column: Digital Twin stadium (60% screen width anchor) */}
+            <section className="lg:col-span-3 flex flex-col items-stretch">
               <DigitalTwin />
             </section>
 
-            {/* Right Column: NASA-like Operations Console */}
+            {/* Right Column: Operations Console */}
             <section className="col-span-1 flex flex-col items-stretch">
               <OperationsConsole />
             </section>

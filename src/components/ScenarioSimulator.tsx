@@ -27,16 +27,16 @@ export const ScenarioSimulator: React.FC = () => {
     <div className="w-full glass-panel rounded-2xl flex flex-col p-5 overflow-hidden">
       
       {/* Header HUD */}
-      <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <Play className="w-4 h-4 text-indigo-400" />
-          <span className="font-mono text-xs uppercase tracking-widest text-white/70">TELEMETRY SCENARIOS</span>
+          <Play className="w-4 h-4 text-blue-500" />
+          <span className="font-mono text-xs uppercase tracking-widest text-slate-400 font-bold">Scenario Profiles</span>
         </div>
-        <span className="font-mono text-[9px] text-white/30 uppercase">7 PROFILES LOADED</span>
+        <span className="font-mono text-[9px] text-slate-500 font-bold uppercase">7 Active</span>
       </div>
 
       {/* Scenarios Grid */}
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2">
         {SCENARIOS.map((sc) => {
           const IconComponent = sc.icon;
           const isActive = activeScenario === sc.id;
@@ -46,24 +46,28 @@ export const ScenarioSimulator: React.FC = () => {
               key={sc.id}
               disabled={isMissionControlActive}
               onClick={() => selectScenario(sc.id)}
-              className={`group flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-300 ${
+              className={`group flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-200 ${
                 isActive
-                  ? 'bg-indigo-500/15 border-indigo-500/50 text-white shadow-lg shadow-indigo-500/10 glow-indigo'
-                  : 'bg-white/2 border-white/5 text-white/60 hover:text-white hover:bg-white/5 hover:border-white/10'
+                  ? 'bg-[#181a24] border-l-2 border-l-blue-500 border-y-[#1d202d] border-r-[#1d202d] text-slate-100 font-semibold'
+                  : 'bg-transparent border-transparent text-slate-400 hover:bg-zinc-800/40 hover:text-slate-200'
               } ${isMissionControlActive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
               <div className="flex items-center gap-3">
                 <div className={`p-1.5 rounded-lg flex items-center justify-center border transition-colors ${
                   isActive 
-                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' 
-                    : 'bg-white/5 text-white/40 border-transparent group-hover:text-white'
+                    ? 'bg-blue-600/10 text-blue-400 border-blue-500/20' 
+                    : 'bg-zinc-800 text-slate-500 border-transparent group-hover:text-slate-350'
                 }`}>
                   <IconComponent className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-semibold tracking-wide">{sc.name}</span>
+                <span className="text-xs tracking-tight">{sc.name}</span>
               </div>
               
-              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border rounded uppercase ${sc.badgeColor}`}>
+              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 border rounded uppercase ${
+                isActive 
+                  ? sc.badgeColor.replace('/10', '/20')
+                  : 'bg-zinc-900 border-zinc-800 text-slate-500'
+              }`}>
                 {sc.badge}
               </span>
             </button>

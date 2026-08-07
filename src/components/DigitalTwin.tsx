@@ -119,25 +119,24 @@ export const DigitalTwin: React.FC = () => {
 
   // Sector density color helpers
   const getSectorColor = (density: number) => {
-    if (density < 0.45) return 'fill-emerald-500/10 stroke-emerald-500/40';
-    if (density < 0.75) return 'fill-amber-500/20 stroke-amber-500/50';
-    return 'fill-red-500/30 stroke-red-500/60 animate-pulse';
+    if (density < 0.45) return 'fill-[#181c25] stroke-[#2e3344]'; // Flat, clean healthy slate
+    if (density < 0.75) return 'fill-[#362d1a] stroke-[#78350f]'; // Flat warning amber
+    return 'fill-[#4c1c24] stroke-[#b91c1c]'; // Flat critical red
   };
 
   const activeIncidents = telemetry.incidents || [];
   const activeGates = telemetry.gates || [];
 
-
   return (
     <div className="relative w-full h-full min-h-[460px] glass-panel rounded-2xl flex flex-col p-5 overflow-hidden">
       
       {/* HUD Header */}
-      <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4 z-20">
+      <div className="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4 z-20">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-indigo-400" />
-          <span className="font-mono text-xs uppercase tracking-widest text-white/70">DIGITAL TWIN // REAL-TIME VECTOR GRID</span>
+          <Activity className="w-4 h-4 text-blue-500" />
+          <span className="font-mono text-xs uppercase tracking-widest text-slate-350">Digital Twin Simulation</span>
         </div>
-        <div className="flex gap-4 text-[10px] font-mono text-white/30">
+        <div className="flex gap-4 text-[10px] font-mono text-slate-500">
           <span>SCALE: 1:1200</span>
           <span>LATITUDE: 24.478° N</span>
         </div>
@@ -150,12 +149,12 @@ export const DigitalTwin: React.FC = () => {
 
         {/* Dynamic Warning Alert Overlay */}
         {activeIncidents.length > 0 && (
-          <div className="absolute top-2 left-2 z-20 flex flex-col gap-2">
+          <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
             {activeIncidents.map((inc: any) => (
-              <div key={inc.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs animate-pulse glow-red">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span className="font-mono font-bold">{inc.id}</span>
-                <span className="text-[10px] uppercase font-semibold">{inc.type}: {inc.location}</span>
+              <div key={inc.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono font-semibold">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span className="font-bold">{inc.id}</span>
+                <span className="text-[10px] uppercase">{inc.type} // {inc.location}</span>
               </div>
             ))}
           </div>
@@ -165,19 +164,16 @@ export const DigitalTwin: React.FC = () => {
         <svg viewBox="0 0 500 500" className="w-full h-full max-w-[420px] max-h-[420px] relative z-0">
           <defs>
             <radialGradient id="pitchGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#1e293b" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#020205" stopOpacity="1" />
+              <stop offset="0%" stopColor="#12141d" stopOpacity="1" />
+              <stop offset="100%" stopColor="#0e1017" stopOpacity="1" />
             </radialGradient>
-            <pattern id="concourseStripes" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-            </pattern>
           </defs>
 
           {/* Outer perimeter limits */}
-          <circle cx="250" cy="250" r="230" fill="url(#concourseStripes)" stroke="rgba(255,255,255,0.04)" strokeDasharray="5,5" />
+          <circle cx="250" cy="250" r="230" fill="none" stroke="rgba(255,255,255,0.03)" strokeDasharray="3,3" />
 
           {/* Outer Transit Ring Roads & Bus Stops */}
-          <circle cx="250" cy="250" r="215" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="8" />
+          <circle cx="250" cy="250" r="215" fill="none" stroke="rgba(255,255,255,0.01)" strokeWidth="6" />
 
           {/* Sector Overlays (North, South, East, West concourse segments) */}
           {/* North Sector (Concourse outer) */}
@@ -277,43 +273,43 @@ export const DigitalTwin: React.FC = () => {
       </div>
 
       {/* Ticker HUD Stats Overlay at bottom of Digital Twin */}
-      <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3 mt-2 text-center text-xs font-mono">
+      <div className="grid grid-cols-3 gap-2 border-t border-zinc-800 pt-3 mt-2 text-center text-xs font-mono">
         <div className="flex flex-col items-center">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
-            CROWD INSIDE
+          <span className="text-slate-500 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
+            Crowd Inside
             <button 
               onClick={() => setLineageModalData(LINEAGE_REGISTRY['stands-density'])}
-              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              className="hover:text-blue-400 p-0.5 rounded cursor-pointer"
             >
-              <HelpCircle className="w-2.5 h-2.5" />
+              <HelpCircle className="w-2.5 h-2.5 text-slate-500 hover:text-blue-400" />
             </button>
           </span>
-          <span className="text-white font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
+          <span className="text-slate-350 font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
         </div>
-        <div className="flex flex-col items-center border-x border-white/5">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
-            AVG FLOW RATE
+        <div className="flex flex-col items-center border-x border-zinc-800">
+          <span className="text-slate-500 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
+            Average Flow Rate
             <button 
               onClick={() => setLineageModalData(LINEAGE_REGISTRY['flow-rate'])}
-              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              className="hover:text-blue-400 p-0.5 rounded cursor-pointer"
             >
-              <HelpCircle className="w-2.5 h-2.5" />
+              <HelpCircle className="w-2.5 h-2.5 text-slate-500 hover:text-blue-400" />
             </button>
           </span>
-          <span className="text-white font-semibold">{telemetry.crowd.flowRate} p/min</span>
+          <span className="text-slate-350 font-semibold">{telemetry.crowd.flowRate} p/min</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
-            ACTIVE ALERTS
+          <span className="text-slate-500 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
+            Active Alerts
             <button 
               onClick={() => setLineageModalData(LINEAGE_REGISTRY['active-alerts'])}
-              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              className="hover:text-blue-400 p-0.5 rounded cursor-pointer"
             >
-              <HelpCircle className="w-2.5 h-2.5" />
+              <HelpCircle className="w-2.5 h-2.5 text-slate-500 hover:text-blue-400" />
             </button>
           </span>
-          <span className={`font-semibold ${activeIncidents.length > 0 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`}>
-            {activeIncidents.length > 0 ? `${activeIncidents.length} CRITICAL` : 'NONE'}
+          <span className={`font-semibold ${activeIncidents.length > 0 ? 'text-red-400 font-extrabold' : 'text-emerald-400'}`}>
+            {activeIncidents.length > 0 ? `${activeIncidents.length} Alert${activeIncidents.length > 1 ? 's' : ''}` : 'None'}
           </span>
         </div>
       </div>

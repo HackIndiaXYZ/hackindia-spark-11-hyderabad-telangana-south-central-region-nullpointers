@@ -9,7 +9,7 @@ import {
 
 
 export const RoleOverlay: React.FC = () => {
-  const { currentRole, telemetry, setLineageModalData } = useAppState();
+  const { currentRole, telemetry, setLineageModalData, activeScenario } = useAppState();
 
   if (!telemetry) return null;
 
@@ -345,8 +345,99 @@ export const RoleOverlay: React.FC = () => {
     );
   };
 
+  // Dynamic Priority Panel helper based on the active scenario
+  const renderPrioritiesPanel = () => {
+    let criticalItems: string[] = [];
+    let warningItems: string[] = [];
+    let normalItems: string[] = [];
+
+    switch (activeScenario) {
+      case 'heavy-rain':
+        criticalItems = ['Gate B concourse capacity exceeded (96%)'];
+        warningItems = ['Plaza vehicle arrival delays (+8m)', 'Concourse water pooling hazard rising'];
+        normalItems = ['Transit metro services operating nominal', 'Medical triage response ready'];
+        break;
+      case 'metro-delay':
+        criticalItems = ['Commuter backup active at East Plaza terminal'];
+        warningItems = ['Transit signaling timeout (ATS latency feed)'];
+        normalItems = ['Weather clear', 'Gate scanners fully operational'];
+        break;
+      case 'medical-emergency':
+        criticalItems = ['Active cardiac alert dispatch in Sector C Stands'];
+        warningItems = ['Medical response crew transit delay (+45s)'];
+        normalItems = ['Stadium access gates secure', 'Transit networks nominal'];
+        break;
+      case 'gate-failure':
+        criticalItems = ['Gate D turnstile database reader offline'];
+        warningItems = ['Gate D plaza queue backing up (8k count)'];
+        normalItems = ['Transit schedules nominal', 'Weather clear'];
+        break;
+      case 'vip-arrival':
+        criticalItems = [];
+        warningItems = ['VIP convoy arrival security sweep active'];
+        normalItems = ['All gates operating nominal', 'Stands crowd flow steady'];
+        break;
+      case 'power-failure':
+        criticalItems = ['Security RFID database gateway blackout'];
+        warningItems = ['Citizen reports: Dark corridor Stairwell A'];
+        normalItems = ['Emergency power diesel generator activated'];
+        break;
+      default:
+        criticalItems = [];
+        warningItems = [];
+        normalItems = ['All venue telemetry streams nominal', 'Weather clear', 'Transit systems on schedule'];
+        break;
+    }
+
+    return (
+      <div className="border-b border-zinc-800 pb-4 mb-4 text-left">
+        <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Priority Action Center</h4>
+        
+        {/* Critical Alerts */}
+        {criticalItems.length > 0 && (
+          <div className="space-y-1.5 mb-3">
+            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 font-mono tracking-wider block w-fit uppercase">Critical</span>
+            {criticalItems.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-xs font-semibold text-red-400 pl-1">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Warning Alerts */}
+        {warningItems.length > 0 && (
+          <div className="space-y-1.5 mb-3">
+            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono tracking-wider block w-fit uppercase">Warning</span>
+            {warningItems.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-xs text-amber-400 pl-1">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Normal Subsystems */}
+        {normalItems.length > 0 && (
+          <div className="space-y-1.5">
+            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-slate-500 font-mono tracking-wider block w-fit uppercase">Normal</span>
+            {normalItems.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-xs text-slate-400 pl-1">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shrink-0" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full glass-panel rounded-2xl p-5 overflow-hidden">
+      {renderPrioritiesPanel()}
       {currentRole === 'commander' && renderCommanderView()}
       {currentRole === 'security' && renderSecurityView()}
       {currentRole === 'medical' && renderMedicalView()}

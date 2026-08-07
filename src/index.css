@@ -6,117 +6,87 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* Global Reset & Base Styling with Dual Glow Corner Gradients */
+/* Global Reset & Base Styling - Premium Deep Graphite */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #030308;
-  color: #f3f4f6;
+  background-color: #08090d; /* Solid premium graphite slate */
+  color: #e2e8f0;
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
-  
-  /* Cybernetic control room background layout */
-  background-image: 
-    radial-gradient(circle at 5% 5%, rgba(99, 102, 241, 0.05) 0%, transparent 35%),
-    radial-gradient(circle at 95% 95%, rgba(244, 63, 94, 0.04) 0%, transparent 35%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
 }
 
-/* Futuristic interactive glass panels with raising transitions */
+/* Clean Enterprise Cards (Minimal Visual Noise) */
 .glass-panel {
-  background: rgba(10, 10, 22, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(99, 102, 241, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: #11131c; /* Solid graphite card */
+  border: 1px solid #1d202d; /* Crisp thin border */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease-in-out;
 }
 
 .glass-panel:hover {
-  border-color: rgba(99, 102, 241, 0.25);
-  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.08), inset 0 0 12px rgba(255, 255, 255, 0.01);
-  transform: translateY(-2px);
+  border-color: #3b82f6; /* Muted corporate blue highlight for interactivity */
 }
 
 .glass-panel-heavy {
-  background: rgba(6, 6, 14, 0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.6);
+  background: #0f1016;
+  border: 1px solid #232738;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel-heavy:hover {
+  border-color: #3b82f6;
 }
 
 .glass-panel-light {
   background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* Multi-layer Neon glowing utilities */
+/* No glowing borders (purely informational color accents) */
 .glow-green {
-  box-shadow: 0 0 15px rgba(52, 211, 153, 0.1), inset 0 0 8px rgba(52, 211, 153, 0.04);
-  border-color: rgba(52, 211, 153, 0.25) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
 .glow-yellow {
-  box-shadow: 0 0 15px rgba(251, 191, 36, 0.1), inset 0 0 8px rgba(251, 191, 36, 0.04);
-  border-color: rgba(251, 191, 36, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
 }
 
 .glow-red {
-  box-shadow: 0 0 15px rgba(248, 113, 113, 0.1), inset 0 0 8px rgba(248, 113, 113, 0.04);
-  border-color: rgba(248, 113, 113, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
 .glow-blue {
-  box-shadow: 0 0 15px rgba(96, 165, 250, 0.1), inset 0 0 8px rgba(96, 165, 250, 0.04);
-  border-color: rgba(96, 165, 250, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
 .glow-indigo {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.25), inset 0 0 12px rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.4) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
 }
 
-/* Custom Telemetry Scanline overlay */
+/* scanline bypass */
 .scanline {
   position: relative;
 }
 
-.scanline::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-  z-index: 10;
-  background-size: 100% 4px;
-  pointer-events: none;
-  opacity: 0.4;
+.grid-bg {
+  /* Minimal background grids */
+  background-image: radial-gradient(#1f2937 0.75px, transparent 0.75px);
+  background-size: 24px 24px;
 }
 
 /* Animations */
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 0.3; }
-}
-
-@keyframes blink-fast {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.4; }
 }
 
 .animate-pulse-slow {
   animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-blink-fast {
-  animation: blink-fast 1s infinite;
 }
 
 /* Custom Scrollbars */
@@ -126,16 +96,16 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 /* Hide default Vite styles since we are overriding it */
@@ -146,30 +116,29 @@ html, body, #root {
   border-inline: none;
 }
 
-/* Recharts Tooltip Overrides */
+/* Recharts Tooltip Overrides - Solid Enterprise Styles */
 .recharts-default-tooltip {
-  background-color: rgba(6, 6, 14, 0.95) !important;
-  border: 1px solid rgba(99, 102, 241, 0.25) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(10px) !important;
+  background-color: #0f1016 !important;
+  border: 1px solid #232738 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
   color: #fff !important;
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
 }
 
 .recharts-tooltip-label {
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 10px !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  padding-bottom: 4px !important;
-  margin-bottom: 6px !important;
+  padding-bottom: 3px !important;
+  margin-bottom: 5px !important;
 }
 
 .recharts-tooltip-item {
   font-family: 'Outfit', sans-serif !important;
   font-size: 11px !important;
-  padding: 2px 0 !important;
+  padding: 1px 0 !important;
 }
 
 @keyframes spin-slow {
