@@ -89,12 +89,12 @@ export const DigitalTwin: React.FC = () => {
     if (hasMedicalIncident) {
       setIsMedicalResponding(true);
       // Sector C Stands is located around x=150, y=140 on the SVG.
-      // Animate responder towards it.
+      // Animate responder towards Platform Hub (x=190, y=200)
       let frame = 0;
-      const startX = 250;
-      const startY = 250;
-      const targetX = 150;
-      const targetY = 140;
+      const startX = 400;
+      const startY = 80;
+      const targetX = 190;
+      const targetY = 200;
 
       const interval = setInterval(() => {
         frame++;
@@ -110,98 +110,62 @@ export const DigitalTwin: React.FC = () => {
       return () => clearInterval(interval);
     } else {
       setIsMedicalResponding(false);
-      // Standby Location
-      setMedicalPos({ x: 250, y: 250 });
+      // Standby Location (Medical Base Station)
+      setMedicalPos({ x: 400, y: 80 });
     }
   }, [telemetry?.incidents]);
 
   if (!telemetry) return null;
 
-  // Programmatic generation of concentric oval seating sections matching target image
-  const renderStadiumSeats = () => {
-    const cx = 250;
-    const cy = 250;
+  // Programmatic generation of Metro Station Layout
+  const renderMetroStation = () => {
+    const elements: React.ReactNode[] = [];
     
-    // 3 tiers of seats with progressive elliptical radii
-    const tiers = [
-      { rx: 90, ry: 120, count: 24, width: 8, height: 6 },
-      { rx: 112, ry: 147, count: 32, width: 10, height: 7 },
-      { rx: 136, ry: 178, count: 42, width: 12, height: 8 },
-    ];
+    // Main Concourse Background
+    elements.push(
+      <rect key="concourse" x="50" y="50" width="400" height="400" rx="8" fill="#11131c" stroke="#1d202d" strokeWidth="1.5" />
+    );
 
-    const seatElements: React.ReactNode[] = [];
+    // Grid lines for blueprint feel (subtle)
+    for (let i = 70; i < 450; i += 20) {
+      elements.push(<line key={`v-${i}`} x1={i} y1="50" x2={i} y2="450" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />);
+      elements.push(<line key={`h-${i}`} x1="50" y1={i} x2="450" y2={i} stroke="rgba(255,255,255,0.02)" strokeWidth="1" />);
+    }
 
-    tiers.forEach((tier, tierIdx) => {
-      for (let i = 0; i < tier.count; i++) {
-        const angle = (i * 2 * Math.PI) / tier.count;
-        const x = cx + tier.rx * Math.cos(angle);
-        const y = cy + tier.ry * Math.sin(angle);
-        
-        const angleDeg = (angle * 180) / Math.PI;
-        
-        let fillClass = 'fill-none stroke-zinc-800 hover:stroke-zinc-600';
-        
-        if (x < cx) {
-          // Color-coded left half: shades of emerald, purple, blue, cyan
-          const segment = Math.floor((angleDeg + 90) / 45) % 8;
-          if (segment === 0 || segment === 1) {
-            fillClass = 'fill-emerald-500/20 stroke-emerald-500/40 hover:fill-emerald-500/35'; // Green
-          } else if (segment === 2 || segment === 3) {
-            fillClass = 'fill-purple-500/20 stroke-purple-500/40 hover:fill-purple-500/35'; // Purple
-          } else if (segment === 4 || segment === 5) {
-            fillClass = 'fill-blue-500/20 stroke-blue-500/40 hover:fill-blue-500/35'; // Blue
-          } else {
-            fillClass = 'fill-cyan-500/20 stroke-cyan-500/40 hover:fill-cyan-500/35'; // Light blue
-          }
-        } else {
-          // Right half has white outlines matching target design
-          fillClass = 'fill-none stroke-zinc-700/60 hover:stroke-slate-500';
-        }
+    // East-West Metro Line (Tracks)
+    elements.push(
+      <rect key="track-ew" x="50" y="160" width="400" height="40" fill="#0d1411" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+    );
+    elements.push(<line key="track-ew-1" x1="50" y1="170" x2="450" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 2" />);
+    elements.push(<line key="track-ew-2" x1="50" y1="190" x2="450" y2="190" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 2" />);
 
-        // Apply dynamic heat mapping to seats based on active incidents
-        let normalizedAngle = (angleDeg + 360) % 360;
-        let seatSectorDensity = telemetry.crowd.standsDensity;
-        
-        if (normalizedAngle >= 225 && normalizedAngle < 315) {
-          // North
-          if (activeScenario === 'heavy-rain') seatSectorDensity = 0.92;
-        } else if (normalizedAngle >= 315 || normalizedAngle < 45) {
-          // East
-          if (activeScenario === 'metro-delay') seatSectorDensity = 0.84;
-        } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
-          // South
-          seatSectorDensity = telemetry.crowd.standsDensity * 0.85;
-        } else {
-          // West
-          if (activeScenario === 'gate-failure') seatSectorDensity = 0.89;
-        }
+    // North-South Metro Line (Tracks)
+    elements.push(
+      <rect key="track-ns" x="230" y="50" width="40" height="400" fill="#0d1411" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+    );
+    elements.push(<line key="track-ns-1" x1="240" y1="50" x2="240" y2="450" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 2" />);
+    elements.push(<line key="track-ns-2" x1="260" y1="50" x2="260" y2="450" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 2" />);
 
-        if (seatSectorDensity > 0.85) {
-          if ((i % 3 === 0 && x < cx) || (i % 2 === 0 && x >= cx)) {
-            fillClass = 'fill-red-500/20 stroke-red-500/50 hover:fill-red-500/40 animate-pulse';
-          }
-        } else if (seatSectorDensity > 0.7) {
-          if (i % 3 === 1) {
-            fillClass = 'fill-amber-500/20 stroke-amber-500/50 hover:fill-amber-500/40';
-          }
-        }
+    // Central Hub Platform (Dynamic Color based on density)
+    let hubDensity = telemetry.crowd.standsDensity;
+    if (activeScenario === 'metro-delay') hubDensity = 0.9;
+    let hubFill = hubDensity > 0.85 ? 'fill-red-500/10 stroke-red-500/30' : hubDensity > 0.7 ? 'fill-amber-500/10 stroke-amber-500/30' : 'fill-[#181c25] stroke-[#2e3344]';
 
-        seatElements.push(
-          <rect
-            key={`seat-${tierIdx}-${i}`}
-            x={x - tier.width / 2}
-            y={y - tier.height / 2}
-            width={tier.width}
-            height={tier.height}
-            rx="1.5"
-            transform={`rotate(${angleDeg + 90}, ${x}, ${y})`}
-            className={`${fillClass} transition-all duration-300 cursor-pointer`}
-          />
-        );
-      }
-    });
+    elements.push(
+      <rect key="hub-platform" x="180" y="200" width="140" height="100" rx="4" className={`${hubFill} transition-all duration-300`} strokeWidth="1.5" />
+    );
 
-    return seatElements;
+    // North Platform
+    elements.push(
+      <rect key="platform-n" x="190" y="90" width="120" height="50" rx="2" fill="#181c25" stroke="#2e3344" strokeWidth="1" />
+    );
+
+    // South Platform
+    elements.push(
+      <rect key="platform-s" x="190" y="320" width="120" height="50" rx="2" fill="#181c25" stroke="#2e3344" strokeWidth="1" />
+    );
+
+    return elements;
   };
 
   const activeIncidents = telemetry.incidents || [];
@@ -240,51 +204,31 @@ export const DigitalTwin: React.FC = () => {
           </div>
         )}
 
-        {/* Stadium Top-Down Layout Map */}
+        {/* Metro Station Top-Down Layout Map */}
         <svg viewBox="0 0 500 500" className="w-full h-full max-w-[420px] max-h-[420px] relative z-0">
           
-          {/* Programmatically Generated Seating Bowl Blocks */}
-          {renderStadiumSeats()}
+          {/* Programmatically Generated Metro Layout */}
+          {renderMetroStation()}
 
-          {/* High-Fidelity Football Pitch (Center) */}
-          <rect x="200" y="170" width="100" height="160" rx="4" fill="#0d1411" stroke="rgba(255,255,255,0.08)" strokeWidth="1.2" />
-          <line x1="200" y1="250" x2="300" y2="250" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <circle cx="250" cy="250" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <circle cx="250" cy="250" r="1.5" fill="rgba(255,255,255,0.25)" />
-          
-          {/* Pitch Goal Boxes */}
-          {/* Top Penalty Area */}
-          <rect x="220" y="170" width="60" height="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <rect x="236" y="170" width="28" height="10" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <path d="M 235 198 A 15 15 0 0 0 265 198" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-
-          {/* Bottom Penalty Area */}
-          <rect x="220" y="302" width="60" height="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <rect x="236" y="320" width="28" height="10" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <path d="M 235 302 A 15 15 0 0 1 265 302" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-
-          {/* Outer Stadium Rim Ellipse */}
-          <ellipse cx="250" cy="250" rx="170" ry="215" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
-          
-          {/* Sector Division Dash Lines */}
-          <line x1="250" y1="35" x2="250" y2="465" stroke="rgba(255,255,255,0.04)" strokeDasharray="3,3" />
-          <line x1="75" y1="250" x2="425" y2="250" stroke="rgba(255,255,255,0.04)" strokeDasharray="3,3" />
-
-          {/* Gates (Indicators Placed around outer ellipse) */}
+          {/* Gates (Indicators Placed around concourse edges) */}
           {activeGates.map((gate: any, idx: number) => {
-            const angles = [210, 330, 270, 90, 30, 150]; // Gates A to F
-            const angleRad = (angles[idx] * Math.PI) / 180;
-            const rx = 170;
-            const ry = 215;
-            const gx = 250 + rx * Math.cos(angleRad);
-            const gy = 250 + ry * Math.sin(angleRad);
+            const gatePositions = [
+              { x: 50, y: 120 }, // Gate A (West)
+              { x: 50, y: 380 }, // Gate B (West)
+              { x: 450, y: 120 }, // Gate C (East)
+              { x: 450, y: 380 }, // Gate D (East)
+              { x: 120, y: 50 }, // Gate E (North)
+              { x: 380, y: 450 }, // Gate F (South)
+            ];
+            const gx = gatePositions[idx]?.x || 250;
+            const gy = gatePositions[idx]?.y || 250;
 
             const isOffline = gate.status === 'OFFLINE';
 
             return (
               <g key={gate.id}>
                 {/* Gate Label Bubble */}
-                <circle cx={gx} cy={gy} r="10" fill="#0c0c16" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                <circle cx={gx} cy={gy} r="10" fill="#0c0c16" stroke={isOffline ? '#ef4444' : gate.occupancy > 0.85 ? '#f59e0b' : '#3b82f6'} strokeWidth="1" />
                 <text x={gx} y={gy + 3} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold" fontFamily="monospace">
                   {gate.id}
                 </text>
@@ -295,7 +239,7 @@ export const DigitalTwin: React.FC = () => {
                   cy={gy} 
                   r="14" 
                   fill="none" 
-                  stroke={isOffline ? '#ef4444' : gate.occupancy > 0.85 ? '#f59e0b' : '#10b981'} 
+                  stroke={isOffline ? '#ef4444' : gate.occupancy > 0.85 ? '#f59e0b' : '#3b82f6'} 
                   strokeWidth="1.5" 
                   className={isOffline ? 'animate-blink-fast' : 'animate-pulse-slow'} 
                 />
@@ -303,15 +247,14 @@ export const DigitalTwin: React.FC = () => {
             );
           })}
 
-          {/* Dynamic Patrol Units along Elliptical tracks */}
-          {/* Animated Security Patrols */}
-          <circle cx={250 + 115 * Math.cos(Date.now() / 6000)} cy={250 + 150 * Math.sin(Date.now() / 6000)} r="3.5" fill="#f87171" />
-          <circle cx={250 + 115 * Math.cos(Date.now() / 6000 + Math.PI)} cy={250 + 150 * Math.sin(Date.now() / 6000 + Math.PI)} r="3.5" fill="#f87171" />
+          {/* Dynamic Patrol Units */}
+          {/* Security Patrols (Linear movement along concourse) */}
+          <circle cx={100 + 300 * Math.abs(Math.sin(Date.now() / 8000))} cy="100" r="3.5" fill="#3b82f6" />
+          <circle cx={400 - 300 * Math.abs(Math.sin(Date.now() / 8000))} cy="400" r="3.5" fill="#3b82f6" />
 
-          {/* Animated Volunteer Patrols */}
-          <circle cx={250 + 160 * Math.cos(Date.now() / 4500)} cy={250 + 205 * Math.sin(Date.now() / 4500)} r="3" fill="#fbbf24" />
-          <circle cx={250 + 160 * Math.cos(Date.now() / 4500 + (2 * Math.PI) / 3)} cy={250 + 205 * Math.sin(Date.now() / 4500 + (2 * Math.PI) / 3)} r="3" fill="#fbbf24" />
-
+          {/* Staff Patrols */}
+          <circle cx="150" cy={100 + 300 * Math.abs(Math.cos(Date.now() / 6000))} r="3" fill="#8b5cf6" />
+          
           {/* Animated Medical Responder */}
           <circle 
             cx={medicalPos.x} 
@@ -322,7 +265,7 @@ export const DigitalTwin: React.FC = () => {
           />
           
           {/* Medical base station indicator */}
-          <circle cx="250" cy="250" r="3.5" fill="#10b981" opacity="0.4" />
+          <circle cx="400" cy="80" r="4" fill="#10b981" opacity="0.4" />
         </svg>
       </div>
 
