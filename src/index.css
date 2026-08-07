@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Outfit', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }
 
 /* Global Reset & Base Styling - Premium Deep Graphite */
@@ -14,7 +14,7 @@ html, body, #root {
   min-height: 100vh;
   background-color: #08090d; /* Solid premium graphite slate */
   color: #e2e8f0;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   overflow-x: hidden;
 }
 
