@@ -18,7 +18,7 @@ export const DecisionReplay: React.FC = () => {
       <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-indigo-400" />
-          <span className="font-mono text-xs uppercase tracking-widest text-white/70">DECISION REPLAY // INCIDENT JOURNAL</span>
+          <span className="font-mono text-xs uppercase tracking-widest text-white/70">Action Replay & Decision Log</span>
         </div>
         <span className="font-mono text-[9px] text-white/30 uppercase">
           {replayHistory.length} ENTRIES LOGGED
@@ -30,8 +30,8 @@ export const DecisionReplay: React.FC = () => {
         {replayHistory.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/5 rounded-xl text-white/20 font-mono text-xs">
             <Scale className="w-8 h-8 mb-3 text-white/10" />
-            <span>[SYSTEM STANDBY: NO DIRECTIVES ISSUED]</span>
-            <span className="text-[10px] mt-1 opacity-50">Trigger a scenario incident to generate entries.</span>
+            <span>System Standby: No Actions Taken Yet</span>
+            <span className="text-[10px] mt-1 opacity-50">Select a scenario above and approve a recommendation to record decisions.</span>
           </div>
         ) : (
           replayHistory.map((item) => {
@@ -92,9 +92,9 @@ export const DecisionReplay: React.FC = () => {
                         <div className="flex justify-between items-center border-b border-green-500/10 pb-2 mb-3">
                           <span className="text-[10px] font-mono font-bold text-green-400 uppercase tracking-widest flex items-center gap-1.5">
                             <CheckSquare className="w-3.5 h-3.5" />
-                            Actual Intervention
+                            Actual Action Approved
                           </span>
-                          <span className="text-[9px] font-mono text-green-500/60">APPROVED STATUS</span>
+                          <span className="text-[9px] font-mono text-green-500/60">ACTION TAKEN</span>
                         </div>
                         
                         <div className="grid grid-cols-2 gap-2 text-center">
@@ -116,9 +116,9 @@ export const DecisionReplay: React.FC = () => {
                         <div className="flex justify-between items-center border-b border-red-500/10 pb-2 mb-3">
                           <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
                             <XCircle className="w-3.5 h-3.5" />
-                            No Intervention
+                            No Action (What If?)
                           </span>
-                          <span className="text-[9px] font-mono text-red-500/60">COUNTERFACTUAL</span>
+                          <span className="text-[9px] font-mono text-red-500/60">SIMULATED RISK</span>
                         </div>
                         
                         <div className="grid grid-cols-2 gap-2 text-center">

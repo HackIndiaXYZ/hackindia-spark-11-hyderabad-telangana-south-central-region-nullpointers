@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { AlertTriangle, Activity } from 'lucide-react';
+import { LINEAGE_REGISTRY } from '../services/lineageRegistry';
+import { AlertTriangle, Activity, HelpCircle } from 'lucide-react';
 
 export const DigitalTwin: React.FC = () => {
-  const { telemetry, activeScenario } = useAppState();
+  const { telemetry, activeScenario, setLineageModalData } = useAppState();
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [medicalPos, setMedicalPos] = useState({ x: 250, y: 130 });
   const [isMedicalResponding, setIsMedicalResponding] = useState(false);
@@ -277,15 +279,39 @@ export const DigitalTwin: React.FC = () => {
       {/* Ticker HUD Stats Overlay at bottom of Digital Twin */}
       <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3 mt-2 text-center text-xs font-mono">
         <div className="flex flex-col items-center">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider">CROWD INSIDE</span>
+          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
+            CROWD INSIDE
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['stands-density'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <span className="text-white font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
         </div>
         <div className="flex flex-col items-center border-x border-white/5">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider">AVG FLOW RATE</span>
+          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
+            AVG FLOW RATE
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['flow-rate'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <span className="text-white font-semibold">{telemetry.crowd.flowRate} p/min</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white/30 text-[9px] uppercase tracking-wider">ACTIVE ALERTS</span>
+          <span className="text-white/30 text-[9px] uppercase tracking-wider flex items-center gap-1 justify-center">
+            ACTIVE ALERTS
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['active-alerts'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <span className={`font-semibold ${activeIncidents.length > 0 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`}>
             {activeIncidents.length > 0 ? `${activeIncidents.length} CRITICAL` : 'NONE'}
           </span>

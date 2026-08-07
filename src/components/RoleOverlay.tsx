@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Users, AlertTriangle, Heart } from 'lucide-react';
+import { LINEAGE_REGISTRY } from '../services/lineageRegistry';
+import { Users, AlertTriangle, Heart, HelpCircle } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, 
   Tooltip, BarChart, Bar 
@@ -8,7 +9,7 @@ import {
 
 
 export const RoleOverlay: React.FC = () => {
-  const { currentRole, telemetry } = useAppState();
+  const { currentRole, telemetry, setLineageModalData } = useAppState();
 
   if (!telemetry) return null;
 
@@ -33,12 +34,20 @@ export const RoleOverlay: React.FC = () => {
 
     return (
       <div className="space-y-4">
-        <h3 className="font-mono text-xs text-blue-400 uppercase tracking-widest border-b border-white/5 pb-2">COMMANDER HUD OVERLAYS</h3>
+        <h3 className="font-mono text-xs text-blue-400 uppercase tracking-widest border-b border-white/5 pb-2">System Status</h3>
         
         {/* Stadium Occupancy Radial Gauge */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 flex items-center justify-between">
           <div className="text-left">
-            <span className="text-[10px] font-mono text-white/30 uppercase block">Stands Capacity</span>
+            <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1">
+              Stands Capacity
+              <button 
+                onClick={() => setLineageModalData(LINEAGE_REGISTRY['stands-density'])}
+                className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              >
+                <HelpCircle className="w-2.5 h-2.5" />
+              </button>
+            </span>
             <span className="text-2xl font-bold text-white">{standsPct}%</span>
             <span className="text-[9px] font-mono text-white/40 block mt-0.5">{(telemetry.crowd.totalInside * 0.7).toLocaleString()} / 80k Seats</span>
           </div>
@@ -51,7 +60,15 @@ export const RoleOverlay: React.FC = () => {
 
         {/* Global Concourse Density Card */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-1.5">Concourse Circulation Flow</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-1.5">
+            Concourse Circulation Flow
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['concourse-density'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-white">{concoursePct}%</span>
             <span className={`text-[10px] font-mono font-bold ${concoursePct > 75 ? 'text-red-400' : 'text-green-400'}`}>
@@ -70,7 +87,15 @@ export const RoleOverlay: React.FC = () => {
 
         {/* Global Alerts Feed */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-3">Critical Alerts Log</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-3">
+            Critical Alerts Log
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['active-alerts'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           {telemetry.incidents.length === 0 ? (
             <div className="text-xs text-white/30 font-mono py-4 text-center border border-dashed border-white/5 rounded-lg">
               NO ACTIVE ALERTS
@@ -98,11 +123,19 @@ export const RoleOverlay: React.FC = () => {
 
     return (
       <div className="space-y-4">
-        <h3 className="font-mono text-xs text-red-400 uppercase tracking-widest border-b border-white/5 pb-2">SECURITY STATUS OVERLAYS</h3>
+        <h3 className="font-mono text-xs text-red-400 uppercase tracking-widest border-b border-white/5 pb-2">Security Status</h3>
         
         {/* Security Posture Index */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block">Security Posture</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1">
+            Security Posture
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['active-alerts'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <span className={`text-2xl font-bold block mt-1 ${alertLevel === 'CRITICAL' ? 'text-red-400 animate-pulse' : alertLevel === 'ELEVATED' ? 'text-amber-400' : 'text-blue-400'}`}>
             {alertLevel}
           </span>
@@ -111,7 +144,15 @@ export const RoleOverlay: React.FC = () => {
 
         {/* Dynamic Gate Intake List */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-3">Perimeter Gate Queue Densities</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-3">
+            Perimeter Gate Queue Densities
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['gate-occupancy'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <div className="space-y-2.5">
             {telemetry.gates.map((g: any) => {
               const occ = Math.round(g.occupancy * 100);
@@ -143,12 +184,20 @@ export const RoleOverlay: React.FC = () => {
   const renderMedicalView = () => {
     return (
       <div className="space-y-4">
-        <h3 className="font-mono text-xs text-emerald-400 uppercase tracking-widest border-b border-white/5 pb-2">MEDICAL UNIT OVERLAYS</h3>
+        <h3 className="font-mono text-xs text-emerald-400 uppercase tracking-widest border-b border-white/5 pb-2">Medical Status</h3>
         
         {/* Dispatch Metrics */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] font-mono text-white/30 uppercase">Avg Response Time</span>
+            <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1">
+              Avg Response Time
+              <button 
+                onClick={() => setLineageModalData(LINEAGE_REGISTRY['medical-response'])}
+                className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              >
+                <HelpCircle className="w-2.5 h-2.5" />
+              </button>
+            </span>
             <span className="text-xs font-mono text-white/40">{telemetry.medical.responseTimeSec}s</span>
           </div>
           <div className="h-16 w-full">
@@ -199,12 +248,20 @@ export const RoleOverlay: React.FC = () => {
     const fatigue = Math.round(telemetry.volunteers.fatigue * 100);
     return (
       <div className="space-y-4">
-        <h3 className="font-mono text-xs text-amber-400 uppercase tracking-widest border-b border-white/5 pb-2">VOLUNTEER SERVICES</h3>
+        <h3 className="font-mono text-xs text-amber-400 uppercase tracking-widest border-b border-white/5 pb-2">Staff Status</h3>
         
         {/* Fatigue dial index */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left flex justify-between items-center">
           <div>
-            <span className="text-[10px] font-mono text-white/30 uppercase block">Staff Fatigue Index</span>
+            <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1">
+              Staff Fatigue Index
+              <button 
+                onClick={() => setLineageModalData(LINEAGE_REGISTRY['volunteer-fatigue'])}
+                className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+              >
+                <HelpCircle className="w-2.5 h-2.5" />
+              </button>
+            </span>
             <span className={`text-2xl font-bold block mt-1 ${fatigue > 40 ? 'text-amber-400' : 'text-green-400'}`}>
               {fatigue}%
             </span>
@@ -242,11 +299,19 @@ export const RoleOverlay: React.FC = () => {
   const renderTransportView = () => {
     return (
       <div className="space-y-4">
-        <h3 className="font-mono text-xs text-indigo-400 uppercase tracking-widest border-b border-white/5 pb-2">TRANSIT SYSTEM HUD</h3>
+        <h3 className="font-mono text-xs text-indigo-400 uppercase tracking-widest border-b border-white/5 pb-2">Transit Status</h3>
         
         {/* Metro Wait times chart */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-1.5">Metro Line 1 Status</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-1.5">
+            Metro Line 1 Status
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['metro-status'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <div className="flex items-baseline gap-2">
             <span className={`text-2xl font-bold uppercase ${telemetry.transport.metroStatus === 'DELAYED' ? 'text-red-400 animate-pulse' : 'text-green-400'}`}>
               {telemetry.transport.metroStatus}
@@ -257,7 +322,15 @@ export const RoleOverlay: React.FC = () => {
 
         {/* Bus Queue chart */}
         <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-1">Transit Bus plaza wait queue</span>
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-1">
+            Transit Bus plaza wait queue
+            <button 
+              onClick={() => setLineageModalData(LINEAGE_REGISTRY['metro-status'])}
+              className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
+            >
+              <HelpCircle className="w-2.5 h-2.5" />
+            </button>
+          </span>
           <span className="text-xs font-mono text-white/40 block mb-2">{telemetry.transport.busTerminalQueue} Commuters waiting</span>
           <div className="h-16 w-full">
             <ResponsiveContainer width="100%" height="100%">

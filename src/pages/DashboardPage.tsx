@@ -5,9 +5,11 @@ import { OperationsConsole } from '../components/OperationsConsole';
 import { ScenarioSimulator } from '../components/ScenarioSimulator';
 import { DecisionReplay } from '../components/DecisionReplay';
 import { RoleOverlay } from '../components/RoleOverlay';
+import { DataSourcesPage } from './DataSourcesPage';
+import { InfoModal } from '../components/common/InfoModal';
 import { 
   Play, Pause, RotateCcw, Shield, Activity, 
-  Users, Truck, Cpu, ChevronDown, Radio
+  Users, Truck, Cpu, ChevronDown, Radio, Database, LayoutDashboard
 } from 'lucide-react';
 
 const ROLE_INFO = {
@@ -30,9 +32,15 @@ export const DashboardPage: React.FC = () => {
     isMissionControlActive,
     startMissionControl,
     stopMissionControl,
-    missionControlTimer
+    missionControlTimer,
+    
+    // New tab state and lineage modal hooks
+    activeTab,
+    setActiveTab,
+    lineageModalData,
+    setLineageModalData,
+    getIngestFeeds
   } = useAppState();
-
 
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
 
@@ -49,12 +57,13 @@ export const DashboardPage: React.FC = () => {
   };
 
   const healthStatus = getHealthStatus(telemetry.operationalHealth);
+  const activeFeeds = getIngestFeeds();
 
   return (
-    <div className="w-full h-full min-h-screen bg-[#020205] text-white flex flex-col p-4 md:p-6 select-none grid-bg scanline">
+    <div className="w-full min-h-screen bg-[#020205] text-white flex flex-col p-4 md:p-6 select-none grid-bg scanline">
       
       {/* 1. STADIUM HUD HEADER */}
-      <header className="w-full grid grid-cols-1 lg:grid-cols-3 items-center justify-between gap-4 border-b border-white/5 pb-4 mb-6 z-30">
+      <header className="w-full grid grid-cols-1 lg:grid-cols-3 items-center justify-between gap-4 border-b border-white/5 pb-4 mb-4 z-35">
         
         {/* Left: Role Switcher Dropdown */}
         <div className="flex items-center gap-3 justify-start">
@@ -145,7 +154,7 @@ export const DashboardPage: React.FC = () => {
             }`}
           >
             <Radio className={`w-4 h-4 ${isMissionControlActive ? 'animate-spin' : ''}`} />
-            {isMissionControlActive ? `MC ACTIVE [${missionControlTimer}S]` : 'MISSION CONTROL'}
+            {isMissionControlActive ? `Auto-Play [ ${missionControlTimer}s ]` : 'Start Auto-Play Presentation'}
           </button>
 
           {/* Ticking Controls */}
@@ -170,31 +179,72 @@ export const DashboardPage: React.FC = () => {
 
       </header>
 
-      {/* 2. CORE WORKSPACE GRID */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 items-stretch mb-6">
-        
-        {/* Left Column: Role Details Overlay + Scenario Selector */}
-        <section className="col-span-1 flex flex-col gap-6">
-          <RoleOverlay />
-          <ScenarioSimulator />
-        </section>
+      {/* 2. SUB-HEADER: SLEEK SYSTEM TABS */}
+      <div className="flex gap-2 mb-6 border-b border-white/5 pb-3 justify-start shrink-0">
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wide transition-all border cursor-pointer ${
+            activeTab === 'dashboard'
+              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30 glow-indigo'
+              : 'bg-transparent text-white/50 border-transparent hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          Control Center
+        </button>
+        <button
+          onClick={() => setActiveTab('sources')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wide transition-all border cursor-pointer ${
+            activeTab === 'sources'
+              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30 glow-indigo'
+              : 'bg-transparent text-white/50 border-transparent hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          Data Sources ({activeFeeds.length} Feeds)
+        </button>
+      </div>
 
-        {/* Center Hero Column: Digital Twin stadium */}
-        <section className="lg:col-span-2 flex flex-col items-stretch">
-          <DigitalTwin />
-        </section>
+      {/* 3. DYNAMIC BODY PANELS */}
+      {activeTab === 'sources' ? (
+        <div className="flex-1 overflow-y-auto">
+          <DataSourcesPage />
+        </div>
+      ) : (
+        <>
+          {/* Main Grid View */}
+          <main className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-stretch mb-6">
+            
+            {/* Left Column: Role Details Overlay + Scenario Selector */}
+            <section className="col-span-1 flex flex-col gap-6">
+              <RoleOverlay />
+              <ScenarioSimulator />
+            </section>
 
-        {/* Right Column: NASA-like Operations Console */}
-        <section className="col-span-1 flex flex-col items-stretch">
-          <OperationsConsole />
-        </section>
+            {/* Center Hero Column: Digital Twin stadium */}
+            <section className="lg:col-span-2 flex flex-col items-stretch">
+              <DigitalTwin />
+            </section>
 
-      </main>
+            {/* Right Column: NASA-like Operations Console */}
+            <section className="col-span-1 flex flex-col items-stretch">
+              <OperationsConsole />
+            </section>
 
-      {/* 3. FOOTER GRID: Decision Replay Timeline */}
-      <footer className="w-full">
-        <DecisionReplay />
-      </footer>
+          </main>
+
+          {/* Footer Grid: Decision Replay Timeline */}
+          <footer className="w-full shrink-0">
+            <DecisionReplay />
+          </footer>
+        </>
+      )}
+
+      {/* 4. SYSTEM-WIDE INFO LINEAGE POPUPS */}
+      <InfoModal 
+        data={lineageModalData} 
+        onClose={() => setLineageModalData(null)} 
+      />
 
     </div>
   );

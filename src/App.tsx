@@ -8,7 +8,7 @@ const AppContent: React.FC = () => {
   const { currentRole } = useAppState();
 
   return (
-    <div className="w-full h-full min-h-screen">
+    <div className="w-full min-h-screen">
       {currentRole === null ? <LandingPage /> : <DashboardPage />}
     </div>
   );
