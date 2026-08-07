@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Camera, ScanLine, Target, Brain, Cpu, Waves, Loader2 } from 'lucide-react';
+import { X, Camera, ScanLine, Target, Brain, Cpu, Waves, Loader2, Smartphone } from 'lucide-react';
 import { useAppState } from '../../context/AppStateContext';
 import type { IngestFeed } from '../../context/AppStateContext';
 import { analyzeDataSource } from '../../services/groqService';
@@ -297,7 +297,6 @@ const TrafficHeatmapVisualizer = () => {
 };
 
 export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, onClose }) => {
-  const [boxes, setBoxes] = useState<Array<{id: number, x: number, y: number, w: number, h: number, label: string, conf: number}>>([]);
   const [aiAnalysis, setAiAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const { liveEventsLog, currentRole } = useAppState();
@@ -324,36 +323,6 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
 
   useEffect(() => {
     if (!feed || feed.id !== 'cctv') return;
-    
-    // Simulate YOLO bounding boxes moving slightly
-    const generateBoxes = () => {
-      const newBoxes = [];
-      for (let i = 0; i < 12; i++) {
-        newBoxes.push({
-          id: i,
-          x: 10 + Math.random() * 80,
-          y: 30 + Math.random() * 50,
-          w: 4 + Math.random() * 8,
-          h: 15 + Math.random() * 10,
-          label: 'person',
-          conf: 0.85 + Math.random() * 0.14
-        });
-      }
-      return newBoxes;
-    };
-
-    setBoxes(generateBoxes());
-
-    const interval = setInterval(() => {
-      setBoxes(prev => prev.map(b => ({
-        ...b,
-        x: b.x + (Math.random() - 0.5) * 2,
-        y: b.y + (Math.random() - 0.5) * 1,
-        conf: Math.min(0.99, Math.max(0.70, b.conf + (Math.random() - 0.5) * 0.1))
-      })));
-    }, 500);
-
-    return () => clearInterval(interval);
   }, [feed]);
 
   if (!feed) return null;
@@ -399,24 +368,6 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                 {/* Glitch/Scanline effect overlay */}
                 <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent h-[150%] animate-[scan_4s_linear_infinite] pointer-events-none" />
-
-                {/* Bounding Boxes */}
-                {boxes.map(b => (
-                  <div 
-                    key={b.id}
-                    className="absolute border-[1.5px] border-emerald-500 bg-emerald-500/10 transition-all duration-500 ease-linear"
-                    style={{
-                      left: `${b.x}%`,
-                      top: `${b.y}%`,
-                      width: `${b.w}%`,
-                      height: `${b.h}%`,
-                    }}
-                  >
-                    <div className="absolute -top-4 left-[-1px] bg-emerald-500 text-black text-[8px] font-bold px-1 whitespace-nowrap">
-                      {b.label} {(b.conf * 100).toFixed(0)}%
-                    </div>
-                  </div>
-                ))}
 
                 {/* HUD Overlay */}
                 <div className="absolute top-4 right-4 flex flex-col gap-2 text-right">

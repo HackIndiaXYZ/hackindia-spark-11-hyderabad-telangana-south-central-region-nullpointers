@@ -22,7 +22,7 @@
   {
     "id": "src-cctv",
     "topic": "CCTV Computer Vision",
-    "content": "Source: Platform Cameras at Ameerpet Metro Station (Major Interchange Node). Hackathon Backend: YOLOv11 Detection model. Data Emitted: High-density people counts, average crowd speed (m/s), flow bottlenecks, and anomaly flags. Tracks passengers navigating the busy Ameerpet interchange stairs, platforms, and concourses using live RTSP video feeds to compute real-time crowd dynamics."
+    "content": "Source: Platform Cameras at Raidurg Metro Station (Terminal Node in IT Corridor). Hackathon Backend: YOLOv11 Detection model. Data Emitted: High-density people counts, average crowd speed (m/s), flow bottlenecks, and anomaly flags. Tracks passengers navigating the busy Raidurg terminus stairs, platforms, and concourses using live RTSP video feeds to compute real-time crowd dynamics."
   },
   {
     "id": "src-afc",
