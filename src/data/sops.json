@@ -1,0 +1,77 @@
+[
+  {
+    "id": "sop-001",
+    "topic": "Escalator Failure",
+    "content": "In the event of an escalator failure during peak hours (08:00-11:00 or 17:00-20:00), the following protocol must be initiated:\n1. Immediately halt the escalator and deploy physical barriers at both ends.\n2. Dispatch one field officer to redirect crowd flow to the nearest functioning staircase or elevator.\n3. If platform density exceeds 70% as a result, temporarily hold incoming commuters at the concourse level.\n4. Notify the maintenance team for priority repair (SLA: 15 minutes)."
+  },
+  {
+    "id": "sop-002",
+    "topic": "Platform Congestion",
+    "content": "Platform congestion is defined as density exceeding 80% of maximum capacity. Protocol:\n1. If density reaches 85%, immediately open auxiliary exits (e.g., Exit C, Exit D) to allow faster egress.\n2. Dispatch Crowd Control units (minimum 2 officers) to the congested sector.\n3. Coordinate with Metro ATS to delay incoming trains by 2-3 minutes to prevent further accumulation.\n4. Broadcast automated PA announcements redirecting passengers to less crowded zones."
+  },
+  {
+    "id": "sop-003",
+    "topic": "Medical Emergency",
+    "content": "For any medical emergency detected on the premises:\n1. Dispatch the nearest Medical Response Team immediately.\n2. Secure a 5-meter perimeter around the affected passenger to ensure privacy and space for medics.\n3. Prepare a clear route for evacuation to the nearest street-level exit.\n4. If the incident occurs on a train, hold the train at the current/next station until the passenger is safely evacuated."
+  },
+  {
+    "id": "sop-004",
+    "topic": "Power Failure",
+    "content": "In case of partial or total power failure at a station:\n1. Backup generators will automatically engage within 10 seconds to power emergency lighting and critical AFC gates.\n2. Suspend all train arrivals to the affected station.\n3. Field officers must use loudhailers to guide passengers to the nearest illuminated exits.\n4. Halt all escalators and elevators. Elevators have battery backups to lower to the nearest floor and open doors."
+  },
+  {
+    "id": "src-cctv",
+    "topic": "CCTV Computer Vision",
+    "content": "Source: Platform Cameras. Hackathon Backend: YOLOv11 Detection model. Data Emitted: People counts, average crowd speed (m/s), and anomaly flags (e.g. density alerts, abandoned luggage). Uses live RTSP streams to compute frame-by-frame passenger metrics."
+  },
+  {
+    "id": "src-afc",
+    "topic": "AFC Gate Data",
+    "content": "Source: Turnstile Counters. Hackathon Backend: Live Stream Tap Data. Data Emitted: Entry/exit counts, smart card taps, and flow rates (passengers per minute). Used to measure exact ingress and egress loads at concourse levels."
+  },
+  {
+    "id": "src-transit",
+    "topic": "Metro ATS",
+    "content": "Source: ATS Logs (Automatic Train Supervision). Hackathon Backend: Transport Sim. Data Emitted: Train locations, arrival times, dwell times, and delay status. Integrates with signaling systems to provide real-time train positions."
+  },
+  {
+    "id": "src-weather",
+    "topic": "Weather API",
+    "content": "Source: IMD Radar. Hackathon Backend: OpenWeather API. Data Emitted: Precipitation probability, temperature, and severe weather alerts. Correlates with sudden spikes in metro ridership as people avoid road transport during rain."
+  },
+  {
+    "id": "src-traffic",
+    "topic": "Google Maps Traffic",
+    "content": "Source: Inductive Loops and GPS probes. Hackathon Backend: Maps API. Data Emitted: Surrounding road congestion levels and travel time indexes. Used to predict incoming passenger surges when roads are gridlocked."
+  },
+  {
+    "id": "src-escalator",
+    "topic": "Escalator Health",
+    "content": "Source: Motor PLCs. Hackathon Backend: IoT Predictive Model. Data Emitted: Motor RPM, vibration levels, and fault codes. Alerts generated for sudden stops, over-speed, or emergency button presses."
+  },
+  {
+    "id": "src-lift",
+    "topic": "Lift Telemetry",
+    "content": "Source: Elevator PLCs. Hackathon Backend: Anomaly Detection. Data Emitted: Current floor, door status, load weight, and error codes. Monitors for overload conditions or passengers trapped inside."
+  },
+  {
+    "id": "src-staffgps",
+    "topic": "Staff GPS",
+    "content": "Source: Radio Tetra Terminals. Hackathon Backend: AI Routing Algo. Data Emitted: Lat/Long coordinates of field officers and medical responders. Enables dynamic dispatch of personnel to anomaly locations."
+  },
+  {
+    "id": "src-medical",
+    "topic": "Medical Incident System",
+    "content": "Source: Dispatch Logs. Hackathon Backend: Resource Optimizer. Data Emitted: Active medical emergencies, triage levels, and responder ETAs. Facilitates coordination with external ambulance services."
+  },
+  {
+    "id": "src-security",
+    "topic": "Security Incidents",
+    "content": "Source: VMS Alarms. Hackathon Backend: Object Tracking. Data Emitted: Unauthorized access alerts, perimeter breaches, and specific security threat logs. Triggers automatic lockdown procedures in affected zones."
+  },
+  {
+    "id": "src-sos",
+    "topic": "Passenger SOS App",
+    "content": "Source: Mobile App API. Hackathon Backend: NLP Classification. Data Emitted: User-reported distress signals, categorized by urgency using NLP. Includes GPS coordinates from the passenger's mobile device."
+  }
+]

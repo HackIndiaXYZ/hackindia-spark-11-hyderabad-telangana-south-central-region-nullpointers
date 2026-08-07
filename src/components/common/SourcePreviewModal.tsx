@@ -1,18 +1,218 @@
 import React, { useEffect, useState } from 'react';
-import { X, Camera, ScanLine, Target, Brain, Cpu, Waves } from 'lucide-react';
+import { X, Camera, ScanLine, Target, Brain, Cpu, Waves, Loader2 } from 'lucide-react';
 import { useAppState } from '../../context/AppStateContext';
 import type { IngestFeed } from '../../context/AppStateContext';
+import { analyzeDataSource } from '../../services/groqService';
 
 interface SourcePreviewModalProps {
   feed: IngestFeed | null;
   onClose: () => void;
 }
 
+const MetroATSVisualizer = () => {
+  const [trains, setTrains] = useState([
+    { id: 'TRN-402', line: 'Blue Line', station: 'Secunderabad Stn', status: 'DWELLING (24s)', speed: 0, block: 'BLK-42A', health: 'OPTIMAL' },
+    { id: 'TRN-119', line: 'Red Line', station: 'Miyapur -> Ameerpet', status: 'IN TRANSIT', speed: 64, block: 'BLK-18B', health: 'OPTIMAL' },
+    { id: 'TRN-305', line: 'Blue Line', station: 'Hitec City', status: 'APPROACHING', speed: 38, block: 'BLK-51C', health: 'ATTENTION' },
+    { id: 'TRN-208', line: 'Green Line', station: 'Begumpet Stn', status: 'SIGNAL HOLD', speed: 0, block: 'BLK-09F', health: 'DELAYED' },
+  ]);
+
+  const [logs, setLogs] = useState<Array<{ time: string; train: string; event: string; status: string }>>([
+    { time: '05:02:40', train: 'TRN-402', event: 'Arrived at Secunderabad Platform 2', status: 'INFO' },
+    { time: '05:02:25', train: 'TRN-119', event: 'Cleared Signal Interlock BLK-17A', status: 'SUCCESS' },
+    { time: '05:02:10', train: 'TRN-305', event: 'Speed curve adjusted for station approach', status: 'INFO' },
+    { time: '05:01:55', train: 'TRN-208', event: 'Automatic Train Protection (ATP) signal hold', status: 'WARN' },
+  ]);
+
+  useEffect(() => {
+    const cycleEvents = [
+      { train: 'TRN-402', event: 'Doors closed. Interlock verification complete', status: 'SUCCESS' },
+      { train: 'TRN-402', event: 'Departed Secunderabad -> Next: Begumpet', status: 'INFO' },
+      { train: 'TRN-119', event: 'Accelerating to 68 km/h on Block BLK-19A', status: 'INFO' },
+      { train: 'TRN-305', event: 'Platform 1 Dwell timer initiated (45s)', status: 'INFO' },
+      { train: 'TRN-208', event: 'Signal cleared BLK-09F. Resuming transit', status: 'SUCCESS' }
+    ];
+
+    let idx = 0;
+    const interval = setInterval(() => {
+      const current = cycleEvents[idx % cycleEvents.length];
+      const now = new Date().toISOString().split('T')[1].slice(0, 8);
+      
+      setLogs(prev => [{ time: now, train: current.train, event: current.event, status: current.status }, ...prev].slice(0, 8));
+
+      setTrains(prev => prev.map(t => {
+        if (t.id === current.train) {
+          if (current.event.includes('Departed')) return { ...t, status: 'IN TRANSIT', speed: 45 };
+          if (current.event.includes('Accelerating')) return { ...t, speed: 68 };
+          if (current.event.includes('Dwell')) return { ...t, status: 'DWELLING (45s)', speed: 0 };
+          if (current.event.includes('Resuming')) return { ...t, status: 'IN TRANSIT', speed: 32, health: 'OPTIMAL' };
+        }
+        return t;
+      }));
+
+      idx++;
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>ATS Telemetry Telecommunication Feed</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">FREQ: 5.8 GHz CBTC</span>
+      </div>
+
+      {/* Active Train Matrix */}
+      <div className="grid grid-cols-4 gap-2 mb-4">
+        {trains.map(t => (
+          <div key={t.id} className="bg-zinc-950 border border-zinc-800/80 p-2.5 rounded flex flex-col gap-1">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="font-bold text-slate-200">{t.id}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${t.health === 'OPTIMAL' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : t.health === 'ATTENTION' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}>
+                {t.health}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px] truncate">{t.station}</div>
+            <div className="flex justify-between items-center text-[10px] mt-1 pt-1 border-t border-zinc-900">
+              <span className="text-emerald-400 font-semibold">{t.status}</span>
+              <span className="text-zinc-500">{t.speed} km/h</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Structured Chronological Event Stream */}
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Unit</span>
+          <span className="flex-1 ml-4">ATS Telemetry Interlock Log</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {logs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.1) }}>
+              <span className="text-zinc-500 font-mono">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.train}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-amber-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const WeatherRadarVisualizer = () => {
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-2 font-mono text-xs font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>IMD Doppler Weather Radar (Sector 4)</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">RADAR ID: HYD-DOP-02</span>
+      </div>
+
+      <div className="flex-1 flex gap-4 items-center">
+        <div className="relative w-64 h-64 rounded-full border border-emerald-500/30 flex items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.1)] bg-emerald-950/10">
+           <div className="absolute inset-4 border border-emerald-500/20 rounded-full" />
+           <div className="absolute inset-16 border border-emerald-500/20 rounded-full" />
+           <div className="absolute inset-28 border border-emerald-500/20 rounded-full" />
+           <div className="absolute w-full h-[1px] bg-emerald-500/20" />
+           <div className="absolute h-full w-[1px] bg-emerald-500/20" />
+           
+           <div className="absolute inset-0 origin-center animate-spin" style={{ animationDuration: '4s', background: 'conic-gradient(from 0deg, transparent 70%, rgba(16, 185, 129, 0.1) 95%, rgba(16, 185, 129, 0.8) 100%)' }} />
+           
+           <div className="absolute w-4 h-4 bg-amber-500/80 rounded-full blur-[2px] top-16 left-24 animate-pulse" />
+           <div className="absolute w-7 h-7 bg-emerald-400/60 rounded-full blur-[4px] bottom-16 right-16 animate-pulse" />
+        </div>
+
+        <div className="flex-1 flex flex-col gap-3 font-mono text-xs">
+          <div className="bg-zinc-950 border border-zinc-800 p-3 rounded flex flex-col gap-1">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase">Precipitation Band</span>
+            <span className="text-slate-200 font-bold text-sm">Light Drizzle (1.4 mm/hr)</span>
+          </div>
+          <div className="bg-zinc-950 border border-zinc-800 p-3 rounded flex flex-col gap-1">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase">Wind Velocity</span>
+            <span className="text-emerald-400 font-bold text-sm">18 km/h NW</span>
+          </div>
+          <div className="bg-zinc-950 border border-zinc-800 p-3 rounded flex flex-col gap-1">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase">Station Visibility</span>
+            <span className="text-slate-200 font-bold text-sm">4.2 km (Clear Operating Limit)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TrafficHeatmapVisualizer = () => {
+  const corridors = [
+    { name: 'Ameerpet -> Begumpet Station Rd', speed: '14 km/h', status: 'HEAVY CONGESTION', color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/40' },
+    { name: 'Secunderabad Station Access Rd', speed: '22 km/h', status: 'MODERATE DENSITY', color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/40' },
+    { name: 'Hitec City Metro Flyover', speed: '48 km/h', status: 'CLEAR FLOW', color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/40' },
+    { name: 'LB Nagar Corridor 1', speed: '42 km/h', status: 'CLEAR FLOW', color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/40' },
+  ];
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-amber-500 mb-4 font-mono text-xs font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse shadow-[0_0_10px_#F59E0B]" />
+          <span>Station Vicinity Congestion Telemetry</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">INDUCTIVE LOOP ARRAY</span>
+      </div>
+
+      <div className="flex-1 grid grid-cols-2 gap-3 font-mono">
+        {corridors.map((c, i) => (
+          <div key={i} className={`p-3.5 rounded border flex flex-col justify-between ${c.bg}`}>
+            <div className="text-xs font-bold text-slate-200">{c.name}</div>
+            <div className="mt-2 flex justify-between items-end">
+              <div>
+                <div className="text-[10px] text-zinc-400 uppercase font-semibold">Avg Speed</div>
+                <div className="text-sm font-bold text-slate-100">{c.speed}</div>
+              </div>
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${c.color}`}>{c.status}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, onClose }) => {
   const [boxes, setBoxes] = useState<Array<{id: number, x: number, y: number, w: number, h: number, label: string, conf: number}>>([]);
-  const { liveEventsLog } = useAppState();
+  const [aiAnalysis, setAiAnalysis] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const { liveEventsLog, currentRole } = useAppState();
 
   const recentEvent = feed ? liveEventsLog.find(e => e.source === feed.name) : null;
+
+  useEffect(() => {
+    if (!feed) return;
+    
+    let isMounted = true;
+    const fetchAnalysis = async () => {
+      setIsAnalyzing(true);
+      setAiAnalysis('');
+      const analysis = await analyzeDataSource(feed.id, feed.name, feed.status, currentRole);
+      if (isMounted) {
+        setAiAnalysis(analysis);
+        setIsAnalyzing(false);
+      }
+    };
+    fetchAnalysis();
+
+    return () => { isMounted = false; };
+  }, [feed, currentRole]);
 
   useEffect(() => {
     if (!feed || feed.id !== 'cctv') return;
@@ -122,6 +322,12 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                   <ScanLine className="w-32 h-32 text-emerald-500 animate-[spin_10s_linear_infinite]" />
                 </div>
               </div>
+            ) : feed.id === 'transit' ? (
+              <MetroATSVisualizer />
+            ) : feed.id === 'weather' ? (
+              <WeatherRadarVisualizer />
+            ) : feed.id === 'traffic' ? (
+              <TrafficHeatmapVisualizer />
             ) : (
               <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col">
                 <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
@@ -135,7 +341,6 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                     <p className="text-xs text-slate-500 uppercase tracking-widest">{feed.productionSource}</p>
                   </div>
                   <div className="w-full max-w-md h-32 bg-black border border-zinc-800 rounded flex items-end p-2 gap-1 overflow-hidden opacity-50">
-                    {/* Simulated live chart bars */}
                     {Array.from({length: 30}).map((_, i) => (
                       <div 
                         key={i} 
@@ -217,31 +422,21 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#27272a]">
                 <span className="text-[10px] text-slate-500 font-bold uppercase flex items-center gap-2">
                   <Target className="w-3 h-3 text-emerald-400" />
-                  Actionable Intelligence
+                  AI Source Deep Dive
                 </span>
                 
-                {recentEvent ? (
-                  <div className="flex flex-col gap-3">
-                    <div className="bg-[#18181b] border border-[#27272a] p-3 rounded-lg flex flex-col gap-1">
-                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Extracted Insights</span>
-                      <span className="text-xs text-slate-300">{recentEvent.extractedInsights || recentEvent.message}</span>
+                <div className="bg-[#18181b] border border-[#27272a] p-4 rounded-lg flex flex-col gap-3 min-h-[120px]">
+                  {isAnalyzing ? (
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3">
+                      <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+                      <span className="text-xs font-mono animate-pulse">Querying RAG & LLaMA-3...</span>
                     </div>
-                    <div className="bg-[#18181b] border border-blue-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none" />
-                      <span className="text-[9px] text-blue-400 font-bold uppercase tracking-wider">Prediction</span>
-                      <span className="text-xs text-blue-100 font-semibold">{recentEvent.prediction || 'Normal operation predicted.'}</span>
+                  ) : (
+                    <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      {aiAnalysis || "Analysis failed."}
                     </div>
-                    <div className="bg-[#18181b] border border-emerald-900/30 p-3 rounded-lg flex flex-col gap-1 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay pointer-events-none" />
-                      <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">System Action</span>
-                      <span className="text-xs text-emerald-100 font-bold">{recentEvent.decision || 'Continue standard monitoring.'}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-xs text-slate-500 font-mono italic p-4 text-center border border-[#27272a] border-dashed rounded-lg">
-                    Awaiting anomaly detection...
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
             </div>

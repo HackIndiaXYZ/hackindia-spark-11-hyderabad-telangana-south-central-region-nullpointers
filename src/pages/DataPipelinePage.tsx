@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
 import type { IngestFeed } from '../context/AppStateContext';
-import { Server, Activity, Clock, ShieldCheck, Database, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Server, Activity, Clock, Database, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SourcePreviewModal } from '../components/common/SourcePreviewModal';
 
 export const DataPipelinePage: React.FC = () => {
-  const { getIngestFeeds, pipelineMetrics, currentPulseModule, lastIngestedPacket, liveEventsLog } = useAppState();
+  const { getIngestFeeds, pipelineMetrics, lastIngestedPacket, liveEventsLog } = useAppState();
   const feeds = getIngestFeeds();
   const [selectedPreviewFeed, setSelectedPreviewFeed] = useState<IngestFeed | null>(null);
   const [viewOffset, setViewOffset] = useState(0);
@@ -212,35 +212,7 @@ export const DataPipelinePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Data Flow Architecture */}
-          <div className="glass-panel p-6 flex-1 flex flex-col">
-            <h2 className="text-lg font-bold text-slate-200 mb-6 flex items-center gap-3">
-              <ShieldCheck className="w-5 h-5 text-[#8B5CF6]" />
-              Live AI Pipeline
-            </h2>
-            <div className="flex-1 flex flex-col justify-center items-center text-[10px] font-bold uppercase tracking-widest text-slate-400 gap-2">
-              
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Raw Input' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#27272a] border-[#374151]'}`}>Raw Input</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Validated' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Validated</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Normalized' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Normalized</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Kafka Event Bus' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30'}`}>Kafka Event Bus</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Context Fusion' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'}`}>Context Fusion</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Prediction Engine' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30'}`}>Prediction Engine</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Decision Intelligence' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'}`}>Decision Intelligence</div>
-              <ArrowDown className="text-slate-600 w-4 h-4" />
-              
-              <div className="flex gap-4 w-64 justify-center">
-                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Digital Twin Updated' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#14B8A6]/10 text-[#14B8A6] border-[#14B8A6]/30'}`}>Digital Twin Updated</div>
-                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Replay Logged' ? 'bg-white text-black scale-105 shadow-sm' : 'bg-[#6366F1]/10 text-[#6366F1] border-[#6366F1]/30'}`}>Replay Logged</div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
