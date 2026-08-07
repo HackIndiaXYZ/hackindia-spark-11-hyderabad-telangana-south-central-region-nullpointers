@@ -117,11 +117,91 @@ export const DigitalTwin: React.FC = () => {
 
   if (!telemetry) return null;
 
-  // Sector density color helpers
-  const getSectorColor = (density: number) => {
-    if (density < 0.45) return 'fill-[#181c25] stroke-[#2e3344]'; // Flat, clean healthy slate
-    if (density < 0.75) return 'fill-[#362d1a] stroke-[#78350f]'; // Flat warning amber
-    return 'fill-[#4c1c24] stroke-[#b91c1c]'; // Flat critical red
+  // Programmatic generation of concentric oval seating sections matching target image
+  const renderStadiumSeats = () => {
+    const cx = 250;
+    const cy = 250;
+    
+    // 3 tiers of seats with progressive elliptical radii
+    const tiers = [
+      { rx: 90, ry: 120, count: 24, width: 8, height: 6 },
+      { rx: 112, ry: 147, count: 32, width: 10, height: 7 },
+      { rx: 136, ry: 178, count: 42, width: 12, height: 8 },
+    ];
+
+    const seatElements: React.ReactNode[] = [];
+
+    tiers.forEach((tier, tierIdx) => {
+      for (let i = 0; i < tier.count; i++) {
+        const angle = (i * 2 * Math.PI) / tier.count;
+        const x = cx + tier.rx * Math.cos(angle);
+        const y = cy + tier.ry * Math.sin(angle);
+        
+        const angleDeg = (angle * 180) / Math.PI;
+        
+        let fillClass = 'fill-none stroke-zinc-800 hover:stroke-zinc-600';
+        
+        if (x < cx) {
+          // Color-coded left half: shades of emerald, purple, blue, cyan
+          const segment = Math.floor((angleDeg + 90) / 45) % 8;
+          if (segment === 0 || segment === 1) {
+            fillClass = 'fill-emerald-500/20 stroke-emerald-500/40 hover:fill-emerald-500/35'; // Green
+          } else if (segment === 2 || segment === 3) {
+            fillClass = 'fill-purple-500/20 stroke-purple-500/40 hover:fill-purple-500/35'; // Purple
+          } else if (segment === 4 || segment === 5) {
+            fillClass = 'fill-blue-500/20 stroke-blue-500/40 hover:fill-blue-500/35'; // Blue
+          } else {
+            fillClass = 'fill-cyan-500/20 stroke-cyan-500/40 hover:fill-cyan-500/35'; // Light blue
+          }
+        } else {
+          // Right half has white outlines matching target design
+          fillClass = 'fill-none stroke-zinc-700/60 hover:stroke-slate-500';
+        }
+
+        // Apply dynamic heat mapping to seats based on active incidents
+        let normalizedAngle = (angleDeg + 360) % 360;
+        let seatSectorDensity = telemetry.crowd.standsDensity;
+        
+        if (normalizedAngle >= 225 && normalizedAngle < 315) {
+          // North
+          if (activeScenario === 'heavy-rain') seatSectorDensity = 0.92;
+        } else if (normalizedAngle >= 315 || normalizedAngle < 45) {
+          // East
+          if (activeScenario === 'metro-delay') seatSectorDensity = 0.84;
+        } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
+          // South
+          seatSectorDensity = telemetry.crowd.standsDensity * 0.85;
+        } else {
+          // West
+          if (activeScenario === 'gate-failure') seatSectorDensity = 0.89;
+        }
+
+        if (seatSectorDensity > 0.85) {
+          if ((i % 3 === 0 && x < cx) || (i % 2 === 0 && x >= cx)) {
+            fillClass = 'fill-red-500/20 stroke-red-500/50 hover:fill-red-500/40 animate-pulse';
+          }
+        } else if (seatSectorDensity > 0.7) {
+          if (i % 3 === 1) {
+            fillClass = 'fill-amber-500/20 stroke-amber-500/50 hover:fill-amber-500/40';
+          }
+        }
+
+        seatElements.push(
+          <rect
+            key={`seat-${tierIdx}-${i}`}
+            x={x - tier.width / 2}
+            y={y - tier.height / 2}
+            width={tier.width}
+            height={tier.height}
+            rx="1.5"
+            transform={`rotate(${angleDeg + 90}, ${x}, ${y})`}
+            className={`${fillClass} transition-all duration-300 cursor-pointer`}
+          />
+        );
+      }
+    });
+
+    return seatElements;
   };
 
   const activeIncidents = telemetry.incidents || [];
@@ -162,68 +242,42 @@ export const DigitalTwin: React.FC = () => {
 
         {/* Stadium Top-Down Layout Map */}
         <svg viewBox="0 0 500 500" className="w-full h-full max-w-[420px] max-h-[420px] relative z-0">
-          <defs>
-            <radialGradient id="pitchGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#12141d" stopOpacity="1" />
-              <stop offset="100%" stopColor="#0e1017" stopOpacity="1" />
-            </radialGradient>
-          </defs>
+          
+          {/* Programmatically Generated Seating Bowl Blocks */}
+          {renderStadiumSeats()}
 
-          {/* Outer perimeter limits */}
-          <circle cx="250" cy="250" r="230" fill="none" stroke="rgba(255,255,255,0.03)" strokeDasharray="3,3" />
+          {/* High-Fidelity Football Pitch (Center) */}
+          <rect x="200" y="170" width="100" height="160" rx="4" fill="#0d1411" stroke="rgba(255,255,255,0.08)" strokeWidth="1.2" />
+          <line x1="200" y1="250" x2="300" y2="250" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <circle cx="250" cy="250" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <circle cx="250" cy="250" r="1.5" fill="rgba(255,255,255,0.25)" />
+          
+          {/* Pitch Goal Boxes */}
+          {/* Top Penalty Area */}
+          <rect x="220" y="170" width="60" height="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <rect x="236" y="170" width="28" height="10" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <path d="M 235 198 A 15 15 0 0 0 265 198" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
 
-          {/* Outer Transit Ring Roads & Bus Stops */}
-          <circle cx="250" cy="250" r="215" fill="none" stroke="rgba(255,255,255,0.01)" strokeWidth="6" />
+          {/* Bottom Penalty Area */}
+          <rect x="220" y="302" width="60" height="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <rect x="236" y="320" width="28" height="10" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <path d="M 235 302 A 15 15 0 0 1 265 302" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
 
-          {/* Sector Overlays (North, South, East, West concourse segments) */}
-          {/* North Sector (Concourse outer) */}
-          <path
-            d="M 100 100 A 212 212 0 0 1 400 100 L 350 150 A 141 141 0 0 0 150 150 Z"
-            className={`${getSectorColor(telemetry.crowd.concourseDensity)} transition-all duration-700`}
-            strokeWidth="1.5"
-          />
-          {/* East Sector */}
-          <path
-            d="M 400 100 A 212 212 0 0 1 400 400 L 350 350 A 141 141 0 0 0 350 150 Z"
-            className={`${getSectorColor(activeScenario === 'metro-delay' ? telemetry.crowd.concourseDensity * 1.2 : telemetry.crowd.concourseDensity)} transition-all duration-700`}
-            strokeWidth="1.5"
-          />
-          {/* South Sector */}
-          <path
-            d="M 400 400 A 212 212 0 0 1 100 400 L 150 350 A 141 141 0 0 0 350 350 Z"
-            className={`${getSectorColor(telemetry.crowd.concourseDensity * 0.9)} transition-all duration-700`}
-            strokeWidth="1.5"
-          />
-          {/* West Sector */}
-          <path
-            d="M 100 400 A 212 212 0 0 1 100 100 L 150 150 A 141 141 0 0 0 150 350 Z"
-            className={`${getSectorColor(telemetry.crowd.concourseDensity * 0.85)} transition-all duration-700`}
-            strokeWidth="1.5"
-          />
+          {/* Outer Stadium Rim Ellipse */}
+          <ellipse cx="250" cy="250" rx="170" ry="215" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+          
+          {/* Sector Division Dash Lines */}
+          <line x1="250" y1="35" x2="250" y2="465" stroke="rgba(255,255,255,0.04)" strokeDasharray="3,3" />
+          <line x1="75" y1="250" x2="425" y2="250" stroke="rgba(255,255,255,0.04)" strokeDasharray="3,3" />
 
-          {/* Inner Stadium Seating Bowl Rings */}
-          <circle cx="250" cy="250" r="120" className={`${getSectorColor(telemetry.crowd.standsDensity)} transition-all duration-700`} strokeWidth="2" />
-          <circle cx="250" cy="250" r="95" className={`${getSectorColor(telemetry.crowd.standsDensity * 0.9)} transition-all duration-700`} strokeWidth="1.5" />
-
-          {/* The Pitch (Center Playing Area) */}
-          <rect x="200" y="175" width="100" height="150" rx="6" fill="url(#pitchGlow)" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
-          <circle cx="250" cy="250" r="22" fill="none" stroke="rgba(255,255,255,0.04)" />
-          <line x1="200" y1="250" x2="300" y2="250" stroke="rgba(255,255,255,0.04)" />
-
-          {/* Stadium structural supporting struts */}
-          <line x1="250" y1="20" x2="250" y2="95" stroke="rgba(255,255,255,0.05)" />
-          <line x1="250" y1="405" x2="250" y2="480" stroke="rgba(255,255,255,0.05)" />
-          <line x1="20" y1="250" x2="95" y2="250" stroke="rgba(255,255,255,0.05)" />
-          <line x1="405" y1="250" x2="480" y2="250" stroke="rgba(255,255,255,0.05)" />
-
-          {/* Gates (Indicators Placed around concourse) */}
+          {/* Gates (Indicators Placed around outer ellipse) */}
           {activeGates.map((gate: any, idx: number) => {
-            // Calculate gate polar coordinates
             const angles = [210, 330, 270, 90, 30, 150]; // Gates A to F
             const angleRad = (angles[idx] * Math.PI) / 180;
-            const r = 212;
-            const gx = 250 + r * Math.cos(angleRad);
-            const gy = 250 + r * Math.sin(angleRad);
+            const rx = 170;
+            const ry = 215;
+            const gx = 250 + rx * Math.cos(angleRad);
+            const gy = 250 + ry * Math.sin(angleRad);
 
             const isOffline = gate.status === 'OFFLINE';
 
@@ -231,7 +285,7 @@ export const DigitalTwin: React.FC = () => {
               <g key={gate.id}>
                 {/* Gate Label Bubble */}
                 <circle cx={gx} cy={gy} r="10" fill="#0c0c16" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-                <text x={gx} y={gy + 3.5} textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="monospace">
+                <text x={gx} y={gy + 3} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold" fontFamily="monospace">
                   {gate.id}
                 </text>
                 
@@ -249,26 +303,26 @@ export const DigitalTwin: React.FC = () => {
             );
           })}
 
-          {/* Dynamic Patrol Units (Security - red, Volunteers - yellow, Medical - green) */}
-          {/* Animated Security Patrol along concentric paths */}
-          <circle cx={250 + 130 * Math.cos(Date.now() / 6000)} cy={250 + 130 * Math.sin(Date.now() / 6000)} r="4" fill="#f87171" className="glow-red" />
-          <circle cx={250 + 130 * Math.cos(Date.now() / 6000 + Math.PI)} cy={250 + 130 * Math.sin(Date.now() / 6000 + Math.PI)} r="4" fill="#f87171" className="glow-red" />
+          {/* Dynamic Patrol Units along Elliptical tracks */}
+          {/* Animated Security Patrols */}
+          <circle cx={250 + 115 * Math.cos(Date.now() / 6000)} cy={250 + 150 * Math.sin(Date.now() / 6000)} r="3.5" fill="#f87171" />
+          <circle cx={250 + 115 * Math.cos(Date.now() / 6000 + Math.PI)} cy={250 + 150 * Math.sin(Date.now() / 6000 + Math.PI)} r="3.5" fill="#f87171" />
 
-          {/* Animated Volunteer Patrols near entrances */}
-          <circle cx={250 + 175 * Math.cos(Date.now() / 4500)} cy={250 + 175 * Math.sin(Date.now() / 4500)} r="3.5" fill="#fbbf24" className="glow-yellow" />
-          <circle cx={250 + 175 * Math.cos(Date.now() / 4500 + (2 * Math.PI) / 3)} cy={250 + 175 * Math.sin(Date.now() / 4500 + (2 * Math.PI) / 3)} r="3.5" fill="#fbbf24" className="glow-yellow" />
+          {/* Animated Volunteer Patrols */}
+          <circle cx={250 + 160 * Math.cos(Date.now() / 4500)} cy={250 + 205 * Math.sin(Date.now() / 4500)} r="3" fill="#fbbf24" />
+          <circle cx={250 + 160 * Math.cos(Date.now() / 4500 + (2 * Math.PI) / 3)} cy={250 + 205 * Math.sin(Date.now() / 4500 + (2 * Math.PI) / 3)} r="3" fill="#fbbf24" />
 
           {/* Animated Medical Responder */}
           <circle 
             cx={medicalPos.x} 
             cy={medicalPos.y} 
-            r="4.5" 
-            fill="#34d399" 
-            className={`${isMedicalResponding ? 'animate-pulse' : ''} glow-green`} 
+            r="4" 
+            fill="#10b981" 
+            className={isMedicalResponding ? 'animate-pulse' : ''} 
           />
           
           {/* Medical base station indicator */}
-          <circle cx="250" cy="250" r="3.5" fill="#34d399" opacity="0.4" />
+          <circle cx="250" cy="250" r="3.5" fill="#10b981" opacity="0.4" />
         </svg>
       </div>
 
