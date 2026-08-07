@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Zap, Target, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Zap, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldCheck, Brain } from 'lucide-react';
 
 export const DecisionCenterPage: React.FC = () => {
   const { activeScenario, approveIntervention, isIntervened, isApproving } = useAppState();
@@ -137,26 +137,32 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Factors & Impact */}
-              <div className="grid grid-cols-2 gap-8 mt-8">
+              {/* AI Explainability Panel (WHY THIS DECISION?) */}
+              <div className="grid grid-cols-2 gap-8 mt-4">
                 <div className="flex flex-col gap-4">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Contributing Factors</h3>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-[#EF4444]" />
-                      <span className="text-sm font-bold text-slate-300">Platform Occupancy limit exceeded</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="w-4 h-4 text-[#8B5CF6]" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#8B5CF6]">Why This Decision?</h3>
+                  </div>
+                  
+                  <div className="bg-[#111827] border border-[#1F2937] rounded-lg p-4 flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Reasoning Chain</span>
+                      <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside marker:text-indigo-500">
+                        <li>CCTV (YOLOv11) detected 127 pax on Platform 2</li>
+                        <li>Escalator B Failure (IoT Model) reduced capacity</li>
+                        <li>Train Delay (+3m) increases accumulation rate</li>
+                        <li>Fusion Engine predicts critical bottleneck in 4 mins</li>
+                      </ul>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-[#F59E0B]" />
-                      <span className="text-sm font-bold text-slate-300">Metro Train Delayed (6 mins)</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-[#3B82F6]" />
-                      <span className="text-sm font-bold text-slate-300">Heavy Rain forcing indoor shelter</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-[#F59E0B]" />
-                      <span className="text-sm font-bold text-slate-300">Escalator B Failure</span>
+                    
+                    <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#1F2937]">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Models Triggered</span>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        <span className="text-[10px] font-bold px-2 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded">YOLOv11 Person Detection</span>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded">IoT Predictive Maintenance</span>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded">Context Fusion Engine</span>
+                      </div>
                     </div>
                   </div>
                 </div>

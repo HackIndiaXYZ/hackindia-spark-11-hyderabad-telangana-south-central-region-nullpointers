@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Server, Activity, Clock, ShieldCheck, Database, ArrowRight, ArrowDown } from 'lucide-react';
+import { Server, Activity, Clock, ShieldCheck, Database, ArrowDown } from 'lucide-react';
 
 export const DataPipelinePage: React.FC = () => {
-  const { getIngestFeeds } = useAppState();
+  const { getIngestFeeds, pipelineMetrics, currentPulseModule, lastIngestedPacket } = useAppState();
   const feeds = getIngestFeeds();
 
   const getStatusColor = (status: string) => {
@@ -76,9 +76,67 @@ export const DataPipelinePage: React.FC = () => {
       
       {/* Top section: Two columns of feeds */}
       <div className="grid grid-cols-2 gap-12">
-        <div className="glass-panel p-6">
-          <FeedTable title="Live Sources" data={liveFeeds} />
-          <FeedTable title="Simulated Sources" data={simFeeds} />
+        <div className="flex flex-col gap-8">
+          {/* Live Ingestion Stream */}
+          <div className="glass-panel p-6 border-l-4 border-l-[#3B82F6] relative overflow-hidden flex flex-col gap-4">
+            <div className="absolute top-0 right-0 p-4">
+              <div className="flex gap-1">
+                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{animationDelay: '0ms'}}/>
+                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{animationDelay: '150ms'}}/>
+                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{animationDelay: '300ms'}}/>
+              </div>
+            </div>
+            <h2 className="text-lg font-bold text-slate-200 flex items-center gap-3 uppercase tracking-widest">
+              Live Ingestion Stream
+            </h2>
+            
+            {lastIngestedPacket ? (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-blue-400 font-mono text-xs">{lastIngestedPacket.time}</span>
+                    <span className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30 text-[10px] font-bold uppercase tracking-wider">
+                      {lastIngestedPacket.source}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-500">{lastIngestedPacket.packetId || 'PKT-PENDING'}</span>
+                </div>
+                
+                <div className="text-sm font-semibold text-white">
+                  {lastIngestedPacket.message}
+                </div>
+
+                {/* AI Pipeline Mini View */}
+                {lastIngestedPacket.rawInput && (
+                  <div className="flex flex-col gap-3 bg-[#0F172A] border border-[#1F2937] rounded-lg p-4 mt-2">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Raw Input</span>
+                      <span className="text-xs font-mono text-slate-300 bg-[#111827] px-2 py-1 rounded border border-[#374151]">{lastIngestedPacket.rawInput}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                        <ArrowDown className="w-3 h-3 text-indigo-400" /> AI Model
+                      </span>
+                      <span className="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20 w-fit">{lastIngestedPacket.aiModel}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                        <ArrowDown className="w-3 h-3 text-emerald-400" /> Extracted Insights
+                      </span>
+                      <span className="text-xs text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">{lastIngestedPacket.extractedInsights}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-slate-500 text-sm py-8 text-center">Awaiting telemetry packet...</div>
+            )}
+          </div>
+
+          <div className="glass-panel p-6">
+            <FeedTable title="Live Sources" data={liveFeeds} />
+            <FeedTable title="Simulated Sources" data={simFeeds} />
+          </div>
         </div>
 
         {/* Right side: Pipeline Health and Data Flow */}
@@ -92,29 +150,29 @@ export const DataPipelinePage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-2 gap-6">
               <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Overall Availability</div>
-                <div className="text-3xl font-bold text-[#10B981]">99.8%</div>
-                <div className="mt-4 h-2 bg-[#1F2937] rounded-full overflow-hidden">
-                  <div className="h-full bg-[#10B981] w-[99.8%]" />
+                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Queue Size</div>
+                <div className="text-3xl font-bold text-[#10B981]">{pipelineMetrics.queueSize}</div>
+                <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
+                  Healthy
                 </div>
               </div>
               <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Average Latency</div>
-                <div className="text-3xl font-bold text-[#3B82F6]">132 ms</div>
+                <div className="text-3xl font-bold text-[#3B82F6]">{pipelineMetrics.avgLatency} ms</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
-                  <Clock className="w-3 h-3" /> P99: 215ms
+                  <Clock className="w-3 h-3" /> P99: {pipelineMetrics.avgLatency + 85}ms
                 </div>
               </div>
               <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Events / Sec</div>
-                <div className="text-3xl font-bold text-slate-200">42</div>
+                <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
                   +12% vs avg
                 </div>
               </div>
               <div className="bg-[#0F172A] p-4 rounded-lg border border-[#1F2937]">
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Messages Processed</div>
-                <div className="text-3xl font-bold text-slate-200">18,220</div>
+                <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.packetsProcessed.toLocaleString()}</div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
                   <Database className="w-3 h-3" /> Last 1hr
                 </div>
@@ -122,52 +180,37 @@ export const DataPipelinePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Data Flow Diagram */}
+          {/* Data Flow Architecture */}
           <div className="glass-panel p-6 flex-1 flex flex-col">
             <h2 className="text-lg font-bold text-slate-200 mb-6 flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-[#8B5CF6]" />
-              Data Flow Architecture
+              Live AI Pipeline
             </h2>
-            <div className="flex-1 flex flex-col justify-center items-center py-4 text-sm font-bold text-slate-300">
+            <div className="flex-1 flex flex-col justify-center items-center text-[10px] font-bold uppercase tracking-widest text-slate-400 gap-2">
               
-              <div className="flex items-center justify-center gap-4 w-full px-8">
-                <div className="bg-[#1F2937] px-4 py-3 rounded-lg border border-[#374151] flex-1 text-center shadow-lg">
-                  Raw Sources
-                </div>
-                <ArrowRight className="text-slate-500" />
-                <div className="bg-[#3B82F6]/20 text-[#3B82F6] px-4 py-3 rounded-lg border border-[#3B82F6]/40 flex-1 text-center shadow-lg">
-                  Parser & Normalizer
-                </div>
-                <ArrowRight className="text-slate-500" />
-                <div className="bg-[#10B981]/20 text-[#10B981] px-4 py-3 rounded-lg border border-[#10B981]/40 flex-1 text-center shadow-lg">
-                  Kafka Data Bus
-                </div>
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Raw Input' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#1F2937] border-[#374151]'}`}>Raw Input</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Validated' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Validated</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Normalized' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30'}`}>Normalized</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Kafka Event Bus' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30'}`}>Kafka Event Bus</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Context Fusion' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'}`}>Context Fusion</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Prediction Engine' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30'}`}>Prediction Engine</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              <div className={`px-4 py-2 w-64 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Decision Intelligence' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'}`}>Decision Intelligence</div>
+              <ArrowDown className="text-slate-600 w-4 h-4" />
+              
+              <div className="flex gap-4 w-64 justify-center">
+                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Digital Twin Updated' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#14B8A6]/10 text-[#14B8A6] border-[#14B8A6]/30'}`}>Digital Twin Updated</div>
+                <div className={`px-2 py-2 flex-1 rounded-lg border text-center transition-all duration-300 ${currentPulseModule === 'Replay Logged' ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#6366F1]/10 text-[#6366F1] border-[#6366F1]/30'}`}>Replay Logged</div>
               </div>
-
-              <ArrowDown className="text-slate-500 my-4" />
-
-              <div className="bg-[#8B5CF6]/20 text-[#8B5CF6] px-8 py-4 rounded-lg border border-[#8B5CF6]/40 w-3/4 text-center shadow-lg text-lg">
-                Context Fusion Engine
-              </div>
-
-              <ArrowDown className="text-slate-500 my-4" />
-
-              <div className="flex items-center justify-center gap-4 w-3/4">
-                 <div className="bg-[#F59E0B]/20 text-[#F59E0B] px-4 py-3 rounded-lg border border-[#F59E0B]/40 flex-1 text-center shadow-lg">
-                  Operational Reasoning
-                </div>
-                <ArrowRight className="text-slate-500" />
-                <div className="bg-[#EF4444]/20 text-[#EF4444] px-4 py-3 rounded-lg border border-[#EF4444]/40 flex-1 text-center shadow-lg">
-                  Decision Intelligence
-                </div>
-              </div>
-
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 };

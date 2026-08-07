@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import type { LineageData } from '../components/common/InfoModal';
 import normalData from '../../public/mock-data/normal.json';
 import heavyRainData from '../../public/mock-data/heavy-rain.json';
 import metroDelayData from '../../public/mock-data/metro-delay.json';
@@ -6,9 +7,7 @@ import medicalEmergencyData from '../../public/mock-data/medical-emergency.json'
 import gateFailureData from '../../public/mock-data/gate-failure.json';
 import vipArrivalData from '../../public/mock-data/vip-arrival.json';
 import powerFailureData from '../../public/mock-data/power-failure.json';
-import type { LineageData } from '../components/common/InfoModal';
 
-// Mapping scenarios statically for zero-latency offline loads
 export const SCENARIO_DATA: Record<string, any> = {
   'normal': normalData,
   'heavy-rain': heavyRainData,
@@ -20,6 +19,7 @@ export const SCENARIO_DATA: Record<string, any> = {
 };
 
 export type RoleType = 'commander' | 'security' | 'medical' | 'volunteer' | 'transport' | null;
+export type ResourceState = 'Idle' | 'Assigned' | 'Travelling' | 'Arrived' | 'Completed';
 
 export interface ReplayItem {
   id: string;
@@ -47,16 +47,32 @@ export interface IngestFeed {
   refreshRate: string;
 }
 
+export interface LiveEvent {
+  id: string;
+  time: string;
+  source: string;
+  message: string;
+  type: 'info' | 'warning' | 'critical' | 'success';
+  packetId?: string;
+  affectedModules?: string[];
+  
+  // AI Pipeline Metadata
+  rawInput?: string;
+  aiModel?: string;
+  extractedInsights?: string;
+  contextFusion?: string;
+  prediction?: string;
+  decision?: string;
+}
+
 interface AppStateContextType {
   currentRole: RoleType;
   setRole: (role: RoleType) => void;
   activeScenario: string;
   selectScenario: (scenario: string) => void;
-  simulationStep: number;
-  setSimulationStep: (step: number) => void;
   isSimulating: boolean;
   setIsSimulating: (simulating: boolean) => void;
-  telemetry: any;
+  telemetry: any; // Live mutable state
   isIntervened: boolean;
   approveIntervention: () => void;
   approvedScenarios: Record<string, boolean>;
@@ -64,49 +80,146 @@ interface AppStateContextType {
   approvalLogs: string[];
   isApproving: boolean;
   resetSimulation: () => void;
-  isMissionControlActive: boolean;
-  startMissionControl: () => void;
-  stopMissionControl: () => void;
-  missionControlTimer: number;
   
-  // New Ingestion & Context Fusion state
+  // New Generative Live State
+  liveEventsLog: LiveEvent[];
+  pipelineMetrics: {
+    eventsPerSec: number;
+    avgLatency: number;
+    queueSize: number;
+    packetsProcessed: number;
+  };
+  activeRecommendation: any | null; // AI recommendation currently active
+  resourceStates: Record<string, ResourceState>;
+  currentPulseModule: string | null;
+  lastIngestedPacket: LiveEvent | null;
+  
   activeTab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings';
   setActiveTab: (tab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings') => void;
   lineageModalData: LineageData | null;
   setLineageModalData: (data: LineageData | null) => void;
   getIngestFeeds: () => IngestFeed[];
-  getIngestTimeline: () => { time: string; message: string }[];
   getConfidenceBreakdown: () => { label: string; value: number }[];
   getTrustPenalty: () => { feedName: string; penalty: number } | null;
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(undefined);
 
+// Initial base state
+const INITIAL_TELEMETRY = JSON.parse(JSON.stringify(normalData.telemetrySteps[0]));
+
+// The rigid narrative sequence
+type EventLogic = (tel: any, ctx: any) => void;
+interface SequenceEvent {
+  source: string;
+  message: string;
+  type: 'info'|'warning'|'critical'|'success';
+  affectedModules: string[];
+  logic: EventLogic;
+  
+  rawInput?: string;
+  aiModel?: string;
+  extractedInsights?: string;
+  contextFusion?: string;
+  prediction?: string;
+  decision?: string;
+}
+
+const NARRATIVE_SEQUENCE: SequenceEvent[] = [
+  { 
+    source: 'Weather API', message: 'Rain probability 82%', type: 'info', affectedModules: ['Context Fusion', 'Prediction'], 
+    rawInput: 'Rain: 82%, Wind: 18 km/h', aiModel: 'AI Behaviour Model', extractedInsights: 'Covered Entrance Usage +31%, Platform Waiting Time +18%', contextFusion: 'Correlated with rush hour baseline', prediction: 'Platform entry bottleneck in 15 mins', decision: 'Prepare Additional Entry Gates',
+    logic: (tel, ctx) => { tel.weather.precipitation = '82%'; tel.weather.condition = 'Heavy Rain'; ctx.setMetrics({lat: 112, qs: 4, eps: 42}); } 
+  },
+  { 
+    source: 'Google Maps Traffic', message: 'Heavy Traffic on East Corridor', type: 'warning', affectedModules: ['Context Fusion', 'Prediction Engine'], 
+    rawInput: 'Traffic: Heavy, Arrival Roads: East Corridor', aiModel: 'Route Optimization Engine', extractedInsights: 'Passenger Delay: 7 min, Ride Share Congestion: High', contextFusion: 'Aggregated with Weather Delay', prediction: 'Passenger Arrival Surge 8 minutes later', decision: 'Adjust AFC gate inflow rate',
+    logic: (_tel, ctx) => { ctx.setMetrics({lat: 135, qs: 8, eps: 45}); } 
+  },
+  { 
+    source: 'Metro ATS', message: 'Blue Line Delayed by 3 min', type: 'critical', affectedModules: ['Context Fusion', 'Prediction', 'Decision Center'], 
+    rawInput: 'Blue Line: Running -> Delay +3 min', aiModel: 'Transport Simulation', extractedInsights: 'Expected Passenger Accumulation: Platform 2 Current 76% -> Expected 89% ETA 4 min', contextFusion: 'Combined with Weather and Traffic surge', prediction: 'Platform Overcrowding imminent', decision: 'Deploy Platform Supervisor',
+    logic: (tel) => { tel.transport.metroIntervalMin += 3; tel.transport.metroStatus = 'DELAYED'; tel.crowd.standsDensity += 0.05; } 
+  },
+  { 
+    source: 'CCTV Computer Vision', message: 'Density Spikes at Exit B', type: 'warning', affectedModules: ['Platform Occupancy', 'Digital Twin'], 
+    rawInput: 'Live CCTV Feed (Platform 2)', aiModel: 'YOLOv11 Person Detection', extractedInsights: 'People: 127, Avg Speed: 0.8 m/s, Queue Growing: YES, Zone: Exit B (Confidence 96%)', contextFusion: 'Overlapped with ATS train delay data', prediction: 'Stampede risk at Exit B if flow unchanged', decision: 'Open Exit C',
+    logic: (tel, ctx) => { tel.crowd.standsDensity = 0.84; tel.operationalHealth -= 4; tel.riskLevel += 0.05; ctx.setMetrics({lat: 120, qs: 5, eps: 44}); } 
+  },
+  { 
+    source: 'AFC Gate', message: 'Arrival Rate 36/min (Increasing)', type: 'info', affectedModules: ['Passenger Flow', 'Operational Health'], 
+    rawInput: 'Gate A Live Stream Tap Data (18:04:12)', aiModel: 'Time Series Forecast', extractedInsights: 'Current: 36/min, Trend: Increasing, Expected in 5 min: 52/min', contextFusion: 'Merged with CCTV density', prediction: 'Entry queue will exceed safe limits', decision: 'Throttle Gate A',
+    logic: (tel) => { tel.crowd.totalInside += 41; tel.crowd.concourseDensity += 0.05; tel.crowd.standsDensity += 0.02; } 
+  },
+  { 
+    source: 'Staff GPS', message: 'Supervisor Assigned to Platform 2', type: 'info', affectedModules: ['Resource Dispatch', 'Digital Twin'], 
+    rawInput: 'Supervisor Amit Current Position: Platform 1', aiModel: 'AI Routing Algorithm', extractedInsights: 'Nearest Incident: Platform 2, Walking Time: 46 sec', contextFusion: 'Matched with Decision Center task', prediction: 'Arrival in <1 min', decision: 'Dispatch Supervisor Amit',
+    logic: (_tel, ctx) => { ctx.setResourceState('Supervisor Amit', 'Assigned'); setTimeout(() => ctx.setResourceState('Supervisor Amit', 'Travelling'), 1000); } 
+  },
+  { 
+    source: 'Escalator Health', message: 'Escalator B Failure Predicted', type: 'warning', affectedModules: ['Digital Twin', 'Decision Center'], 
+    rawInput: 'Motor Temp: High, Current Draw: Spiky, Vibration: Anomalous', aiModel: 'IoT Predictive Maintenance Model', extractedInsights: 'Failure Probability: 62%, Est Remaining Time: 48 mins', contextFusion: 'Intersected with Exit B congestion', prediction: 'Escalator will fail during peak flow', decision: 'Dispatch Maintenance Team & Reroute flow',
+    logic: (tel, ctx) => { tel.operationalHealth -= 5; ctx.setActiveRecommendation(SCENARIO_DATA['metro-delay'].recommendation); ctx.logReplay('Dispatch Maintenance', 'Escalator failure imminent.'); } 
+  },
+  { 
+    source: 'Lift Telemetry', message: 'Lift Door Cycles Anomalous', type: 'info', affectedModules: ['Context Fusion'], 
+    rawInput: 'Door Cycles: High, Travel Count: 14/hr, Motor Load: Normal', aiModel: 'Anomaly Detection', extractedInsights: 'Passenger Delay Risk: High, Accessibility Impact: Medium', contextFusion: 'N/A', prediction: 'Lift congestion forming', decision: 'Monitor',
+    logic: (tel) => { tel.riskLevel += 0.05; } 
+  },
+  { 
+    source: 'Security Incidents', message: 'Unattended Bag Detected', type: 'critical', affectedModules: ['Security Dispatch', 'Digital Twin'], 
+    rawInput: 'Concourse Camera 4 Feed', aiModel: 'Object Tracking & Classification', extractedInsights: 'Time Since Detection: 4m, Risk Score: High', contextFusion: 'Near Gate A queue', prediction: 'Potential security threat', decision: 'Close Zone C, Deploy Security Team',
+    logic: (tel, ctx) => { tel.riskLevel += 0.15; ctx.logReplay('Security Alert', 'Unattended bag detected.'); } 
+  },
+  { 
+    source: 'Passenger SOS App', message: 'Medical Assistance Requested', type: 'critical', affectedModules: ['Medical Dispatch', 'Digital Twin'], 
+    rawInput: 'SOS App Ticket #492 (Platform 3)', aiModel: 'NLP Classification', extractedInsights: 'Classification: Emergency, Priority: High', contextFusion: 'Linked to Medical Incident System', prediction: 'Patient condition deteriorating', decision: 'Dispatch Nearest Team',
+    logic: (tel, ctx) => { tel.operationalHealth -= 10; ctx.setResourceState('Medical Team Alpha', 'Assigned'); } 
+  },
+  { 
+    source: 'Medical Incident System', message: 'Passenger Collapse (Platform 3)', type: 'critical', affectedModules: ['Medical Dispatch', 'Digital Twin'], 
+    rawInput: 'Platform 3 CCTV / SOS confirmed', aiModel: 'Resource Allocation Optimizer', extractedInsights: 'Nearest Medical Team: Alpha, ETA: 52 sec, Nearby Crowd: High', contextFusion: 'Requires space clearing', prediction: 'Response delayed by crowd', decision: 'Create Emergency Corridor',
+    logic: (_tel, ctx) => { ctx.setResourceState('Medical Team Alpha', 'Travelling'); ctx.logReplay('Emergency Corridor', 'Creating corridor for medical team.'); } 
+  }
+];
+
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentRole, setRoleState] = useState<RoleType>(null);
   const [activeScenario, setActiveScenarioState] = useState<string>('normal');
-  const [simulationStep, setSimulationStep] = useState<number>(0);
   const [isSimulating, setIsSimulating] = useState<boolean>(true);
   const [isIntervened, setIsIntervened] = useState<boolean>(false);
   const [approvedScenarios, setApprovedScenarios] = useState<Record<string, boolean>>({});
   const [replayHistory, setReplayHistory] = useState<ReplayItem[]>([]);
   
-  // Terminal animation states
   const [approvalLogs, setApprovalLogs] = useState<string[]>([]);
   const [isApproving, setIsApproving] = useState<boolean>(false);
 
-  // Mission Control auto-demo states
-  const [isMissionControlActive, setIsMissionControlActive] = useState<boolean>(false);
-  const [missionControlTimer, setMissionControlTimer] = useState<number>(0);
-  
-  // Ingest state overrides
   const [activeTab, setActiveTab] = useState<'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('overview');
   const [lineageModalData, setLineageModalData] = useState<LineageData | null>(null);
 
-  const simIntervalRef = useRef<any>(null);
-  const mcIntervalRef = useRef<any>(null);
+  // Live Generative State
+  const [telemetry, setTelemetry] = useState<any>(INITIAL_TELEMETRY);
+  const [liveEventsLog, setLiveEventsLog] = useState<LiveEvent[]>([]);
+  const [pipelineMetrics, setPipelineMetrics] = useState({
+    eventsPerSec: 42,
+    avgLatency: 115,
+    queueSize: 5,
+    packetsProcessed: 15400
+  });
+  const [activeRecommendation, setActiveRecommendation] = useState<any | null>(null);
+  const [resourceStates, setResourceStates] = useState<Record<string, ResourceState>>({
+    'Supervisor Amit': 'Idle',
+    'Medical Team Alpha': 'Idle'
+  });
+  const [currentPulseModule, setCurrentPulseModule] = useState<string | null>(null);
+  const [lastIngestedPacket, setLastIngestedPacket] = useState<LiveEvent | null>(null);
 
-  // Sync role to local storage for persistence across reloads
+  const engineIntervalRef = useRef<any>(null);
+  const pulseTimeoutRef = useRef<any>(null);
+  const totalEventsRef = useRef(0);
+  const sequenceIndexRef = useRef(0);
+
+  // Persist role
   const setRole = (role: RoleType) => {
     setRoleState(role);
     if (role) localStorage.setItem('crowdos_role', role);
@@ -115,21 +228,18 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     const savedRole = localStorage.getItem('crowdos_role') as RoleType;
-    if (savedRole) {
-      setRoleState(savedRole);
-    }
+    if (savedRole) setRoleState(savedRole);
   }, []);
 
   const selectScenario = (scenario: string) => {
     setActiveScenarioState(scenario);
-    setSimulationStep(0);
     setIsIntervened(!!approvedScenarios[scenario]);
     setApprovalLogs([]);
     setIsApproving(false);
+    setActiveRecommendation(null);
   };
 
   const resetSimulation = () => {
-    setSimulationStep(0);
     setIsIntervened(false);
     setApprovedScenarios({});
     setReplayHistory([]);
@@ -137,373 +247,186 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsApproving(false);
     setIsSimulating(true);
     setActiveScenarioState('normal');
-    stopMissionControl();
     setActiveTab('overview');
+    setTelemetry(JSON.parse(JSON.stringify(INITIAL_TELEMETRY)));
+    setLiveEventsLog([]);
+    setActiveRecommendation(null);
+    sequenceIndexRef.current = 0;
   };
 
-  // 1. Ticking simulation logic
-  useEffect(() => {
-    if (isSimulating && !isApproving && !isMissionControlActive) {
-      simIntervalRef.current = setInterval(() => {
-        setSimulationStep((prev) => {
-          const maxSteps = SCENARIO_DATA[activeScenario]?.telemetrySteps?.length || 5;
-          if (prev < maxSteps - 1) {
-            return prev + 1;
-          }
-          return prev;
-        });
-      }, 4000);
-    } else {
-      if (simIntervalRef.current) clearInterval(simIntervalRef.current);
-    }
+  const setResourceState = (resource: string, state: ResourceState) => {
+    setResourceStates(prev => ({ ...prev, [resource]: state }));
+  };
 
-    return () => {
-      if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+  const setMetrics = (metrics: { lat?: number, qs?: number, eps?: number }) => {
+    setPipelineMetrics(prev => ({
+      ...prev,
+      avgLatency: metrics.lat || prev.avgLatency,
+      queueSize: metrics.qs || prev.queueSize,
+      eventsPerSec: metrics.eps || prev.eventsPerSec,
+      packetsProcessed: prev.packetsProcessed + 1
+    }));
+  };
+
+  // ---------------------------------------------------------
+  // GENERATIVE SIMULATION ENGINE
+  // ---------------------------------------------------------
+  
+  const addEventLog = (evt: SequenceEvent) => {
+    const packetId = `PKT-${Math.floor(90000 + Math.random() * 9999)}`;
+    const newLog: LiveEvent = {
+      id: `EVT-${Math.random().toString(36).substring(2, 9)}`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      source: evt.source,
+      message: evt.message,
+      type: evt.type,
+      packetId,
+      affectedModules: evt.affectedModules,
+      rawInput: evt.rawInput,
+      aiModel: evt.aiModel,
+      extractedInsights: evt.extractedInsights,
+      contextFusion: evt.contextFusion,
+      prediction: evt.prediction,
+      decision: evt.decision
     };
-  }, [isSimulating, activeScenario, isApproving, isMissionControlActive]);
+    
+    setLiveEventsLog(prev => [newLog, ...prev].slice(0, 50));
+    setLastIngestedPacket(newLog);
+    totalEventsRef.current += 1;
 
-  // 2. Sequential command execution micro-animations
-  const approveIntervention = () => {
-    if (isApproving || isIntervened) return;
-    setIsApproving(true);
-    setApprovalLogs([]);
+    // Trigger pipeline pulse animation
+    triggerPulse();
+  };
 
-    const steps = [
-      'Mitigation recommendation approved...',
-      'Deploying support staff to key sectors...',
-      'Updating digital twin routing overlays...',
-      'Recalculating local risk and traffic vectors...',
-      'Operational health index restored successfully.'
-    ];
+  const triggerPulse = () => {
+    const modules = ['Raw Input', 'Validated', 'Normalized', 'Kafka Event Bus', 'Context Fusion', 'Prediction Engine', 'Decision Intelligence', 'Digital Twin Updated', 'Replay Logged'];
+    let step = 0;
+    
+    const pulseStep = () => {
+      if (step < modules.length) {
+        setCurrentPulseModule(modules[step]);
+        step++;
+        pulseTimeoutRef.current = setTimeout(pulseStep, 250); // Pulse moves every 250ms
+      } else {
+        setCurrentPulseModule(null);
+      }
+    };
+    
+    if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+    pulseStep();
+  };
 
-    steps.forEach((logText, idx) => {
-      setTimeout(() => {
-        setApprovalLogs((prev) => [...prev, logText]);
-        if (idx === steps.length - 1) {
-          setIsApproving(false);
-          setIsIntervened(true);
-          setApprovedScenarios((prev) => ({ ...prev, [activeScenario]: true }));
-
-          // Save to Replay Log
-          const scenarioInfo = SCENARIO_DATA[activeScenario];
-          const currentStepData = scenarioInfo.telemetrySteps[simulationStep];
-          const rawHealth = currentStepData.operationalHealth;
-          const rawRisk = currentStepData.riskLevel;
-          const mod = scenarioInfo.recommendation.resolutionModifiers;
-
-          const intervenedHealth = Math.min(100, rawHealth + (mod.operationalHealth || 0));
-          const intervenedRisk = Math.max(0, rawRisk + (mod.riskLevel || 0));
-
-          const newLog: ReplayItem = {
-            id: `REP-${Math.floor(1000 + Math.random() * 9000)}`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-            scenario: activeScenario,
-            roleName: currentRole || 'Operations Commander',
-            recommendationTitle: scenarioInfo.recommendation.title,
-            recommendationDesc: scenarioInfo.recommendation.description,
-            confidence: getAdjustedConfidence(),
-            expectedImpact: scenarioInfo.recommendation.expectedImpact,
-            actualHealth: intervenedHealth,
-            actualRisk: intervenedRisk,
-            counterfactualHealth: Math.max(30, rawHealth - 15),
-            counterfactualRisk: Math.min(1.0, rawRisk + 0.15)
-          };
-
-          setReplayHistory((prev) => [newLog, ...prev]);
-        }
-      }, (idx + 1) * 750);
+  const logReplay = (title: string, desc: string, confidence: number = 95) => {
+    setReplayHistory(prev => {
+      const newLog: ReplayItem = {
+        id: `REP-${Math.floor(1000 + Math.random() * 9000)}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        scenario: activeScenario,
+        roleName: currentRole || 'System Auto',
+        recommendationTitle: title,
+        recommendationDesc: desc,
+        confidence,
+        expectedImpact: 'Mitigates risk escalation',
+        actualHealth: telemetry.operationalHealth,
+        actualRisk: telemetry.riskLevel,
+        counterfactualHealth: Math.max(30, telemetry.operationalHealth - 15),
+        counterfactualRisk: Math.min(1.0, telemetry.riskLevel + 0.15)
+      };
+      return [newLog, ...prev];
     });
   };
 
-  // 3. Dynamic Telemetry Calculation with Intervention Modifiers
-  const getModifiedTelemetry = () => {
-    const scenarioInfo = SCENARIO_DATA[activeScenario];
-    if (!scenarioInfo) return null;
-    const stepData = scenarioInfo.telemetrySteps[simulationStep];
-    if (!stepData) return null;
+  // Event Engine (every 3 - 5 seconds)
+  useEffect(() => {
+    if (!isSimulating || isApproving) {
+      if (engineIntervalRef.current) clearTimeout(engineIntervalRef.current);
+      return;
+    }
 
-    // Clone stepData to avoid mutation
-    const tel = JSON.parse(JSON.stringify(stepData));
-
-    if (isIntervened) {
-      const mod = scenarioInfo.recommendation.resolutionModifiers;
+    const tickEngine = () => {
+      // Process one event from the sequence
+      const evt = NARRATIVE_SEQUENCE[sequenceIndexRef.current];
       
-      // Update global parameters
-      tel.operationalHealth = Math.min(100, tel.operationalHealth + (mod.operationalHealth || 0));
-      tel.riskLevel = Math.max(0, tel.riskLevel + (mod.riskLevel || 0));
-      
-      if (mod.medical) {
-        tel.medical.activeIncidents = Math.max(0, tel.medical.activeIncidents + (mod.medical.activeIncidents || 0));
-        tel.medical.responseTimeSec = Math.max(30, tel.medical.responseTimeSec + (mod.medical.responseTimeSec || 0));
-      }
-
-      if (mod.transport) {
-        if (mod.transport.metroStatus) tel.transport.metroStatus = mod.transport.metroStatus;
-        tel.transport.busTerminalQueue = Math.max(0, tel.transport.busTerminalQueue + (mod.transport.busTerminalQueue || 0));
-      }
-
-      if (mod.crowd) {
-        tel.crowd.concourseDensity = Math.max(0.1, tel.crowd.concourseDensity + (mod.crowd.concourseDensity || 0));
-        tel.crowd.standsDensity = Math.max(0.1, tel.crowd.standsDensity + (mod.crowd.standsDensity || 0));
-        tel.crowd.flowRate = Math.max(10, tel.crowd.flowRate + (mod.crowd.flowRate || 0));
-      }
-
-      if (mod.gates) {
-        tel.gates = tel.gates.map((g: any) => {
-          const gateMod = mod.gates[g.id];
-          if (gateMod) {
-            return {
-              ...g,
-              status: gateMod.status || g.status,
-              occupancy: Math.max(0, g.occupancy + (gateMod.occupancy || 0)),
-              throughput: Math.max(0, g.throughput + (gateMod.throughput || 0))
-            };
-          }
-          return g;
+      // Update telemetry context
+      setTelemetry((prevTel: any) => {
+        const nextTel = JSON.parse(JSON.stringify(prevTel));
+        evt.logic(nextTel, {
+            setActiveRecommendation,
+            setResourceState,
+            logReplay,
+            setMetrics,
+            scenarioRec: SCENARIO_DATA['metro-delay'].recommendation
         });
-      }
-    }
+        return nextTel;
+      });
 
-    return tel;
+      // Log it
+      addEventLog(evt);
+
+      // Advance sequence
+      sequenceIndexRef.current = (sequenceIndexRef.current + 1) % NARRATIVE_SEQUENCE.length;
+
+      // Schedule next tick
+      engineIntervalRef.current = setTimeout(tickEngine, 3000 + Math.random() * 2000); // 3s - 5s
+    };
+
+    // Start engine
+    engineIntervalRef.current = setTimeout(tickEngine, 2000);
+
+    return () => {
+      if (engineIntervalRef.current) clearTimeout(engineIntervalRef.current);
+      if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+    };
+  }, [isSimulating, isApproving]);
+
+
+  // ---------------------------------------------------------
+  // INTERVENTION (User clicks approve)
+  // ---------------------------------------------------------
+
+  const approveIntervention = () => {
+    // We disable the manual approve for this strict narrative simulation
+    // Since the event sequence auto-resolves things, we just do a quick effect
+    if (isApproving || isIntervened) return;
+    setIsApproving(true);
+    setTimeout(() => {
+        setIsApproving(false);
+    }, 2000);
   };
 
-  // 4. Data Trust & Feeds Ingestion Configuration
+  // ---------------------------------------------------------
+  // HELPERS
+  // ---------------------------------------------------------
+
   const getIngestFeeds = (): IngestFeed[] => {
-    // Basic settings for all feeds
-    const feeds: IngestFeed[] = [
-      { id: 'weather', name: 'Weather Sensors', hackathonSource: 'OpenWeather API', productionSource: 'IMD Precipitation Radar', status: 'Healthy', lastUpdated: '12 sec ago', trust: 99, refreshRate: '5 minutes' },
-      { id: 'traffic', name: 'Road Traffic', hackathonSource: 'Google Maps API', productionSource: 'Inductive Loop traffic sensors', status: 'Healthy', lastUpdated: '8 sec ago', trust: 98, refreshRate: '1 minute' },
-      { id: 'crowd', name: 'Crowd Density', hackathonSource: 'Telemetry Sim Engine', productionSource: 'Turnstile Counters + WiFi Probes + Bluetooth + CCTV CV', status: 'Healthy', lastUpdated: '2 sec ago', trust: 99, refreshRate: '3 seconds' },
-      { id: 'parking', name: 'Parking Lot occupancy', hackathonSource: 'Simulation Engine', productionSource: 'Magnetic ground loops + ANPR cameras', status: 'Healthy', lastUpdated: '18 sec ago', trust: 97, refreshRate: '30 seconds' },
-      { id: 'transit', name: 'Public Transport', hackathonSource: 'GTFS static feeds', productionSource: 'Metro ATS Operations API logs', status: 'Healthy', lastUpdated: '14 sec ago', trust: 98, refreshRate: '30 seconds' },
-      { id: 'medical', name: 'Medical CAD Dispatch', hackathonSource: 'Mock Incident Feed', productionSource: 'Ambulance GPS + Hospital ERP terminal', status: 'Healthy', lastUpdated: '5 sec ago', trust: 99, refreshRate: '10 seconds' },
-      { id: 'volunteer', name: 'Volunteer wearable tracking', hackathonSource: 'Simulated GPS', productionSource: 'Volunteer App GPS logs + QR Checkins', status: 'Healthy', lastUpdated: '4 sec ago', trust: 99, refreshRate: '5 seconds' },
-      { id: 'security', name: 'Security Access Control', hackathonSource: 'Mock CCTV event alerts', productionSource: 'CCTV CV + RFID Door Badge logs', status: 'Healthy', lastUpdated: '3 sec ago', trust: 99, refreshRate: '10 seconds' },
-      { id: 'citizen', name: 'Citizen Community Signals', hackathonSource: 'Mock Community Feed', productionSource: 'Citizen Incident Mobile App reports', status: 'Healthy', lastUpdated: '24 sec ago', trust: 96, refreshRate: '1 minute' }
+    const isDelayed = telemetry.transport.metroStatus === 'DELAYED';
+    return [
+      { id: 'cctv', name: 'CCTV Computer Vision', hackathonSource: 'YOLOv11 Detection', productionSource: 'Platform Cameras', status: 'Healthy', lastUpdated: `${Math.floor(Math.random()*3)} sec ago`, trust: 96, refreshRate: '1 second' },
+      { id: 'afc', name: 'AFC Gate Data', hackathonSource: 'Live Stream Tap Data', productionSource: 'Turnstile Counters', status: 'Healthy', lastUpdated: `${Math.floor(Math.random()*2)} sec ago`, trust: 99, refreshRate: '2 seconds' },
+      { id: 'transit', name: 'Metro ATS', hackathonSource: 'Transport Sim', productionSource: 'ATS Logs', status: isDelayed ? 'Delayed' : 'Healthy', lastUpdated: `${Math.floor(Math.random()*5)} sec ago`, trust: isDelayed ? 71 : 98, refreshRate: '30 seconds' },
+      { id: 'weather', name: 'Weather API', hackathonSource: 'OpenWeather', productionSource: 'IMD Radar', status: telemetry.weather.precipitation === '82%' ? 'Delayed' : 'Healthy', lastUpdated: `${Math.floor(Math.random()*5)} sec ago`, trust: 99, refreshRate: '5 minutes' },
+      { id: 'traffic', name: 'Google Maps Traffic', hackathonSource: 'Maps API', productionSource: 'Inductive Loops', status: 'Healthy', lastUpdated: `${Math.floor(Math.random()*8)} sec ago`, trust: 98, refreshRate: '1 minute' },
+      { id: 'escalator', name: 'Escalator Health', hackathonSource: 'IoT Predictive Model', productionSource: 'Motor PLCs', status: 'Healthy', lastUpdated: '1 sec ago', trust: 92, refreshRate: '1 second' },
+      { id: 'lift', name: 'Lift Telemetry', hackathonSource: 'Anomaly Detection', productionSource: 'Elevator PLCs', status: 'Healthy', lastUpdated: '3 sec ago', trust: 95, refreshRate: '1 second' },
+      { id: 'staffgps', name: 'Staff GPS', hackathonSource: 'AI Routing Algo', productionSource: 'Radio Tetra Terminals', status: 'Healthy', lastUpdated: '2 sec ago', trust: 99, refreshRate: '2 seconds' },
+      { id: 'medical', name: 'Medical Incident System', hackathonSource: 'Resource Optimizer', productionSource: 'Dispatch Logs', status: 'Healthy', lastUpdated: '10 sec ago', trust: 98, refreshRate: 'Real-time' },
+      { id: 'security', name: 'Security Incidents', hackathonSource: 'Object Tracking', productionSource: 'VMS Alarms', status: 'Healthy', lastUpdated: '5 sec ago', trust: 94, refreshRate: 'Real-time' },
+      { id: 'sos', name: 'Passenger SOS App', hackathonSource: 'NLP Classification', productionSource: 'Mobile App API', status: 'Healthy', lastUpdated: '1 sec ago', trust: 90, refreshRate: 'Real-time' }
     ];
-
-    // Alter feed status dynamically depending on scenario & step escalation
-    if (activeScenario === 'metro-delay' && simulationStep >= 1) {
-      const idx = feeds.findIndex(f => f.id === 'transit');
-      if (idx !== -1) {
-        feeds[idx].status = 'Delayed';
-        feeds[idx].lastUpdated = '6 min ago';
-        feeds[idx].trust = 71;
-      }
-    }
-
-    if (activeScenario === 'power-failure' && simulationStep >= 1) {
-      const idx = feeds.findIndex(f => f.id === 'security');
-      if (idx !== -1) {
-        feeds[idx].status = 'Offline';
-        feeds[idx].lastUpdated = '12 min ago';
-        feeds[idx].trust = 30;
-      }
-    }
-
-    if (activeScenario === 'heavy-rain' && simulationStep >= 1) {
-      const idx = feeds.findIndex(f => f.id === 'traffic');
-      if (idx !== -1) {
-        feeds[idx].status = 'Delayed';
-        feeds[idx].lastUpdated = '3.5 min ago';
-        feeds[idx].trust = 78;
-      }
-    }
-
-    return feeds;
   };
 
-  // Check if there is an active stale feed penalty
   const getTrustPenalty = () => {
-    if (activeScenario === 'metro-delay' && simulationStep >= 1) {
-      return { feedName: 'Metro Transit API', penalty: 10 };
-    }
-    if (activeScenario === 'power-failure' && simulationStep >= 1) {
-      return { feedName: 'Security Access Grid', penalty: 25 };
-    }
+    if (telemetry.transport.metroStatus === 'DELAYED') return { feedName: 'Metro Transit API', penalty: 10 };
     return null;
   };
 
-  const getAdjustedConfidence = () => {
-    const base = SCENARIO_DATA[activeScenario]?.recommendation?.confidence || 95;
-    const penalty = getTrustPenalty();
-    if (penalty) {
-      return Math.max(50, base - penalty.penalty);
-    }
-    return base;
-  };
-
-  // Get confidence contribution weights dynamically
   const getConfidenceBreakdown = () => {
-    switch (activeScenario) {
-      case 'heavy-rain':
-        return [
-          { label: 'Crowd Density', value: 40 },
-          { label: 'Weather Sensors', value: 25 },
-          { label: 'Road Traffic', value: 20 },
-          { label: 'Medical Ingestion', value: 15 }
-        ];
-      case 'metro-delay':
-        return [
-          { label: 'Public Transport', value: 45 },
-          { label: 'Crowd Density', value: 35 },
-          { label: 'Citizen Reports', value: 20 }
-        ];
-      case 'power-failure':
-        return [
-          { label: 'Security Access', value: 40 },
-          { label: 'Citizen Reports', value: 30 },
-          { label: 'Crowd Density', value: 20 },
-          { label: 'Medical Ingestion', value: 10 }
-        ];
-      default:
-        return [
-          { label: 'Crowd Density', value: 50 },
-          { label: 'Security Access', value: 30 },
-          { label: 'Public Transport', value: 20 }
-        ];
-    }
+    return [
+      { label: 'Crowd Density', value: 40 },
+      { label: 'Security Access', value: 30 },
+      { label: 'Public Transport', value: 30 }
+    ];
   };
-
-  // Generate dynamic chronologically ticking data feed log timeline
-  const getIngestTimeline = () => {
-    const timeline: { time: string; message: string }[] = [];
-    const baseTime = "18:";
-    
-    // Always load step 0 logs
-    timeline.push(
-      { time: `${baseTime}00:01`, message: '[INGEST] OpenWeather: Core telemetry feed synced.' },
-      { time: `${baseTime}00:05`, message: '[INGEST] Turnstile Counters: Node gateway reporting nominal.' }
-    );
-
-    if (simulationStep >= 1) {
-      if (activeScenario === 'heavy-rain') {
-        timeline.push(
-          { time: `${baseTime}02:10`, message: '[INGEST] Micro-radar: Rain rates crossed 12mm/h threshold.' },
-          { time: `${baseTime}02:22`, message: '[FUSION] Concourse density index breached warning level (58%).' }
-        );
-      } else if (activeScenario === 'metro-delay') {
-        timeline.push(
-          { time: `${baseTime}02:08`, message: '[INGEST] Metro ATS: Transit log heartbeat timeout. Feed marked STALE.' },
-          { time: `${baseTime}02:15`, message: '[DI_CORE] Trust score penalty applied to Metro lines telemetry.' }
-        );
-      } else if (activeScenario === 'gate-failure') {
-        timeline.push(
-          { time: `${baseTime}02:10`, message: '[INGEST] Turnstiles: Gate D reader network socket closed.' },
-          { time: `${baseTime}02:22`, message: '[FUSION] Gate D flow rate index dropped to 0 p/m.' }
-        );
-      } else if (activeScenario === 'power-failure') {
-        timeline.push(
-          { time: `${baseTime}02:08`, message: '[INGEST] Security: Sector A RFID badge reader network OFFLINE.' },
-          { time: `${baseTime}02:20`, message: '[DI_CORE] Trust score penalty applied to Security network.' }
-        );
-      } else {
-        timeline.push(
-          { time: `${baseTime}02:10`, message: '[INGEST] Road Traffic: Inbound highways reporting standard speeds.' }
-        );
-      }
-    }
-
-    if (simulationStep >= 2) {
-      if (activeScenario === 'heavy-rain') {
-        timeline.push(
-          { time: `${baseTime}04:15`, message: '[INGEST] Citizen Reports: Concourse steps slip hazard alerts rising.' },
-          { time: `${baseTime}04:30`, message: '[DI_CORE] Generating dynamic wet-weather circulation briefing.' }
-        );
-      } else if (activeScenario === 'metro-delay') {
-        timeline.push(
-          { time: `${baseTime}04:12`, message: '[INGEST] Citizen Reports: High passenger density pockets at East Subway plaza.' },
-          { time: `${baseTime}04:25`, message: '[FUSION] Concourse egress backing up. Inflow restriction required.' }
-        );
-      } else if (activeScenario === 'gate-failure') {
-        timeline.push(
-          { time: `${baseTime}04:18`, message: '[INGEST] CCTV CV: 8,000 count buildup detected in Gate D outer plaza.' }
-        );
-      } else if (activeScenario === 'power-failure') {
-        timeline.push(
-          { time: `${baseTime}04:15`, message: '[INGEST] Citizen Reports: Severe blackout in Sector A stairwell.' }
-        );
-      }
-    }
-
-    if (simulationStep >= 3) {
-      timeline.push(
-        { time: `${baseTime}06:12`, message: '[FUSION] Cross-system parameters consolidated.' },
-        { time: `${baseTime}06:20`, message: '[DI_CORE] Recommendation matrix generated. Awaiting approval.' }
-      );
-    }
-
-    return timeline;
-  };
-
-  // 5. Mission Control Mode auto-runner scheduling
-  const startMissionControl = () => {
-    setIsMissionControlActive(true);
-    setMissionControlTimer(0);
-    setRole('commander');
-    
-    // Initial setup
-    setActiveScenarioState('normal');
-    setSimulationStep(0);
-    setIsIntervened(false);
-    setApprovedScenarios({});
-    setReplayHistory([]);
-    setApprovalLogs([]);
-    setIsApproving(false);
-    setActiveTab('overview');
-  };
-
-  const stopMissionControl = () => {
-    setIsMissionControlActive(false);
-    setMissionControlTimer(0);
-    if (mcIntervalRef.current) clearInterval(mcIntervalRef.current);
-  };
-
-  useEffect(() => {
-    if (isMissionControlActive) {
-      mcIntervalRef.current = setInterval(() => {
-        setMissionControlTimer((prev) => {
-          const nextTime = prev + 1;
-          
-          if (nextTime === 5) {
-            // Transition to Metro Delay
-            setActiveScenarioState('metro-delay');
-            setSimulationStep(1);
-            setIsIntervened(false);
-          } else if (nextTime === 10) {
-            // Escalation
-            setSimulationStep(3);
-          } else if (nextTime === 14) {
-            // Auto approve Metro Delay intervention
-            approveIntervention();
-          } else if (nextTime === 22) {
-            // Transition to Heavy Rain
-            setActiveScenarioState('heavy-rain');
-            setSimulationStep(1);
-            setIsIntervened(false);
-          } else if (nextTime === 28) {
-            // Escalation
-            setSimulationStep(3);
-          } else if (nextTime === 32) {
-            // Auto approve Heavy Rain intervention
-            approveIntervention();
-          } else if (nextTime === 40) {
-            // Loop or stop
-            setIsMissionControlActive(false);
-            if (mcIntervalRef.current) clearInterval(mcIntervalRef.current);
-          }
-
-          return nextTime;
-        });
-      }, 1000);
-    } else {
-      if (mcIntervalRef.current) clearInterval(mcIntervalRef.current);
-    }
-
-    return () => {
-      if (mcIntervalRef.current) clearInterval(mcIntervalRef.current);
-    };
-  }, [isMissionControlActive, activeScenario, simulationStep, isIntervened, currentRole]);
 
   return (
     <AppStateContext.Provider value={{
@@ -511,11 +434,9 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setRole,
       activeScenario,
       selectScenario,
-      simulationStep,
-      setSimulationStep,
       isSimulating,
       setIsSimulating,
-      telemetry: getModifiedTelemetry(),
+      telemetry,
       isIntervened,
       approveIntervention,
       approvedScenarios,
@@ -523,18 +444,17 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       approvalLogs,
       isApproving,
       resetSimulation,
-      isMissionControlActive,
-      startMissionControl,
-      stopMissionControl,
-      missionControlTimer,
-      
-      // Ingestion and context fusion extensions
+      liveEventsLog,
+      pipelineMetrics,
+      activeRecommendation,
+      resourceStates,
+      currentPulseModule,
+      lastIngestedPacket,
       activeTab,
       setActiveTab,
       lineageModalData,
       setLineageModalData,
       getIngestFeeds,
-      getIngestTimeline,
       getConfidenceBreakdown,
       getTrustPenalty
     }}>

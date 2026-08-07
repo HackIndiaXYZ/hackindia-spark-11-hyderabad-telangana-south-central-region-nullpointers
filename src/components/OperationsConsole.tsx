@@ -7,13 +7,12 @@ import { CheckCircle2, RefreshCw, Terminal, ChevronDown, ChevronUp, AlertTriangl
 export const OperationsConsole: React.FC = () => {
   const { 
     activeScenario, 
-    simulationStep, 
     telemetry, 
     isIntervened, 
     approveIntervention,
     approvalLogs,
     isApproving,
-    getIngestTimeline,
+    liveEventsLog,
     getConfidenceBreakdown,
     getTrustPenalty,
     setLineageModalData
@@ -49,18 +48,18 @@ export const OperationsConsole: React.FC = () => {
     }, 800);
 
     return () => clearTimeout(delayTimer);
-  }, [activeScenario, simulationStep, isIntervened]);
+  }, [activeScenario, telemetry, isIntervened]);
 
   // Scroll Ingestion timeline to bottom automatically
   useEffect(() => {
     if (timelineEndRef.current) {
       timelineEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [simulationStep, activeScenario]);
+  }, [liveEventsLog, activeScenario]);
 
   if (!telemetry) return null;
 
-  const timelineLogs = getIngestTimeline();
+  const timelineLogs = liveEventsLog;
   const confidenceBreakdown = getConfidenceBreakdown();
   const trustPenalty = getTrustPenalty();
 
@@ -130,7 +129,7 @@ export const OperationsConsole: React.FC = () => {
           <span>Active Ingestion Feeds</span>
         </div>
         <div className="flex-1 overflow-y-auto space-y-2 pr-1 text-xs scrollbar-thin">
-          {timelineLogs.map((log, idx) => {
+          {timelineLogs.map((log: any, idx: number) => {
             const cleanMessage = log.message
               .replace('[DI_CORE] ', '')
               .replace('INGEST // ', '')
@@ -140,6 +139,7 @@ export const OperationsConsole: React.FC = () => {
               <div key={idx} className="flex gap-3 text-slate-300 leading-tight">
                 <span className="text-[10px] font-mono text-slate-500 shrink-0 select-none mt-0.5">{log.time}</span>
                 <span className="font-sans font-medium text-slate-300">
+                  <span className="text-blue-400 font-bold mr-2">[{log.source}]</span>
                   {cleanMessage}
                 </span>
               </div>

@@ -21,7 +21,7 @@ const SCENARIOS: ScenarioOption[] = [
 ];
 
 export const ScenarioSimulator: React.FC = () => {
-  const { activeScenario, selectScenario, isMissionControlActive } = useAppState();
+  const { activeScenario, selectScenario } = useAppState();
 
   return (
     <div className="w-full glass-panel rounded-2xl flex flex-col p-5 overflow-hidden">
@@ -44,13 +44,12 @@ export const ScenarioSimulator: React.FC = () => {
           return (
             <button
               key={sc.id}
-              disabled={isMissionControlActive}
               onClick={() => selectScenario(sc.id)}
               className={`group flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-200 ${
                 isActive
                   ? 'bg-[#181a24] border-l-2 border-l-blue-500 border-y-[#1d202d] border-r-[#1d202d] text-slate-100 font-semibold'
                   : 'bg-transparent border-transparent text-slate-400 hover:bg-zinc-800/40 hover:text-slate-200'
-              } ${isMissionControlActive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+              } cursor-pointer`}
             >
               <div className="flex items-center gap-3">
                 <div className={`p-1.5 rounded-lg flex items-center justify-center border transition-colors ${

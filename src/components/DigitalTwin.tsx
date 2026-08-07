@@ -1,261 +1,327 @@
 import React, { useEffect, useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { AlertTriangle, Activity } from 'lucide-react';
+import { AlertTriangle, Crosshair } from 'lucide-react';
+
+// Particle type for crowd visualization
+type Particle = {
+  id: number;
+  x: number;
+  y: number;
+  speed: number;
+  angle: number;
+  color: string;
+};
 
 export const DigitalTwin: React.FC = () => {
-  const { telemetry, activeScenario, simulationStep, isApproving, isIntervened } = useAppState();
+  const { telemetry, lastIngestedPacket, liveEventsLog } = useAppState();
 
-  const [medicalPos, setMedicalPos] = useState({ x: 250, y: 130 });
-  const [trainX, setTrainX] = useState(50);
-  const [trainY, setTrainY] = useState(50);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [trainPos, setTrainPos] = useState(0);
 
-  // Train Animation Logic
+  const isCritical = telemetry?.crowd?.standsDensity > 0.8;
+  const hasEscalatorFailure = liveEventsLog.some(e => e.source.includes('Escalator') && e.type === 'warning');
+  const hasMedicalEmergency = liveEventsLog.some(e => e.source.includes('Medical Incident') && e.type === 'critical');
+  const hasRain = liveEventsLog.some(e => e.source.includes('Weather') && e.message.includes('Rain'));
+  const hasSecurityAlert = liveEventsLog.some(e => e.source.includes('Security') && e.type === 'critical');
+
+  // Initialize and animate crowd particles
   useEffect(() => {
-    let frame = 0;
-    const interval = setInterval(() => {
-      frame++;
-      // Move East-West Train
-      setTrainX(50 + ((frame * 2) % 400));
-      // Move North-South Train
-      setTrainY(50 + ((frame * 1.5) % 400));
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Patrol Dispatch Animation Logic
-  useEffect(() => {
-    const hasMedicalIncident = telemetry?.incidents?.some((i: any) => i.type === 'MEDICAL' && i.status === 'RESPONDING');
+    if (!telemetry) return;
     
-    if (hasMedicalIncident) {
-      let frame = 0;
-      const startX = 400;
-      const startY = 80;
-      const targetX = 190;
-      const targetY = 200;
-
-      const interval = setInterval(() => {
-        frame++;
-        const pct = Math.min(1, frame / 30);
-        setMedicalPos({
-          x: startX + (targetX - startX) * pct,
-          y: startY + (targetY - startY) * pct
-        });
-
-        if (pct >= 1) clearInterval(interval);
-      }, 50);
-
-      return () => clearInterval(interval);
-    } else {
-      setMedicalPos({ x: 400, y: 80 });
+    // Determine target density
+    let numParticles = 100 + (telemetry.crowd.totalInside / 100);
+    let targetZone = { x: 400, y: 400, radius: 400 }; // Default spread out
+    
+    if (telemetry.crowd.standsDensity > 0.70) {
+      numParticles = 250 + (telemetry.crowd.standsDensity - 0.7) * 400; // Higher density
+      targetZone = { x: 400, y: 550, radius: 100 }; // Cluster at Platform 2 (South)
     }
-  }, [telemetry?.incidents]);
+
+    if (hasRain && !isCritical) {
+      targetZone = { x: 400, y: 250, radius: 120 }; // Cluster near entrances/Platform 1
+    }
+
+    if (hasMedicalEmergency) {
+      targetZone = { x: 200, y: 550, radius: 100 }; // Move away from Platform 3 / corridor
+    }
+
+    if (telemetry.crowd.standsDensity < 0.65 && !hasRain && !hasMedicalEmergency) {
+      targetZone = { x: 400, y: 400, radius: 400 }; // Normal flow
+    }
+
+    const newParticles: Particle[] = Array.from({ length: numParticles }).map((_, i) => ({
+      id: i,
+      x: targetZone.x + (Math.random() - 0.5) * targetZone.radius * 2,
+      y: targetZone.y + (Math.random() - 0.5) * targetZone.radius * 2,
+      speed: 0.5 + Math.random() * 1.5,
+      angle: Math.random() * Math.PI * 2,
+      color: Math.random() > 0.8 ? '#3B82F6' : '#60A5FA', // Blue hues
+    }));
+
+    setParticles(newParticles);
+  }, [telemetry]);
+
+  // Animate particles and trains
+  useEffect(() => {
+    let animationFrame: number;
+    let currentTrain = 0;
+
+    const animate = () => {
+      // Update particles
+      setParticles(prev => prev.map(p => {
+        let nx = p.x + Math.cos(p.angle) * p.speed;
+        let ny = p.y + Math.sin(p.angle) * p.speed;
+        
+        // Bounce off invisible boundaries (800x800 grid)
+        if (nx < 100 || nx > 700) p.angle = Math.PI - p.angle;
+        if (ny < 100 || ny > 700) p.angle = -p.angle;
+
+        return { ...p, x: nx, y: ny };
+      }));
+
+      // Update train (moves across the 800px track)
+      currentTrain = (currentTrain + 3) % 1200;
+      setTrainPos(currentTrain - 200);
+
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => cancelAnimationFrame(animationFrame);
+  }, []);
 
   if (!telemetry) return null;
 
-  // Determine if we should activate the "Hidden Killer Feature" zoom
-  const hasRecommendation = activeScenario !== 'normal' && simulationStep >= 2 && !isIntervened;
-  
-  // Base SVG viewBox
-  let viewBox = "0 0 500 500";
-  // Zoom into Platform 2 (South Platform area) when recommendation appears
-  if (hasRecommendation) {
-    viewBox = "100 200 300 250"; 
-  }
-
-  const renderMetroStation = () => {
-    const elements: React.ReactNode[] = [];
-    
-    // Main Concourse Background
-    elements.push(
-      <rect key="concourse" x="50" y="50" width="400" height="400" rx="8" fill="#111827" stroke="#1F2937" strokeWidth="2" className="transition-all duration-700" />
-    );
-
-    // East-West Metro Line (Tracks)
-    elements.push(
-      <rect key="track-ew" x="50" y="160" width="400" height="40" fill="#0B1220" stroke="#1F2937" strokeWidth="1" />
-    );
-    elements.push(<line key="track-ew-1" x1="50" y1="170" x2="450" y2="170" stroke="#374151" strokeWidth="1" strokeDasharray="4 2" />);
-    elements.push(<line key="track-ew-2" x1="50" y1="190" x2="450" y2="190" stroke="#374151" strokeWidth="1" strokeDasharray="4 2" />);
-
-    // Moving Train EW
-    elements.push(
-      <rect key="moving-train-ew" x={trainX} y="162" width="60" height="36" rx="4" fill="#2563EB" opacity={0.8} />
-    );
-
-    // North-South Metro Line (Tracks)
-    elements.push(
-      <rect key="track-ns" x="230" y="50" width="40" height="400" fill="#0B1220" stroke="#1F2937" strokeWidth="1" />
-    );
-    elements.push(<line key="track-ns-1" x1="240" y1="50" x2="240" y2="450" stroke="#374151" strokeWidth="1" strokeDasharray="4 2" />);
-    elements.push(<line key="track-ns-2" x1="260" y1="50" x2="260" y2="450" stroke="#374151" strokeWidth="1" strokeDasharray="4 2" />);
-
-    // Moving Train NS
-    elements.push(
-      <rect key="moving-train-ns" x="232" y={trainY} width="36" height="60" rx="4" fill="#2563EB" opacity={0.8} />
-    );
-
-    // Central Hub Platform (Dynamic Color based on density)
-    let hubDensity = telemetry.crowd.standsDensity;
-    if (activeScenario === 'metro-delay') hubDensity = 0.9;
-    let hubFill = hubDensity > 0.85 ? 'fill-[#EF4444]/20 stroke-[#EF4444]/50' : hubDensity > 0.7 ? 'fill-[#F59E0B]/20 stroke-[#F59E0B]/50' : 'fill-[#1F2937] stroke-[#374151]';
-
-    elements.push(
-      <rect key="hub-platform" x="180" y="200" width="140" height="100" rx="4" className={`${hubFill} transition-all duration-700`} strokeWidth="1.5" />
-    );
-
-    // North Platform 1
-    elements.push(
-      <rect key="platform-n" x="190" y="90" width="120" height="50" rx="2" fill="#1F2937" stroke="#374151" strokeWidth="1" />
-    );
-    elements.push(
-      <text key="lbl-n" x="250" y="115" textAnchor="middle" fill="#9CA3AF" fontSize="12" fontWeight="bold">Platform 1</text>
-    );
-
-    // South Platform 2
-    elements.push(
-      <rect key="platform-s" x="190" y="320" width="120" height="50" rx="2" fill="#1F2937" stroke="#374151" strokeWidth="1" />
-    );
-    elements.push(
-      <text key="lbl-s" x="250" y="345" textAnchor="middle" fill="#9CA3AF" fontSize="12" fontWeight="bold">Platform 2</text>
-    );
-    
-    // Zoom Highlight Context
-    if (hasRecommendation) {
-       elements.push(
-          <rect key="platform-s-highlight" x="185" y="315" width="130" height="60" rx="4" fill="none" stroke="#EF4444" strokeWidth="2" className="animate-pulse" />
-       );
-       elements.push(
-          <g key="platform-context" transform="translate(190, 275)">
-            <rect width="120" height="36" rx="4" fill="#111827" stroke="#EF4444" strokeWidth="1" />
-            <text x="10" y="14" fill="#EF4444" fontSize="10" fontWeight="bold">Density: 91% (CRIT)</text>
-            <text x="10" y="28" fill="#9CA3AF" fontSize="10">Expected: 97%</text>
-          </g>
-       );
-       
-       if (isApproving) {
-         elements.push(
-            <g key="platform-resolving" transform="translate(190, 385)">
-              <rect width="120" height="24" rx="4" fill="#111827" stroke="#10B981" strokeWidth="1" />
-              <text x="60" y="16" textAnchor="middle" fill="#10B981" fontSize="10" fontWeight="bold">Action Executing...</text>
-            </g>
-         );
-       }
-    }
-
-    // Escalators
-    elements.push(<rect key="esc-1" x="200" y="200" width="20" height="30" fill="#374151" />);
-    elements.push(<rect key="esc-2" x="280" y="200" width="20" height="30" fill="#374151" />);
-    
-    // Flow arrows
-    elements.push(<path key="flow-1" d="M 210 215 L 210 225 L 205 220 M 210 225 L 215 220" stroke="#10B981" strokeWidth="1.5" fill="none" />);
-    elements.push(<path key="flow-2" d="M 290 225 L 290 215 L 285 220 M 290 215 L 295 220" stroke="#10B981" strokeWidth="1.5" fill="none" />);
-
-    return elements;
-  };
-
-  const activeIncidents = telemetry.incidents || [];
-  const activeGates = telemetry.gates || [];
-
   return (
-    <div className="relative w-full h-full glass-panel flex flex-col p-5 overflow-hidden">
+    <div className="relative w-full h-full glass-panel flex flex-col overflow-hidden font-sans bg-[#050A15]">
       
       {/* HUD Header */}
-      <div className="flex justify-between items-center border-b border-[#1F2937] pb-3 mb-4 z-20 shrink-0">
-        <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#2563EB]" />
-          <span className="font-semibold text-sm uppercase tracking-widest text-slate-200">Digital Twin</span>
+      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center border-b border-white/5 z-20 bg-gradient-to-b from-[#050A15] to-transparent pointer-events-none">
+        <div className="flex items-center gap-3">
+          <Crosshair className="w-5 h-5 text-blue-500 animate-pulse" />
+          <span className="font-bold text-sm uppercase tracking-widest text-slate-200">Palantir Digital Twin</span>
         </div>
-        <div className="flex gap-4 text-[10px] font-mono text-slate-500">
-          <span>SCALE: 1:1200</span>
-          <span>LATITUDE: 24.478° N</span>
+        <div className="flex gap-4 text-xs font-mono text-slate-500 bg-black/40 px-3 py-1 rounded-full border border-white/5">
+          <span>PROJ: ISOMETRIC</span>
+          <span className="text-blue-500/80">LAT: 24.478°N</span>
         </div>
       </div>
 
-      {/* SVG Container */}
-      <div className="relative flex-1 flex items-center justify-center">
-        {/* Dynamic Warning Alert Overlay */}
-        {activeIncidents.length > 0 && !hasRecommendation && (
-          <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
-            {activeIncidents.map((inc: any) => (
-              <div key={inc.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444] text-xs font-mono font-semibold">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#EF4444] shrink-0" />
-                <span className="font-bold">{inc.id}</span>
-                <span className="text-[10px] uppercase">{inc.type} // {inc.location}</span>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Dynamic Warning Alert Overlay */}
+      {lastIngestedPacket && (lastIngestedPacket.type === 'warning' || lastIngestedPacket.type === 'critical') && (
+        <div className="absolute top-16 left-4 z-20 flex flex-col gap-2 pointer-events-none">
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${lastIngestedPacket.type === 'critical' ? 'bg-red-500/10 border border-red-500/30 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-orange-500/10 border border-orange-500/30 text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.2)]'} text-xs font-mono font-semibold backdrop-blur-md`}>
+              <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse" />
+              <span>{lastIngestedPacket.source} // {lastIngestedPacket.message}</span>
+            </div>
+        </div>
+      )}
 
-        {/* Metro Station Top-Down Layout Map */}
-        <svg viewBox={viewBox} className="w-full h-full max-w-[800px] max-h-[800px] relative z-0 transition-all duration-1000 ease-in-out">
-          
-          {/* Dimming overlay when recommendation appears */}
-          {hasRecommendation && (
-            <rect x="0" y="0" width="500" height="500" fill="#000000" opacity="0.4" className="transition-opacity duration-1000" />
+      {/* 3D Isometric Viewport */}
+      <div 
+        className="flex-1 w-full h-full flex items-center justify-center" 
+        style={{ perspective: '1600px' }}
+      >
+        <div 
+          className="relative transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
+          style={{
+            width: '800px',
+            height: '800px',
+            transformStyle: 'preserve-3d',
+            transform: isCritical 
+              ? 'rotateX(55deg) rotateZ(-30deg) scale(1.1) translateX(50px) translateY(-150px) translateZ(100px)' 
+              : 'rotateX(60deg) rotateZ(-45deg) scale(0.75)',
+          }}
+        >
+          {/* FLOOR GRID LAYER */}
+          <div 
+            className="absolute inset-0 border border-blue-900/30 rounded-3xl"
+            style={{ 
+              background: 'linear-gradient(to right, rgba(30,58,138,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(30,58,138,0.05) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+              backgroundColor: '#070C1A',
+              boxShadow: '0 0 100px rgba(15,23,42,0.8) inset, 0 20px 50px rgba(0,0,0,0.5)',
+              transform: 'translateZ(0px)'
+            }}
+          >
+            {/* Base glowing effect */}
+            <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full" />
+          </div>
+
+          {/* TRACKS LAYER (Recessed) */}
+          <div className="absolute inset-0" style={{ transform: 'translateZ(2px)', transformStyle: 'preserve-3d' }}>
+            {/* East-West Track Background */}
+            <div className="absolute top-[350px] left-0 w-full h-[100px] bg-black/60 border-y border-zinc-800" />
+            {/* Rails */}
+            <div className="absolute top-[370px] left-0 w-full h-[2px] bg-zinc-700/50" />
+            <div className="absolute top-[390px] left-0 w-full h-[2px] bg-zinc-700/50" />
+            <div className="absolute top-[410px] left-0 w-full h-[2px] bg-zinc-700/50" />
+            <div className="absolute top-[430px] left-0 w-full h-[2px] bg-zinc-700/50" />
+
+            {/* MOVING TRAIN */}
+            <div 
+              className="absolute top-[360px] h-[30px] w-[250px] rounded bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 shadow-[0_0_20px_rgba(56,189,248,0.6)]"
+              style={{ 
+                left: `${trainPos}px`,
+                transform: 'translateZ(10px)', // Train sits on tracks
+              }}
+            >
+              {/* Train Windows */}
+              <div className="absolute top-[10px] left-0 w-full h-[10px] flex gap-2 px-4">
+                 {Array.from({length: 12}).map((_, i) => (
+                   <div key={i} className="w-[12px] h-full bg-cyan-100/80 rounded-[1px]" />
+                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* PLATFORM 1 (North) LAYER - Elevated */}
+          <div 
+            className="absolute top-[150px] left-[200px] w-[400px] h-[200px] rounded-lg transition-colors duration-1000"
+            style={{ 
+              transform: 'translateZ(40px)',
+              transformStyle: 'preserve-3d',
+              backgroundColor: '#111827',
+              borderTop: '2px solid rgba(255,255,255,0.1)',
+              borderLeft: '2px solid rgba(255,255,255,0.1)',
+              boxShadow: '-10px 10px 20px rgba(0,0,0,0.5)',
+            }}
+          >
+            {/* Platform Extrusion/Sides (Fake 3D) */}
+            <div className="absolute bottom-[-20px] left-0 w-full h-[20px] bg-zinc-900 origin-top" style={{ transform: 'rotateX(-90deg)' }} />
+            <div className="absolute top-0 right-[-20px] w-[20px] h-full bg-zinc-950 origin-left" style={{ transform: 'rotateY(90deg)' }} />
+            
+            <div className="absolute top-4 left-4 text-zinc-500 font-mono text-xl font-bold tracking-widest uppercase">
+              Platform 1
+            </div>
+
+            {/* AFC Gates */}
+            <div className="absolute top-[20px] right-[40px] flex gap-4">
+              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded" />
+              <div className="w-[10px] h-[30px] bg-emerald-500/20 border border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded" />
+            </div>
+          </div>
+
+          {/* PLATFORM 2 (South) LAYER - Elevated & Dynamic */}
+          <div 
+            className={`absolute top-[450px] left-[200px] w-[400px] h-[200px] rounded-lg transition-all duration-1000 ${
+              isCritical ? 'bg-red-950/40 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.3)]' : 'bg-[#111827]'
+            }`}
+            style={{ 
+              transform: 'translateZ(40px)',
+              transformStyle: 'preserve-3d',
+              borderTop: isCritical ? '2px solid rgba(239,68,68,0.5)' : '2px solid rgba(255,255,255,0.1)',
+              borderLeft: isCritical ? '2px solid rgba(239,68,68,0.5)' : '2px solid rgba(255,255,255,0.1)',
+              boxShadow: '-10px 10px 20px rgba(0,0,0,0.5)',
+            }}
+          >
+            {/* Sides */}
+            <div className={`absolute bottom-[-20px] left-0 w-full h-[20px] origin-top ${isCritical ? 'bg-red-900/40' : 'bg-zinc-900'}`} style={{ transform: 'rotateX(-90deg)' }} />
+            <div className={`absolute top-0 right-[-20px] w-[20px] h-full origin-left ${isCritical ? 'bg-red-950/60' : 'bg-zinc-950'}`} style={{ transform: 'rotateY(90deg)' }} />
+
+            <div className={`absolute top-4 left-4 font-mono text-xl font-bold tracking-widest uppercase transition-colors ${isCritical ? 'text-red-400' : 'text-zinc-500'}`}>
+              Platform 2 {isCritical && '(CRITICAL)'}
+            </div>
+
+            {/* Context Tooltip pops up in 3D space when highlighted */}
+            {isCritical && (
+              <div 
+                className="absolute top-1/2 left-1/2 bg-black/80 border border-red-500 px-4 py-2 rounded-xl backdrop-blur-md shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                style={{ 
+                  transform: 'translate(-50%, -50%) translateZ(100px) rotateX(-55deg) rotateZ(30deg)', 
+                  transformOrigin: 'bottom'
+                }}
+              >
+                <div className="text-red-500 text-sm font-bold whitespace-nowrap">DENSITY SPIKE: {(telemetry.crowd.standsDensity * 100).toFixed(0)}%</div>
+                <div className="text-red-400/70 text-xs font-mono">EST. STAMPEDE RISK</div>
+              </div>
+            )}
+          </div>
+
+          {/* ESCALATORS CONCOURSE CONNECTIONS */}
+          <div className="absolute top-[350px] left-[350px] w-[40px] h-[100px] bg-zinc-800" style={{ transform: 'translateZ(20px)', border: '1px solid #333' }}>
+             {/* Escalator steps */}
+             {Array.from({length: 10}).map((_, i) => (
+                <div key={i} className={`w-full h-[2px] mt-[8px] ${hasEscalatorFailure ? 'bg-red-500' : 'bg-zinc-600'}`} />
+             ))}
+             {hasEscalatorFailure && (
+               <div className="absolute -top-12 -left-16 bg-red-900/80 border border-red-500 px-3 py-1 rounded text-red-100 text-[10px] font-bold whitespace-nowrap" style={{ transform: 'rotateX(-55deg) rotateZ(30deg)' }}>
+                 ESCALATOR B FAILURE
+               </div>
+             )}
+          </div>
+
+          {/* MEDICAL EMERGENCY CORRIDOR */}
+          {hasMedicalEmergency && (
+            <div className="absolute top-[450px] left-[500px] w-[200px] h-[50px] bg-rose-500/20 border border-rose-500/50 flex items-center justify-center animate-pulse" style={{ transform: 'translateZ(41px)' }}>
+               <span className="text-rose-400 font-bold text-xs uppercase tracking-widest" style={{ transform: 'rotateX(-55deg) rotateZ(30deg)' }}>Emergency Corridor</span>
+            </div>
           )}
 
-          {/* Programmatically Generated Metro Layout */}
-          {renderMetroStation()}
+          {/* SECURITY INCIDENT ZONE */}
+          {hasSecurityAlert && (
+            <div className="absolute top-[200px] left-[450px] w-[150px] h-[100px] bg-red-500/20 border-2 border-dashed border-red-500/50 flex items-center justify-center animate-pulse" style={{ transform: 'translateZ(41px)' }}>
+               <span className="text-red-400 font-bold text-xs uppercase tracking-widest" style={{ transform: 'rotateX(-55deg) rotateZ(30deg)' }}>Quarantine Zone C</span>
+            </div>
+          )}
 
-          {/* Gates (Indicators Placed around concourse edges) */}
-          {activeGates.map((gate: any, idx: number) => {
-            const gatePositions = [
-              { x: 50, y: 120 }, // Gate A (West)
-              { x: 50, y: 380 }, // Gate B (West)
-              { x: 450, y: 120 }, // Gate C (East)
-              { x: 450, y: 380 }, // Gate D (East)
-              { x: 120, y: 50 }, // Gate E (North)
-              { x: 380, y: 450 }, // Gate F (South)
-            ];
-            const gx = gatePositions[idx]?.x || 250;
-            const gy = gatePositions[idx]?.y || 250;
-            const isOffline = gate.status === 'OFFLINE';
+          {/* PARTICLES LAYER (Crowd Flow) */}
+          <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translateZ(45px)' }}>
+            {particles.map(p => (
+              <div 
+                key={p.id}
+                className="absolute w-[4px] h-[4px] rounded-full shadow-[0_0_5px_currentColor]"
+                style={{
+                  left: `${p.x}px`,
+                  top: `${p.y}px`,
+                  backgroundColor: p.color,
+                  color: p.color,
+                }}
+              />
+            ))}
+          </div>
 
-            return (
-              <g key={gate.id} className={hasRecommendation ? "opacity-30" : "opacity-100"}>
-                <circle cx={gx} cy={gy} r="10" fill="#111827" stroke={isOffline ? '#EF4444' : gate.occupancy > 0.85 ? '#F59E0B' : '#10B981'} strokeWidth="1" />
-                <text x={gx} y={gy + 3} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold" fontFamily="monospace">
-                  {gate.id}
-                </text>
-              </g>
-            );
-          })}
+          {/* PILLARS / SUPPORTS (Adds verticality) */}
+          {[
+            {x: 100, y: 100}, {x: 700, y: 100},
+            {x: 100, y: 700}, {x: 700, y: 700}
+          ].map((pos, i) => (
+            <div 
+              key={i}
+              className="absolute w-[20px] h-[200px] bg-gradient-to-r from-zinc-800 to-zinc-950 border border-zinc-700/30"
+              style={{
+                left: `${pos.x}px`,
+                top: `${pos.y}px`,
+                transform: 'rotateX(-90deg) translateZ(100px)',
+                transformOrigin: 'top',
+                boxShadow: '0 0 30px rgba(0,0,0,0.8)'
+              }}
+            />
+          ))}
 
-          {/* Dynamic Patrol Units */}
-          <circle cx={100 + 300 * Math.abs(Math.sin(Date.now() / 8000))} cy="100" r="4" fill="#3B82F6" className={hasRecommendation ? "opacity-30" : "opacity-100"} />
-          <circle cx={400 - 300 * Math.abs(Math.sin(Date.now() / 8000))} cy="400" r="4" fill="#3B82F6" className={hasRecommendation ? "opacity-30" : "opacity-100"} />
-          
-          {/* Animated Medical Responder */}
-          <circle 
-            cx={medicalPos.x} 
-            cy={medicalPos.y} 
-            r="4" 
-            fill="#10B981" 
-            className={hasRecommendation ? "opacity-30" : "opacity-100"}
-          />
-        </svg>
+        </div>
       </div>
 
-      {/* Ticker HUD Stats Overlay at bottom of Digital Twin */}
-      <div className="grid grid-cols-3 gap-2 border-t border-[#1F2937] pt-4 mt-2 text-center text-xs font-mono shrink-0">
+      {/* Ticker HUD Stats Overlay at bottom */}
+      <div className="absolute bottom-0 left-0 w-full grid grid-cols-3 gap-2 border-t border-white/10 pt-4 pb-4 bg-black/60 backdrop-blur-md text-center text-xs font-mono shrink-0 z-20">
         <div className="flex flex-col items-center">
-          <span className="text-slate-500 text-[10px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
+          <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mb-1">
             Crowd Inside
           </span>
-          <span className="text-slate-300 font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
+          <span className="text-slate-200 text-lg font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
         </div>
-        <div className="flex flex-col items-center border-x border-[#1F2937]">
-          <span className="text-slate-500 text-[10px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
+        <div className="flex flex-col items-center border-x border-white/10">
+          <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mb-1">
             Average Flow Rate
           </span>
-          <span className="text-slate-300 font-semibold">{telemetry.crowd.flowRate} p/min</span>
+          <span className="text-slate-200 text-lg font-semibold">{telemetry.crowd.flowRate} p/min</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-slate-500 text-[10px] uppercase tracking-wider flex items-center gap-1 justify-center font-bold">
-            Active Alerts
+          <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+            System Status
           </span>
-          <span className={`font-semibold ${activeIncidents.length > 0 ? 'text-[#EF4444] font-extrabold' : 'text-[#10B981]'}`}>
-            {activeIncidents.length > 0 ? `${activeIncidents.length} Alert${activeIncidents.length > 1 ? 's' : ''}` : 'None'}
+          <span className={`text-lg font-semibold ${telemetry.riskLevel > 0.4 ? 'text-red-500 animate-pulse' : 'text-emerald-500'}`}>
+            {telemetry.riskLevel > 0.4 ? 'CRITICAL' : 'NOMINAL'}
           </span>
         </div>
       </div>

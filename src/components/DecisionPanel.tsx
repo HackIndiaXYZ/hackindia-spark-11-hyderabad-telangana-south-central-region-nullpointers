@@ -1,13 +1,12 @@
 import React from 'react';
-import { useAppState, SCENARIO_DATA } from '../context/AppStateContext';
+import { useAppState } from '../context/AppStateContext';
 
 export const DecisionPanel: React.FC = () => {
-  const { activeScenario, simulationStep, approveIntervention, isApproving, isIntervened } = useAppState();
+  const { activeRecommendation, approveIntervention, isApproving, isIntervened } = useAppState();
 
-  const scenarioInfo = SCENARIO_DATA[activeScenario];
-  const isActionable = activeScenario !== 'normal' && simulationStep >= 2;
+  const isActionable = !!activeRecommendation;
 
-  if (!isActionable || !scenarioInfo) {
+  if (!isActionable || !activeRecommendation) {
     return (
       <div className="glass-panel w-full flex flex-col p-5 h-full items-center justify-center text-slate-500">
         <span className="text-sm font-medium">Monitoring Operations...</span>
@@ -16,7 +15,7 @@ export const DecisionPanel: React.FC = () => {
     );
   }
 
-  const rec = scenarioInfo.recommendation;
+  const rec = activeRecommendation;
   // Dynamic confidence adjustment could be pulled from context if desired. For now use base.
   const confidence = rec.confidence || 94;
 
