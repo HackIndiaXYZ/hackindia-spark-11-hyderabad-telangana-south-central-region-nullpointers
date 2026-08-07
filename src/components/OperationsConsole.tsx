@@ -273,7 +273,11 @@ export const OperationsConsole: React.FC = () => {
                     </div>
 
                     {/* Arrow down to Fusion */}
-                    <div className="text-white/20 text-sm leading-none h-4">↓</div>
+                    <div className="flex justify-center my-0.5">
+                      <svg width="12" height="20" viewBox="0 0 12 20" fill="none" className="text-indigo-500/40">
+                        <path d="M6 0V18M6 18L2 14M6 18L10 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 3" />
+                      </svg>
+                    </div>
 
                     {/* Data Fusion Node */}
                     <div className="p-2.5 w-full rounded border border-white/10 bg-white/2 text-white/80 font-bold flex justify-between items-center shadow-lg">
@@ -282,7 +286,11 @@ export const OperationsConsole: React.FC = () => {
                     </div>
 
                     {/* Arrow down to Reasoning Engine */}
-                    <div className="text-white/20 text-sm leading-none h-4">↓</div>
+                    <div className="flex justify-center my-0.5">
+                      <svg width="12" height="20" viewBox="0 0 12 20" fill="none" className="text-indigo-500/40">
+                        <path d="M6 0V18M6 18L2 14M6 18L10 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
 
                     {/* Decision Reasoning Engine & Breakdown details */}
                     <div className="p-3 w-full rounded border border-indigo-500/20 bg-indigo-950/10 text-left space-y-2">
@@ -316,7 +324,11 @@ export const OperationsConsole: React.FC = () => {
                     </div>
 
                     {/* Arrow down to output */}
-                    <div className="text-white/20 text-sm leading-none h-4">↓</div>
+                    <div className="flex justify-center my-0.5">
+                      <svg width="12" height="20" viewBox="0 0 12 20" fill="none" className="text-green-500/30">
+                        <path d="M6 0V18M6 18L2 14M6 18L10 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
 
                     {/* Action Directives */}
                     <div className="p-2.5 w-full rounded border border-green-500/20 bg-green-950/10 text-green-400 font-bold flex justify-between items-center">

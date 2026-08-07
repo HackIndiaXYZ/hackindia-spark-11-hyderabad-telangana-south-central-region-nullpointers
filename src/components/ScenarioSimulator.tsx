@@ -48,24 +48,22 @@ export const ScenarioSimulator: React.FC = () => {
               onClick={() => selectScenario(sc.id)}
               className={`group flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-300 ${
                 isActive
-                  ? 'bg-white text-black border-white shadow-xl'
-                  : 'bg-white/5 border-white/5 text-white/70 hover:bg-white/10 hover:border-white/10'
+                  ? 'bg-indigo-500/15 border-indigo-500/50 text-white shadow-lg shadow-indigo-500/10 glow-indigo'
+                  : 'bg-white/2 border-white/5 text-white/60 hover:text-white hover:bg-white/5 hover:border-white/10'
               } ${isMissionControlActive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`p-1.5 rounded-lg flex items-center justify-center transition-colors ${
-                  isActive ? 'bg-black/10 text-black' : 'bg-white/5 text-white/50 group-hover:text-white'
+                <div className={`p-1.5 rounded-lg flex items-center justify-center border transition-colors ${
+                  isActive 
+                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' 
+                    : 'bg-white/5 text-white/40 border-transparent group-hover:text-white'
                 }`}>
                   <IconComponent className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-semibold tracking-wide">{sc.name}</span>
               </div>
               
-              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border rounded uppercase ${
-                isActive 
-                  ? 'bg-black/15 text-black border-black/20' 
-                  : sc.badgeColor
-              }`}>
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border rounded uppercase ${sc.badgeColor}`}>
                 {sc.badge}
               </span>
             </button>

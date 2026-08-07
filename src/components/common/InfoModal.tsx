@@ -34,11 +34,11 @@ export const InfoModal: React.FC<InfoModalProps> = ({ data, onClose }) => {
       {/* Blur background */}
       <div 
         onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-filter backdrop-blur-md" 
+        className="absolute inset-0 bg-black/75 backdrop-filter backdrop-blur-xl transition-all duration-300 animate-in fade-in" 
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-md glass-panel-heavy rounded-2xl p-6 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md glass-panel-heavy rounded-2xl p-6 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-300 border border-indigo-500/25 shadow-2xl shadow-indigo-500/10">
         
         {/* Decorative glow lines */}
         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
