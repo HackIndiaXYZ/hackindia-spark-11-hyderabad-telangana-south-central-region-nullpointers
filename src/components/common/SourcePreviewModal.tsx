@@ -216,6 +216,390 @@ const AFCGateVisualizer = () => {
   );
 };
 
+const EscalatorVisualizer = () => {
+  const [escalators, setEscalators] = useState([
+    { id: 'ESC-01', location: 'Concourse -> Plat 1', temp: '38.4°C', vib: '0.04g', status: 'NOMINAL', color: 'text-emerald-400' },
+    { id: 'ESC-02', location: 'Concourse -> Plat 2', temp: '42.1°C', vib: '0.08g', status: 'WARN', color: 'text-amber-400' },
+    { id: 'ESC-03', location: 'Entry A -> Concourse', temp: '36.8°C', vib: '0.02g', status: 'NOMINAL', color: 'text-emerald-400' },
+    { id: 'ESC-04', location: 'Entry B -> Concourse', temp: '0.0°C', vib: '0.00g', status: 'STOPPED', color: 'text-red-400' },
+  ]);
+
+  const [escLogs, setEscLogs] = useState<Array<{ time: string; esc: string; event: string; status: string }>>([
+    { time: '05:22:10', esc: 'ESC-02', event: 'Vibration deviation detected. Schedule inspection', status: 'WARN' },
+    { time: '05:21:40', esc: 'ESC-04', event: 'Emergency stop plunger activated manually', status: 'WARN' },
+    { time: '05:20:15', esc: 'ESC-01', event: 'Automatic chain lubrication cycle complete', status: 'SUCCESS' },
+    { time: '05:19:50', esc: 'ESC-03', event: 'Speed governor verification check passed', status: 'SUCCESS' },
+  ]);
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      const now = new Date().toISOString().split('T')[1].slice(0, 8);
+      setEscLogs(prev => [{ time: now, esc: 'ESC-02', event: 'Telemetry signal update: vibration stable', status: 'INFO' }, ...prev].slice(0, 8));
+      setEscalators(prev => prev.map(e => e.id === 'ESC-02' ? { ...e, temp: '41.8°C' } : e));
+    }, 4000);
+    return () => clearInterval(cycle);
+  }, []);
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>Escalator PLC Health Telemetry</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">SCADA NETWORK: ENG-ESC-7</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        {escalators.map(e => (
+          <div key={e.id} className="bg-zinc-950 border border-zinc-800/80 p-3 rounded flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-slate-200">{e.id}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                e.status === 'NOMINAL' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                e.status === 'WARN' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse' :
+                'bg-red-500/10 text-red-400 border border-red-500/30'
+              }`}>
+                {e.status}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px] truncate">{e.location}</div>
+            <div className="flex justify-between text-[10px] text-zinc-500 mt-1 pt-1 border-t border-zinc-900">
+              <span>Motor Temp: {e.temp}</span>
+              <span>Vibration: {e.vib}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Device</span>
+          <span className="flex-1 ml-4">Event Interlock Output</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {escLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.esc}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-amber-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LiftVisualizer = () => {
+  const [lifts, setLifts] = useState([
+    { id: 'LIFT-A', location: 'Street -> Concourse', floor: '1F', load: '320kg (NOMINAL)', status: 'NOMINAL' },
+    { id: 'LIFT-B', location: 'Concourse -> Plat 2', floor: 'B1F', load: '0kg (IDLE)', status: 'NOMINAL' },
+    { id: 'LIFT-C', location: 'Concourse -> Plat 1', floor: 'B2F', load: '850kg (WARN)', status: 'HEAVY' },
+  ]);
+
+  const [liftLogs, setLiftLogs] = useState<Array<{ time: string; lift: string; event: string; status: string }>>([
+    { time: '05:22:15', lift: 'LIFT-C', event: 'Capacity check warning (85% limit reached)', status: 'WARN' },
+    { time: '05:21:05', lift: 'LIFT-A', event: 'Floor proximity sensor alignment success', status: 'SUCCESS' },
+    { time: '05:19:40', lift: 'LIFT-B', event: 'Idle timeout mode: energy savings enabled', status: 'INFO' },
+  ]);
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      const now = new Date().toISOString().split('T')[1].slice(0, 8);
+      setLiftLogs(prev => [{ time: now, lift: 'LIFT-A', event: 'Arrived at platform zone. Opening doors', status: 'SUCCESS' }, ...prev].slice(0, 8));
+      setLifts(prev => prev.map(l => l.id === 'LIFT-A' ? { ...l, floor: 'B2F' } : l));
+    }, 4500);
+    return () => clearInterval(cycle);
+  }, []);
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>Elevator Telemetry Stream</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">SCADA: ENG-LIFT-9</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2.5 mb-4">
+        {lifts.map(l => (
+          <div key={l.id} className="bg-zinc-950 border border-zinc-800/80 p-2.5 rounded flex flex-col gap-1">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="font-bold text-slate-200">{l.id}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                l.status === 'NOMINAL' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+              }`}>
+                {l.status}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px] truncate">{l.location}</div>
+            <div className="text-[10px] text-zinc-500 mt-1 pt-1 border-t border-zinc-900">
+              <div className="flex justify-between"><span>Floor:</span><span className="text-white font-bold">{l.floor}</span></div>
+              <div className="flex justify-between mt-0.5"><span>Load:</span><span className="text-slate-300">{l.load}</span></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Device</span>
+          <span className="flex-1 ml-4">Elevator Event Log</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {liftLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.lift}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-amber-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StaffGPSVisualizer = () => {
+  const staff = [
+    { name: 'Officer Vikram', role: 'Security Control', zone: 'Concourse A', bat: '94%', status: 'IDLE' },
+    { name: 'Responder Priya', role: 'Medical Squad 1', zone: 'Platform 2', bat: '88%', status: 'EN ROUTE' },
+    { name: 'Helper Suresh', role: 'Passenger Assist', zone: 'Platform 1', bat: '78%', status: 'ARRIVED' },
+    { name: 'Supervisor Amit', role: 'Operations', zone: 'Station Command', bat: '92%', status: 'IDLE' },
+  ];
+
+  const gpsLogs = [
+    { time: '05:22:30', name: 'Responder Priya', event: 'Dispatched to Platform 2 (Emergency Alert)', status: 'INFO' },
+    { time: '05:21:45', name: 'Helper Suresh', event: 'Stationary position check nominal', status: 'SUCCESS' },
+    { time: '05:20:10', name: 'Officer Vikram', event: 'Patrol routing update received', status: 'SUCCESS' },
+  ];
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>Staff GPS Location Tracking</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">TETRA NETWORK p25</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        {staff.map((s, idx) => (
+          <div key={idx} className="bg-zinc-950 border border-zinc-800/80 p-3 rounded flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-slate-200">{s.name}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                s.status === 'EN ROUTE' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse' :
+                s.status === 'ARRIVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                'bg-zinc-500/10 text-zinc-400 border border-zinc-500/30'
+              }`}>
+                {s.status}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px]">{s.role}</div>
+            <div className="flex justify-between text-[10px] text-zinc-500 mt-1 pt-1 border-t border-zinc-900">
+              <span>Zone: {s.zone}</span>
+              <span>Bat: {s.bat}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Staff</span>
+          <span className="flex-1 ml-4">Routing / GPS Log</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {gpsLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-24 truncate">{log.name}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-amber-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MedicalIncidentSystemVisualizer = () => {
+  const incidents = [
+    { id: 'MED-01', type: 'Heatstroke', location: 'Platform 2 East', status: 'DISPATCHED', squad: 'Squad Alpha' },
+    { id: 'MED-02', type: 'Slip & Fall', location: 'Escalator B Hall', status: 'RESPONDED', squad: 'Squad Bravo' },
+  ];
+
+  const medLogs = [
+    { time: '05:22:15', ref: 'MED-01', event: 'Dispatch unit activated (heart rate monitor telemetry triggers)', status: 'WARN' },
+    { time: '05:20:45', ref: 'MED-02', event: 'Patient evaluation complete: minor bruise, cleared to travel', status: 'SUCCESS' },
+  ];
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>Medical Dispatch System</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">TRIAL BAY 1A</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        {incidents.map((inc, idx) => (
+          <div key={idx} className="bg-zinc-950 border border-zinc-800/80 p-3 rounded flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-slate-200">{inc.id} - {inc.type}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                inc.status === 'DISPATCHED' ? 'bg-red-500/10 text-red-400 border border-red-500/30 animate-pulse' :
+                'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+              }`}>
+                {inc.status}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px]">{inc.location}</div>
+            <div className="text-zinc-500 text-[10px] mt-1 pt-1 border-t border-zinc-900">
+              Assigned: {inc.squad}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Ref ID</span>
+          <span className="flex-1 ml-4">Dispatch logs / Triage</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {medLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.ref}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-amber-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SecurityIncidentsVisualizer = () => {
+  const alerts = [
+    { id: 'SEC-102', type: 'Unattended Bag', location: 'Gate A Concourse', level: 'CRITICAL', status: 'VERIFYING' },
+    { id: 'SEC-103', type: 'Turnstile Bypass', location: 'Gate B Entry', level: 'ELEVATED', status: 'RESOLVED' },
+  ];
+
+  const secLogs = [
+    { time: '05:22:40', ref: 'SEC-102', event: 'Camera Object Tracking: luggage left unattended >4 minutes', status: 'WARN' },
+    { time: '05:21:10', ref: 'SEC-103', event: 'RFID audit alarm cleared. Local supervisor checked user card', status: 'SUCCESS' },
+  ];
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>VMS Alarm Central System</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">ZONE INT-12</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        {alerts.map((al, idx) => (
+          <div key={idx} className="bg-zinc-950 border border-zinc-800/80 p-3 rounded flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-slate-200">{al.id} - {al.type}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                al.level === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border border-red-500/30 animate-pulse' :
+                'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+              }`}>
+                {al.level}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px]">{al.location}</div>
+            <div className="text-zinc-500 text-[10px] mt-1 pt-1 border-t border-zinc-900">
+              State: {al.status}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Alarm ID</span>
+          <span className="flex-1 ml-4">Security Feed Event / Verification</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {secLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.ref}</span>
+              <span className={`flex-1 truncate ${log.status === 'WARN' ? 'text-red-400' : log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PassengerSOSAppVisualizer = () => {
+  const reports = [
+    { id: 'SOS-904', user: 'Pax_2041', msg: 'Water spill on stairs Exit A', category: 'SPILL HAZARD', time: '05:22' },
+    { id: 'SOS-905', user: 'Pax_8812', msg: 'Gate scanner C is sluggish', category: 'SYSTEM DELAY', time: '05:23' },
+  ];
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>Passenger Mobile App API Feed</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">ACTIVE SOS CHANNELS: 2</span>
+      </div>
+
+      <div className="flex-1 flex flex-col gap-3">
+        {reports.map((rep, idx) => (
+          <div key={idx} className="bg-zinc-950 border border-zinc-800 p-3.5 rounded flex flex-col gap-2">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="font-bold text-rose-400 flex items-center gap-1">
+                <Smartphone className="w-3.5 h-3.5" />
+                {rep.id} ({rep.user})
+              </span>
+              <span className="px-1.5 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[9px] font-bold rounded">
+                {rep.category}
+              </span>
+            </div>
+            <div className="text-slate-300 text-xs italic">"{rep.msg}"</div>
+            <div className="text-[10px] text-zinc-500 text-right font-mono">Reported: {rep.time}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const WeatherRadarVisualizer = () => {
   return (
     <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
@@ -392,6 +776,18 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               <TrafficHeatmapVisualizer />
             ) : feed.id === 'afc' ? (
               <AFCGateVisualizer />
+            ) : feed.id === 'escalator' ? (
+              <EscalatorVisualizer />
+            ) : feed.id === 'lift' ? (
+              <LiftVisualizer />
+            ) : feed.id === 'staffgps' ? (
+              <StaffGPSVisualizer />
+            ) : feed.id === 'medical' ? (
+              <MedicalIncidentSystemVisualizer />
+            ) : feed.id === 'security' ? (
+              <SecurityIncidentsVisualizer />
+            ) : feed.id === 'sos' ? (
+              <PassengerSOSAppVisualizer />
             ) : (
               <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col">
                 <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
