@@ -165,7 +165,7 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                 <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/30 p-3 rounded-lg text-indigo-400">
                   <Cpu className="w-5 h-5" />
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold">{feed.hackathonSource}</span>
+                    <span className="text-sm font-bold">{recentEvent?.aiModel || feed.hackathonSource}</span>
                     <span className="text-[10px] font-mono">Latency: {Math.floor(12 + Math.random() * 20)}ms</span>
                   </div>
                 </div>
@@ -177,15 +177,21 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
                   <div className="bg-[#111827] border border-[#1F2937] p-4 rounded-lg flex flex-col gap-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Persons in view</span>
-                      <span className="text-lg font-bold text-slate-200">{boxes.length * 9}</span>
+                      <span className="text-lg font-bold text-slate-200">
+                        {recentEvent?.extractedInsights?.match(/People:\s*(\d+)/)?.[1] || '127'}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Avg Crowd Speed</span>
-                      <span className="text-lg font-bold text-slate-200">0.8 m/s</span>
+                      <span className="text-lg font-bold text-slate-200">
+                        {recentEvent?.extractedInsights?.match(/Avg Speed:\s*([\d\.]+\s*m\/s)/)?.[1] || '0.8 m/s'}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Density Anomaly</span>
-                      <span className="text-lg font-bold text-[#F59E0B]">Detected</span>
+                      <span className="text-lg font-bold text-[#F59E0B]">
+                        {recentEvent ? 'Detected (Exit B)' : 'Monitoring'}
+                      </span>
                     </div>
                   </div>
                 </div>
