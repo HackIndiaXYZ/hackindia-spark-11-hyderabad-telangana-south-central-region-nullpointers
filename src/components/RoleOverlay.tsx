@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppState } from '../context/AppStateContext';
 import { LINEAGE_REGISTRY } from '../services/lineageRegistry';
-import { Users, AlertTriangle, Heart, HelpCircle } from 'lucide-react';
+import { AlertTriangle, Heart, HelpCircle } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, 
   Tooltip, BarChart, Bar 
@@ -244,57 +244,6 @@ export const RoleOverlay: React.FC = () => {
     );
   };
 
-  const renderVolunteerView = () => {
-    const fatigue = Math.round(telemetry.volunteers.fatigue * 100);
-    return (
-      <div className="space-y-4">
-        <h3 className="font-mono text-xs text-amber-400 uppercase tracking-widest border-b border-white/5 pb-2">Staff Status</h3>
-        
-        {/* Fatigue dial index */}
-        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left flex justify-between items-center">
-          <div>
-            <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1">
-              Staff Fatigue Index
-              <button 
-                onClick={() => setLineageModalData(LINEAGE_REGISTRY['volunteer-fatigue'])}
-                className="hover:text-indigo-400 p-0.5 rounded cursor-pointer"
-              >
-                <HelpCircle className="w-2.5 h-2.5" />
-              </button>
-            </span>
-            <span className={`text-2xl font-bold block mt-1 ${fatigue > 40 ? 'text-amber-400' : 'text-green-400'}`}>
-              {fatigue}%
-            </span>
-            <span className="text-[9px] font-mono text-white/40 block mt-0.5">Status: Nominal limits</span>
-          </div>
-          <Users className="w-8 h-8 text-amber-400/50" />
-        </div>
-
-        {/* Dispatch locations */}
-        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
-          <span className="text-[10px] font-mono text-white/30 uppercase block mb-3">Volunteer Deployment Units</span>
-          <div className="space-y-2.5 font-mono text-xs">
-            <div className="flex justify-between">
-              <span className="text-white/50">Information Desks</span>
-              <span className="text-white font-semibold">45 Deployed</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50">Gate Queue Helpers</span>
-              <span className="text-white font-semibold">120 Deployed</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50">Medical Triage Support</span>
-              <span className="text-white font-semibold">25 Deployed</span>
-            </div>
-            <div className="flex justify-between border-t border-white/5 pt-2.5 text-[10px] text-white/30">
-              <span>TOTAL FIELD DEPLOYED</span>
-              <span className="text-white font-semibold">{telemetry.volunteers.deployed || 240} Staff</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const renderTransportView = () => {
     return (
@@ -435,14 +384,88 @@ export const RoleOverlay: React.FC = () => {
     );
   };
 
+  const renderStationView = () => {
+    return (
+      <div className="space-y-4">
+        <h3 className="font-mono text-xs text-amber-400 uppercase tracking-widest border-b border-white/5 pb-2">Station Facilities Status</h3>
+        
+        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-2">
+            Escalators & Elevators
+          </span>
+          <div className="space-y-1.5 font-mono text-xs">
+            <div className="flex justify-between">
+              <span className="text-white/50">Concourse Escalators</span>
+              <span className="text-green-400 font-semibold">12/12 Operational</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-white/50">Platform Lifts</span>
+              <span className="text-green-400 font-semibold">4/4 Operational</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
+          <span className="text-[10px] font-mono text-white/30 uppercase block mb-2">Environmental Controls</span>
+          <div className="space-y-1.5 font-mono text-xs">
+            <div className="flex justify-between">
+              <span className="text-white/50">HVAC System</span>
+              <span className="text-white font-semibold">Nominal (23.5°C)</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-white/50">Primary Power Grid</span>
+              <span className="text-green-400 font-semibold">Active (99.8%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderPassengerView = () => {
+    const concoursePct = Math.round(telemetry.crowd.concourseDensity * 100);
+    return (
+      <div className="space-y-4">
+        <h3 className="font-mono text-xs text-violet-400 uppercase tracking-widest border-b border-white/5 pb-2">Passenger Flow Status</h3>
+        
+        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
+          <span className="text-white/30 text-[9px] font-mono uppercase flex items-center gap-1 mb-1.5">
+            Concourse Circulation Flow
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-white">{concoursePct}%</span>
+            <span className={`text-[10px] font-mono font-bold ${concoursePct > 75 ? 'text-red-400' : 'text-green-400'}`}>
+              {concoursePct > 75 ? 'CONGESTION ALERT' : 'OPTIMAL'}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white/2 border border-white/5 text-left">
+          <span className="text-[10px] font-mono text-white/30 uppercase block mb-2">Throughput Analytics</span>
+          <div className="space-y-1.5 font-mono text-xs">
+            <div className="flex justify-between">
+              <span className="text-white/50">Entry Rate</span>
+              <span className="text-white font-semibold">{telemetry.crowd.flowRate} pax/min</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-white/50">Total Checked In</span>
+              <span className="text-white font-semibold">{telemetry.crowd.totalInside.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full glass-panel rounded-2xl p-5 overflow-hidden">
       {renderPrioritiesPanel()}
       {currentRole === 'commander' && renderCommanderView()}
+      {currentRole === 'station' && renderStationView()}
+      {currentRole === 'passenger' && renderPassengerView()}
       {currentRole === 'security' && renderSecurityView()}
-      {currentRole === 'medical' && renderMedicalView()}
-      {currentRole === 'volunteer' && renderVolunteerView()}
-      {currentRole === 'transport' && renderTransportView()}
+      {currentRole === 'transit' && renderTransportView()}
+      {currentRole === 'emergency' && renderMedicalView()}
       {!currentRole && renderCommanderView()}
     </div>
   );

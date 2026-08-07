@@ -18,7 +18,7 @@ export const SCENARIO_DATA: Record<string, any> = {
   'power-failure': powerFailureData
 };
 
-export type RoleType = 'commander' | 'security' | 'medical' | 'volunteer' | 'transport' | null;
+export type RoleType = 'commander' | 'station' | 'passenger' | 'security' | 'transit' | 'emergency' | null;
 export type ResourceState = 'Idle' | 'Assigned' | 'Travelling' | 'Arrived' | 'Completed';
 
 export interface ReplayItem {
