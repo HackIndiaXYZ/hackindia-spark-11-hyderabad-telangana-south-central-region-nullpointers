@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Server, Activity, Clock, ShieldCheck, Database, ArrowDown } from 'lucide-react';
+import type { IngestFeed } from '../context/AppStateContext';
+import { Server, Activity, Clock, ShieldCheck, Database, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SourcePreviewModal } from '../components/common/SourcePreviewModal';
 
 export const DataPipelinePage: React.FC = () => {
-  const { getIngestFeeds, pipelineMetrics, currentPulseModule, lastIngestedPacket } = useAppState();
+  const { getIngestFeeds, pipelineMetrics, currentPulseModule, lastIngestedPacket, liveEventsLog } = useAppState();
   const feeds = getIngestFeeds();
+  const [selectedPreviewFeed, setSelectedPreviewFeed] = useState<IngestFeed | null>(null);
+  const [viewOffset, setViewOffset] = useState(0);
+
+  const displayedPacket = liveEventsLog.length > 0 ? liveEventsLog[Math.min(viewOffset, liveEventsLog.length - 1)] : lastIngestedPacket;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -39,7 +45,11 @@ export const DataPipelinePage: React.FC = () => {
       </div>
       <div className="flex flex-col gap-2">
         {data.map(feed => (
-          <div key={feed.id} className={`grid grid-cols-5 gap-4 items-center px-4 py-3 rounded-lg border ${getStatusBgColor(feed.status)}`}>
+          <div 
+            key={feed.id} 
+            onClick={() => setSelectedPreviewFeed(feed)}
+            className={`grid grid-cols-5 gap-4 items-center px-4 py-3 rounded-lg border cursor-pointer hover:brightness-110 transition-all ${getStatusBgColor(feed.status)}`}
+          >
             <div className="col-span-2 flex items-center gap-3">
               <div className={`w-2 h-2 rounded-full ${feed.status === 'Healthy' ? 'bg-[#10B981]' : feed.status === 'Delayed' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'} animate-pulse`} />
               <div>
@@ -73,6 +83,7 @@ export const DataPipelinePage: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 mt-6">
+      <SourcePreviewModal feed={selectedPreviewFeed} onClose={() => setSelectedPreviewFeed(null)} />
       
       {/* Top section: Two columns of feeds */}
       <div className="grid grid-cols-2 gap-12">
@@ -86,44 +97,65 @@ export const DataPipelinePage: React.FC = () => {
                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{animationDelay: '300ms'}}/>
               </div>
             </div>
-            <h2 className="text-lg font-bold text-slate-200 flex items-center gap-3 uppercase tracking-widest">
-              Live Ingestion Stream
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-200 flex items-center gap-3 uppercase tracking-widest">
+                Live Ingestion Stream
+              </h2>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setViewOffset(prev => Math.min(liveEventsLog.length - 1, prev + 1))}
+                  disabled={viewOffset >= liveEventsLog.length - 1 || liveEventsLog.length === 0}
+                  className="p-1 rounded bg-[#1F2937] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-xs font-mono text-slate-500 w-12 text-center">
+                  {viewOffset === 0 ? 'LATEST' : `-${viewOffset}`}
+                </span>
+                <button 
+                  onClick={() => setViewOffset(prev => Math.max(0, prev - 1))}
+                  disabled={viewOffset === 0}
+                  className="p-1 rounded bg-[#1F2937] hover:bg-slate-700 disabled:opacity-50 text-slate-300 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
             
-            {lastIngestedPacket ? (
+            {displayedPacket ? (
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-blue-400 font-mono text-xs">{lastIngestedPacket.time}</span>
+                    <span className="text-blue-400 font-mono text-xs">{displayedPacket.time}</span>
                     <span className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30 text-[10px] font-bold uppercase tracking-wider">
-                      {lastIngestedPacket.source}
+                      {displayedPacket.source}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-500">{lastIngestedPacket.packetId || 'PKT-PENDING'}</span>
+                  <span className="text-[10px] font-mono text-slate-500">{displayedPacket.packetId || 'PKT-PENDING'}</span>
                 </div>
                 
                 <div className="text-sm font-semibold text-white">
-                  {lastIngestedPacket.message}
+                  {displayedPacket.message}
                 </div>
 
                 {/* AI Pipeline Mini View */}
-                {lastIngestedPacket.rawInput && (
+                {displayedPacket.rawInput && (
                   <div className="flex flex-col gap-3 bg-[#0F172A] border border-[#1F2937] rounded-lg p-4 mt-2">
                     <div className="flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Raw Input</span>
-                      <span className="text-xs font-mono text-slate-300 bg-[#111827] px-2 py-1 rounded border border-[#374151]">{lastIngestedPacket.rawInput}</span>
+                      <span className="text-xs font-mono text-slate-300 bg-[#111827] px-2 py-1 rounded border border-[#374151]">{displayedPacket.rawInput}</span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
                         <ArrowDown className="w-3 h-3 text-indigo-400" /> AI Model
                       </span>
-                      <span className="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20 w-fit">{lastIngestedPacket.aiModel}</span>
+                      <span className="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20 w-fit">{displayedPacket.aiModel}</span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
                         <ArrowDown className="w-3 h-3 text-emerald-400" /> Extracted Insights
                       </span>
-                      <span className="text-xs text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">{lastIngestedPacket.extractedInsights}</span>
+                      <span className="text-xs text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">{displayedPacket.extractedInsights}</span>
                     </div>
                   </div>
                 )}
