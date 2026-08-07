@@ -3,6 +3,7 @@ import { useAppState } from '../context/AppStateContext';
 import { aiService } from '../services/aiService';
 import { LINEAGE_REGISTRY } from '../services/lineageRegistry';
 import { CheckCircle2, RefreshCw, Terminal, ChevronDown, ChevronUp, AlertTriangle, HelpCircle } from 'lucide-react';
+import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
 
 export const OperationsConsole: React.FC = () => {
   const { 
@@ -22,6 +23,7 @@ export const OperationsConsole: React.FC = () => {
   const [mitigation, setMitigation] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [showWhy, setShowWhy] = useState<boolean>(false);
+  const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
 
   const timelineEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -356,13 +358,19 @@ export const OperationsConsole: React.FC = () => {
                   <span className="text-slate-500 block uppercase font-bold tracking-wide">Backup Protocol</span>
                   <span className="text-slate-400">{mitigation?.alternative}</span>
                 </div>
-                <div className="col-span-3 text-right">
+                <div className="col-span-3 text-right flex justify-end gap-1.5">
+                  <button
+                    onClick={() => setShowExplainModal(true)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-500/20 border border-indigo-500/40 hover:bg-indigo-500/30 transition-all font-mono text-[10px] text-indigo-300 font-bold cursor-pointer"
+                  >
+                    WHY THIS DECISION?
+                  </button>
                   <button
                     onClick={() => setShowWhy(!showWhy)}
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600 transition-all font-mono text-[10px] text-blue-400 font-bold cursor-pointer"
                   >
                     {showWhy ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    {showWhy ? 'CLOSE WHY' : 'WHY?'}
+                    {showWhy ? 'CLOSE' : 'GRAPH'}
                   </button>
                 </div>
               </div>
@@ -384,6 +392,13 @@ export const OperationsConsole: React.FC = () => {
         )}
       </div>
 
+      <WhyThisDecisionModal
+        isOpen={showExplainModal}
+        onClose={() => setShowExplainModal(false)}
+        recommendationTitle={mitigation?.title || "Deploy Two Supervisors to Platform 2 & Open Exit C"}
+        confidence={adjustedConfidence}
+        videoSrc="/Crowd-at-Ameerpet-Metro-Station.mp4"
+      />
     </div>
   );
 };

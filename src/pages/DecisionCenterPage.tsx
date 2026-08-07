@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { Zap, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldCheck, Brain } from 'lucide-react';
+import { Zap, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldCheck, Brain, HelpCircle } from 'lucide-react';
+import { WhyThisDecisionModal } from '../components/common/WhyThisDecisionModal';
 
 export const DecisionCenterPage: React.FC = () => {
   const { approveIntervention, isIntervened, isApproving } = useAppState();
 
   const [dispatchStates, setDispatchStates] = useState<Record<string, boolean>>({});
+  const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
 
   const handleDispatch = (id: string) => {
     setDispatchStates(prev => ({ ...prev, [id]: true }));
@@ -140,9 +142,19 @@ export const DecisionCenterPage: React.FC = () => {
               {/* AI Explainability Panel (WHY THIS DECISION?) */}
               <div className="grid grid-cols-2 gap-8 mt-4">
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Brain className="w-4 h-4 text-[#8B5CF6]" />
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#8B5CF6]">Why This Decision?</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4 text-[#8B5CF6]" />
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-[#8B5CF6]">Why This Decision?</h3>
+                    </div>
+
+                    <button
+                      onClick={() => setShowExplainModal(true)}
+                      className="flex items-center gap-1.5 px-3 py-1 bg-[#8B5CF6]/20 hover:bg-[#8B5CF6]/30 text-[#8B5CF6] border border-[#8B5CF6]/40 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                      INSPECT PIPELINE
+                    </button>
                   </div>
                   
                   <div className="bg-[#111827] border border-[#1F2937] rounded-lg p-4 flex flex-col gap-4">
@@ -240,6 +252,13 @@ export const DecisionCenterPage: React.FC = () => {
         )}
       </div>
 
+      <WhyThisDecisionModal
+        isOpen={showExplainModal}
+        onClose={() => setShowExplainModal(false)}
+        recommendationTitle="Open Exit C & Dispatch Crowd Control"
+        confidence={94}
+        videoSrc="/Crowd-at-Ameerpet-Metro-Station.mp4"
+      />
     </div>
   );
 };

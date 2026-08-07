@@ -4,10 +4,11 @@ import { DigitalTwin } from '../components/DigitalTwin';
 import { DecisionReplay } from '../components/DecisionReplay';
 import { RoleOverlay } from '../components/RoleOverlay';
 import { ScenarioSimulator } from '../components/ScenarioSimulator';
+import { MetroVisionIntelligence } from '../components/MetroVisionIntelligence';
 import { InfoModal } from '../components/common/InfoModal';
 import { 
   LayoutDashboard, Map as MapIcon, AlertTriangle, 
-  Database, Zap, RotateCcw, Settings, Activity, ArrowRight
+  Database, Zap, RotateCcw, Settings, Activity, ArrowRight, Camera
 } from 'lucide-react';
 
 import { DecisionCenterPage } from './DecisionCenterPage';
@@ -35,9 +36,10 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-[#0B1220] text-slate-200 flex flex-col p-4 md:p-6 select-none font-sans">
       
-      {/* ENTERPRISE 6-TAB NAVIGATION */}
-      <nav className="flex items-center gap-2 mb-6 border-b border-[#1F2937] pb-4">
+      {/* ENTERPRISE 7-TAB NAVIGATION */}
+      <nav className="flex flex-wrap items-center gap-2 mb-6 border-b border-[#1F2937] pb-4">
         {[
+          { id: 'vision-intelligence', label: 'Metro Vision Intelligence', icon: Camera, highlight: true },
           { id: 'overview', label: 'Overview', icon: LayoutDashboard },
           { id: 'data-pipeline', label: 'Data Pipeline', icon: Database },
           { id: 'digital-twin', label: 'Digital Twin', icon: MapIcon },
@@ -51,14 +53,23 @@ export const DashboardPage: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-all border ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-all border cursor-pointer ${
                 isActive
-                  ? 'bg-[#111827] text-white border-[#1F2937] shadow-sm'
-                  : 'bg-transparent text-slate-500 border-transparent hover:text-slate-200 hover:bg-[#111827]/50'
+                  ? tab.highlight 
+                    ? 'bg-gradient-to-r from-cyan-950 to-indigo-950 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/10'
+                    : 'bg-[#111827] text-white border-[#1F2937] shadow-sm'
+                  : tab.highlight
+                    ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20'
+                    : 'bg-transparent text-slate-500 border-transparent hover:text-slate-200 hover:bg-[#111827]/50'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className={`w-4 h-4 ${tab.highlight ? 'text-cyan-400 animate-pulse' : ''}`} />
               {tab.label}
+              {tab.highlight && (
+                <span className="px-1.5 py-0.2 text-[9px] font-mono font-bold rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase ml-1">
+                  LIVE AI
+                </span>
+              )}
             </button>
           );
         })}
@@ -206,6 +217,12 @@ export const DashboardPage: React.FC = () => {
               </div>
 
             </div>
+          </div>
+        )}
+
+        {activeTab === 'vision-intelligence' && (
+          <div className="flex-1 overflow-hidden">
+            <MetroVisionIntelligence />
           </div>
         )}
 

@@ -94,8 +94,8 @@ interface AppStateContextType {
   currentPulseModule: string | null;
   lastIngestedPacket: LiveEvent | null;
   
-  activeTab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings';
-  setActiveTab: (tab: 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings') => void;
+  activeTab: 'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings';
+  setActiveTab: (tab: 'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings') => void;
   lineageModalData: LineageData | null;
   setLineageModalData: (data: LineageData | null) => void;
   getIngestFeeds: () => IngestFeed[];
@@ -194,7 +194,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [approvalLogs, setApprovalLogs] = useState<string[]>([]);
   const [isApproving, setIsApproving] = useState<boolean>(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('vision-intelligence');
   const [lineageModalData, setLineageModalData] = useState<LineageData | null>(null);
 
   // Live Generative State
