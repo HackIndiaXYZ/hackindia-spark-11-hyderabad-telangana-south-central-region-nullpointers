@@ -22,7 +22,7 @@
   {
     "id": "src-cctv",
     "topic": "CCTV Computer Vision",
-    "content": "Source: Platform Cameras. Hackathon Backend: YOLOv11 Detection model. Data Emitted: People counts, average crowd speed (m/s), and anomaly flags (e.g. density alerts, abandoned luggage). Uses live RTSP streams to compute frame-by-frame passenger metrics."
+    "content": "Source: Platform Cameras at Ameerpet Metro Station (Major Interchange Node). Hackathon Backend: YOLOv11 Detection model. Data Emitted: High-density people counts, average crowd speed (m/s), flow bottlenecks, and anomaly flags. Tracks passengers navigating the busy Ameerpet interchange stairs, platforms, and concourses using live RTSP video feeds to compute real-time crowd dynamics."
   },
   {
     "id": "src-afc",

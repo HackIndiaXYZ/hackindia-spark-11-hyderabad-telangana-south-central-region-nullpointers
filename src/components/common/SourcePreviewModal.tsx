@@ -108,6 +108,114 @@ const MetroATSVisualizer = () => {
   );
 };
 
+const AFCGateVisualizer = () => {
+  const [gates, setGates] = useState([
+    { id: 'Gate 1', mode: 'ENTRY', count: 1420, rate: '24/min', status: 'NOMINAL', color: 'text-emerald-400' },
+    { id: 'Gate 2', mode: 'ENTRY', count: 1890, rate: '42/min', status: 'HEAVY', color: 'text-amber-400' },
+    { id: 'Gate 3', mode: 'ENTRY', count: 2150, rate: '56/min', status: 'CRITICAL', color: 'text-red-400' },
+    { id: 'Gate 4', mode: 'EXIT', count: 980, rate: '18/min', status: 'NOMINAL', color: 'text-emerald-400' },
+    { id: 'Gate 5', mode: 'BIDIRECTIONAL', count: 1100, rate: '12/min', status: 'NOMINAL', color: 'text-emerald-400' },
+    { id: 'Gate 6', mode: 'BIDIRECTIONAL', count: 0, rate: '0/min', status: 'MAINTENANCE', color: 'text-zinc-500' },
+  ]);
+
+  const [gateLogs, setGateLogs] = useState<Array<{ time: string; gate: string; event: string; status: string }>>([
+    { time: '05:12:40', gate: 'Gate 3', event: 'Tap-in frequency threshold warning (50+ pax/min)', status: 'WARN' },
+    { time: '05:12:22', gate: 'Gate 2', event: 'Card validation timeout (retry success)', status: 'INFO' },
+    { time: '05:12:05', gate: 'Gate 6', event: 'Switched to Maintenance Mode for diagnostics', status: 'INFO' },
+    { time: '05:11:48', gate: 'Gate 1', event: 'Turnstile mechanical test complete', status: 'SUCCESS' },
+  ]);
+
+  useEffect(() => {
+    const cycleEvents = [
+      { gate: 'Gate 3', event: 'Passenger entry rate surge detected', status: 'WARN' },
+      { gate: 'Gate 1', event: 'Passenger tapped successfully (NFC validation)', status: 'SUCCESS' },
+      { gate: 'Gate 4', event: 'NFC reader response latency within normal parameters (45ms)', status: 'SUCCESS' },
+      { gate: 'Gate 2', event: 'Turnstile gate cycle count reached limit', status: 'INFO' },
+      { gate: 'Gate 5', event: 'Switched directional mode to: EXIT ONLY', status: 'INFO' },
+    ];
+
+    let idx = 0;
+    const interval = setInterval(() => {
+      const current = cycleEvents[idx % cycleEvents.length];
+      const now = new Date().toISOString().split('T')[1].slice(0, 8);
+
+      setGateLogs(prev => [{ time: now, gate: current.gate, event: current.event, status: current.status }, ...prev].slice(0, 8));
+
+      setGates(prev => prev.map(g => {
+        if (g.id === current.gate) {
+          if (current.event.includes('surge')) return { ...g, rate: '62/min', status: 'CRITICAL', color: 'text-red-400' };
+          if (current.event.includes('tapped')) return { ...g, count: g.count + 1 };
+          if (current.event.includes('directional')) return { ...g, mode: 'EXIT' };
+        }
+        return g;
+      }));
+
+      idx++;
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 font-mono text-xs shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="text-emerald-500 mb-4 font-bold flex items-center justify-between border-b border-zinc-800 pb-3 uppercase tracking-widest text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]" />
+          <span>AFC Turnstile Live Intake Telemetry</span>
+        </div>
+        <span className="text-zinc-500 text-[10px]">PROTOCOL: RFC-1049 AFC-TCP</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2.5 mb-4">
+        {gates.map(g => (
+          <div key={g.id} className="bg-zinc-950 border border-zinc-800/80 p-2.5 rounded flex flex-col gap-1">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="font-bold text-slate-200">{g.id}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                g.status === 'NOMINAL' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                g.status === 'HEAVY' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
+                g.status === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border border-red-500/30 animate-pulse' :
+                'bg-zinc-500/10 text-zinc-400 border border-zinc-500/30'
+              }`}>
+                {g.status}
+              </span>
+            </div>
+            <div className="text-zinc-400 text-[10px]">MODE: {g.mode}</div>
+            <div className="text-zinc-500 text-[9px]">TOTAL TAPS: {g.count}</div>
+            <div className="flex justify-between items-center text-[10px] mt-1 pt-1 border-t border-zinc-900">
+              <span className="text-slate-400">Rate:</span>
+              <span className={`font-semibold ${g.color}`}>{g.rate}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-1 border border-zinc-800/60 rounded bg-black/60 p-3 overflow-hidden flex flex-col">
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 flex justify-between">
+          <span>Timestamp</span>
+          <span>Gate ID</span>
+          <span className="flex-1 ml-4">Turnstile Event / Alarm Log</span>
+        </div>
+        <div className="flex-1 flex flex-col gap-1.5 overflow-hidden">
+          {gateLogs.map((log, i) => (
+            <div key={i} className="flex items-center gap-3 text-[11px] border-b border-zinc-900/50 pb-1" style={{ opacity: 1 - (i * 0.12) }}>
+              <span className="text-zinc-500 font-mono">[{log.time}]</span>
+              <span className="text-slate-300 font-bold w-16">{log.gate}</span>
+              <span className={`flex-1 truncate ${
+                log.status === 'WARN' ? 'text-amber-400' :
+                log.status === 'SUCCESS' ? 'text-emerald-400' :
+                'text-zinc-300'
+              }`}>
+                {log.event}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const WeatherRadarVisualizer = () => {
   return (
     <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col p-5 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
@@ -278,11 +386,14 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
           <div className="flex-1 border-r border-[#27272a] bg-black relative overflow-hidden group p-4">
             {feed.id === 'cctv' ? (
               <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800">
-                {/* Background Image */}
-                <img 
-                  src="/cctv-bg.png" 
-                  alt="CCTV Feed" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
+                {/* Background Video */}
+                <video 
+                  src="/Crowd-at-Ameerpet-Metro-Station.mp4" 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-luminosity"
                 />
                 
                 {/* Glitch/Scanline effect overlay */}
@@ -328,6 +439,8 @@ export const SourcePreviewModal: React.FC<SourcePreviewModalProps> = ({ feed, on
               <WeatherRadarVisualizer />
             ) : feed.id === 'traffic' ? (
               <TrafficHeatmapVisualizer />
+            ) : feed.id === 'afc' ? (
+              <AFCGateVisualizer />
             ) : (
               <div className="w-full h-full relative rounded-lg overflow-hidden border border-zinc-800 bg-[#09090b] flex flex-col">
                 <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
