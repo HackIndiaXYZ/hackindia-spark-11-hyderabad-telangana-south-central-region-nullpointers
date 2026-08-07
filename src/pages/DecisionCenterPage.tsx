@@ -3,7 +3,7 @@ import { useAppState } from '../context/AppStateContext';
 import { Zap, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldCheck, Brain } from 'lucide-react';
 
 export const DecisionCenterPage: React.FC = () => {
-  const { activeScenario, approveIntervention, isIntervened, isApproving } = useAppState();
+  const { approveIntervention, isIntervened, isApproving } = useAppState();
 
   const [dispatchStates, setDispatchStates] = useState<Record<string, boolean>>({});
 
@@ -115,7 +115,7 @@ export const DecisionCenterPage: React.FC = () => {
           Decision Intelligence
         </h2>
 
-        {activeScenario === 'normal' ? (
+        {false ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <ShieldCheck className="w-24 h-24 text-[#10B981] mb-6 opacity-80" />
             <h3 className="text-2xl font-bold text-white mb-2">No Actions Required</h3>

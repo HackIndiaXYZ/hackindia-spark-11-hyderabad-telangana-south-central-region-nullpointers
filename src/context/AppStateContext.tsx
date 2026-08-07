@@ -185,7 +185,7 @@ const NARRATIVE_SEQUENCE: SequenceEvent[] = [
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentRole, setRoleState] = useState<RoleType>(null);
-  const [activeScenario, setActiveScenarioState] = useState<string>('normal');
+  const [activeScenario, setActiveScenarioState] = useState<string>('metro-delay');
   const [isSimulating, setIsSimulating] = useState<boolean>(true);
   const [isIntervened, setIsIntervened] = useState<boolean>(false);
   const [approvedScenarios, setApprovedScenarios] = useState<Record<string, boolean>>({});
