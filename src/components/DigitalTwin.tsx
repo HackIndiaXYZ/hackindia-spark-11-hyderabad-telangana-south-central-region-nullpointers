@@ -10,6 +10,8 @@ type Particle = {
   speed: number;
   angle: number;
   color: string;
+  minY?: number;
+  maxY?: number;
 };
 
 export const DigitalTwin: React.FC = () => {
@@ -49,14 +51,19 @@ export const DigitalTwin: React.FC = () => {
       targetZone = { x: 400, y: 400, radius: 400 }; // Normal flow
     }
 
-    const newParticles: Particle[] = Array.from({ length: numParticles }).map((_, i) => ({
-      id: i,
-      x: targetZone.x + (Math.random() - 0.5) * targetZone.radius * 2,
-      y: targetZone.y + (Math.random() - 0.5) * targetZone.radius * 2,
-      speed: 0.5 + Math.random() * 1.5,
-      angle: Math.random() * Math.PI * 2,
-      color: Math.random() > 0.8 ? '#3B82F6' : '#60A5FA', // Blue hues
-    }));
+    const newParticles: Particle[] = Array.from({ length: numParticles }).map((_, i) => {
+      const startY = targetZone.y + (Math.random() - 0.5) * targetZone.radius * 2;
+      return {
+        id: i,
+        x: targetZone.x + (Math.random() - 0.5) * targetZone.radius * 2,
+        y: startY,
+        speed: 0.1 + Math.random() * 0.3,
+        angle: Math.random() * Math.PI * 2,
+        color: Math.random() > 0.8 ? '#3B82F6' : '#60A5FA',
+        minY: startY < 400 ? 100 : 470,
+        maxY: startY < 400 ? 330 : 700,
+      };
+    });
 
     setParticles(newParticles);
   }, [telemetry]);
@@ -74,7 +81,7 @@ export const DigitalTwin: React.FC = () => {
         
         // Bounce off invisible boundaries (800x800 grid)
         if (nx < 100 || nx > 700) p.angle = Math.PI - p.angle;
-        if (ny < 100 || ny > 700) p.angle = -p.angle;
+        if (ny < (p.minY || 100) || ny > (p.maxY || 700)) p.angle = -p.angle;
 
         return { ...p, x: nx, y: ny };
       }));
@@ -95,18 +102,6 @@ export const DigitalTwin: React.FC = () => {
   return (
     <div className="relative w-full h-full flex flex-col overflow-hidden font-sans bg-[#09090b]">
       
-      {/* HUD Header */}
-      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center border-b border-[#27272a] z-20 pointer-events-none">
-        <div className="flex items-center gap-3">
-          <Crosshair className="w-5 h-5 text-blue-500 animate-pulse" />
-          <span className="font-bold text-sm uppercase tracking-widest text-slate-200">Palantir Digital Twin</span>
-        </div>
-        <div className="flex gap-4 text-xs font-mono text-slate-500 bg-black/40 px-3 py-1 rounded-full border border-white/5">
-          <span>PROJ: ISOMETRIC</span>
-          <span className="text-blue-500/80">LAT: 24.478°N</span>
-        </div>
-      </div>
-
       {/* Dynamic Warning Alert Overlay */}
       {lastIngestedPacket && (lastIngestedPacket.type === 'warning' || lastIngestedPacket.type === 'critical') && (
         <div className="absolute top-16 left-4 z-20 flex flex-col gap-2 pointer-events-none">
