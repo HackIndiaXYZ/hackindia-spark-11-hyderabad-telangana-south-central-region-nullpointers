@@ -98,17 +98,26 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col px-4 text-center">
+                <div 
+                  className="flex flex-col px-4 text-center cursor-pointer hover:opacity-75 transition-opacity"
+                  onClick={() => setActiveTab('vision-intelligence')}
+                >
                   <span className="text-xl font-bold text-slate-200">{activeIncidents}</span>
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Active Incidents</span>
                 </div>
 
-                <div className="flex flex-col px-4 text-center border-l border-[#27272a]">
+                <div 
+                  className="flex flex-col px-4 text-center border-l border-[#27272a] cursor-pointer hover:opacity-75 transition-opacity"
+                  onClick={() => setActiveTab('vision-intelligence')}
+                >
                   <span className="text-xl font-bold text-[#F59E0B]">{predictions}</span>
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Predictions</span>
                 </div>
 
-                <div className="flex flex-col pl-6 text-center border-l border-[#27272a]">
+                <div 
+                  className="flex flex-col pl-6 text-center border-l border-[#27272a] cursor-pointer hover:opacity-75 transition-opacity"
+                  onClick={() => setActiveTab('decision-center')}
+                >
                   <span className="text-xl font-bold text-[#2563EB]">{recommendations}</span>
                   <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Recommendation Waiting</span>
                 </div>
