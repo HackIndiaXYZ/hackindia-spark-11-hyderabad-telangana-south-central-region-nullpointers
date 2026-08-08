@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
 import { useAppState, SCENARIO_DATA } from '../context/AppStateContext';
+import { generateLiveMetrics } from '../services/groqService';
 
 interface TrackedPassenger {
   id: string;
@@ -47,6 +48,21 @@ export const MetroVisionIntelligence: React.FC = () => {
   const [walkingSpeed, setWalkingSpeed] = useState<number>(1.1);
   const [crowdDensity, setCrowdDensity] = useState<number>(0);
   const [congestionScore, setCongestionScore] = useState<number>(0);
+  const [groqBaseline, setGroqBaseline] = useState<any>(null);
+
+  // Fetch believable metrics baseline from Groq when scenario changes
+  useEffect(() => {
+    let isMounted = true;
+    const fetchGroqMetrics = async () => {
+      if (telemetry && activeScenario) {
+        setGroqBaseline(null); // Reset while loading
+        const data = await generateLiveMetrics(activeScenario, telemetry);
+        if (isMounted) setGroqBaseline(data);
+      }
+    };
+    fetchGroqMetrics();
+    return () => { isMounted = false; };
+  }, [activeScenario]);
 
   // Load Demo Data / Simulation
   useEffect(() => {
@@ -170,13 +186,21 @@ export const MetroVisionIntelligence: React.FC = () => {
 
             // Dynamically update analytics dashboard to reflect high density
             if (Math.random() > 0.9 && telemetry) {
-                const count = updatedSwarm.length;
-                setPassengerCount(Math.floor(telemetry.crowd.totalInside * 0.005) + count);
-                setPlatformOccupancy(Math.round(telemetry.crowd.standsDensity * 100));
-                setQueueLength(+(45 + Math.random() * 10).toFixed(1));
-                setWalkingSpeed(telemetry.crowd.flowRate > 80 ? 1.4 : 0.8);
-                setCrowdDensity(+(telemetry.crowd.standsDensity * 5).toFixed(1));
-                setCongestionScore(100 - telemetry.operationalHealth);
+                if (groqBaseline) {
+                    setPassengerCount(groqBaseline.passengerCount + Math.floor(Math.random() * 30 - 15));
+                    setPlatformOccupancy(Math.min(100, Math.max(0, groqBaseline.platformOcc + Math.floor(Math.random() * 2 - 1))));
+                    setQueueLength(+(parseFloat(groqBaseline.queueLength) + (Math.random() * 2 - 1)).toFixed(1));
+                    setWalkingSpeed(+(parseFloat(groqBaseline.walkingSpeed) + (Math.random() * 0.1 - 0.05)).toFixed(1));
+                    setCrowdDensity(+(parseFloat(groqBaseline.crowdDensity) + (Math.random() * 0.2 - 0.1)).toFixed(1));
+                    setCongestionScore(Math.min(100, Math.max(0, groqBaseline.congestionScore + Math.floor(Math.random() * 3 - 1))));
+                } else {
+                    setPassengerCount(Math.floor(telemetry.crowd.totalInside * 15 + 12000) + Math.floor(Math.random() * 30));
+                    setPlatformOccupancy(Math.round(telemetry.crowd.standsDensity * 100));
+                    setQueueLength(+(telemetry.crowd.concourseDensity * 45).toFixed(1));
+                    setWalkingSpeed(telemetry.crowd.flowRate > 80 ? 0.9 : 1.2);
+                    setCrowdDensity(+(telemetry.crowd.standsDensity * 4).toFixed(1));
+                    setCongestionScore(100 - telemetry.operationalHealth);
+                }
             }
         }
       }

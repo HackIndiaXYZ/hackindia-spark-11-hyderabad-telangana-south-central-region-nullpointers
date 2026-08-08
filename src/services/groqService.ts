@@ -250,3 +250,54 @@ Current Telemetry stats:
     return fallback;
   }
 }
+
+/**
+ * Generates believable dynamic live metrics using Groq RAG to scale mock data into realistic metropolitan transit numbers.
+ */
+export async function generateLiveMetrics(scenarioName: string, telemetry: any): Promise<any> {
+  const fallback = {
+    passengerCount: Math.floor(telemetry.crowd.totalInside * 15 + 12000), 
+    platformOcc: Math.round(telemetry.crowd.standsDensity * 100),
+    queueLength: (telemetry.crowd.concourseDensity * 45).toFixed(1),
+    walkingSpeed: (1.4 - (telemetry.crowd.standsDensity * 0.6)).toFixed(1),
+    crowdDensity: (telemetry.crowd.standsDensity * 4).toFixed(1),
+    congestionScore: Math.round(100 - telemetry.operationalHealth)
+  };
+
+  if (!import.meta.env.VITE_GROQ_API_KEY || import.meta.env.VITE_GROQ_API_KEY === 'your_groq_api_key_here') {
+    return fallback;
+  }
+
+  const systemPrompt = `You are the CROWDOS Data Intelligence Engine. Based on the active scenario and telemetry, generate BELIEVABLE, realistic, and mathematically consistent live metrics for a large metropolitan transit station (e.g. 15,000 to 50,000+ passengers during operations).
+Ensure the numbers make sense together (e.g. high occupancy = low walking speed, high density = high congestion score).
+You MUST respond ONLY with a JSON object containing EXACTLY these numeric or string keys: 'passengerCount' (number), 'platformOcc' (number 0-100), 'queueLength' (number in meters), 'walkingSpeed' (number in m/s), 'crowdDensity' (number in pax/m2), and 'congestionScore' (number 0-100).
+Do NOT wrap the JSON in Markdown formatting like \`\`\`json. Start directly with the { character.`;
+
+  const userPrompt = `Telemetry stats:
+- Active Scenario: ${scenarioName}
+- Operational Health: ${telemetry.operationalHealth}%
+- Risk Level: ${Math.round(telemetry.riskLevel * 100)}%
+- Mock Crowd Inside: ${telemetry.crowd.totalInside} (Scale this to realistic station levels)`;
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.3,
+      max_tokens: 200,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) return fallback;
+    
+    return JSON.parse(content);
+  } catch (error: any) {
+    console.error("Groq API Error in generateLiveMetrics:", error);
+    return fallback;
+  }
+}
+
