@@ -21,7 +21,6 @@ export const DigitalTwin: React.FC = () => {
   const [trainPos, setTrainPos] = useState(0);
 
   const isCritical = telemetry?.crowd?.standsDensity > 0.8;
-  const hasEscalatorFailure = liveEventsLog.some(e => e.source.includes('Escalator') && e.type === 'warning');
   const hasMedicalEmergency = liveEventsLog.some(e => e.source.includes('Medical Incident') && e.type === 'critical');
   const hasRain = liveEventsLog.some(e => e.source.includes('Weather') && e.message.includes('Rain'));
   const hasSecurityAlert = liveEventsLog.some(e => e.source.includes('Security') && e.type === 'critical');
@@ -32,30 +31,27 @@ export const DigitalTwin: React.FC = () => {
     
     // Determine target density
     let numParticles = 100 + (telemetry.crowd.totalInside / 100);
-    let targetZone = { x: 400, y: 400, radius: 400 }; // Default spread out
     
     if (telemetry.crowd.standsDensity > 0.70) {
       numParticles = 250 + (telemetry.crowd.standsDensity - 0.7) * 400; // Higher density
-      targetZone = { x: 400, y: 550, radius: 100 }; // Cluster at Platform 3 (South)
-    }
-
-    if (hasRain && !isCritical) {
-      targetZone = { x: 400, y: 250, radius: 120 }; // Cluster near entrances/Platform 1
-    }
-
-    if (hasMedicalEmergency) {
-      targetZone = { x: 200, y: 550, radius: 100 }; // Move away from Platform 3 / corridor
-    }
-
-    if (telemetry.crowd.standsDensity < 0.65 && !hasRain && !hasMedicalEmergency) {
-      targetZone = { x: 400, y: 400, radius: 400 }; // Normal flow
     }
 
     const newParticles: Particle[] = Array.from({ length: numParticles }).map((_, i) => {
-      const startY = targetZone.y + (Math.random() - 0.5) * targetZone.radius * 2;
+      let isPlatform1 = Math.random() > 0.5;
+      if (isCritical) {
+        isPlatform1 = Math.random() > 0.8; // 80% on Platform 3
+      } else if (hasRain) {
+        isPlatform1 = Math.random() > 0.3; // 70% on Platform 1
+      }
+      
+      const pTargetZone = isPlatform1 
+        ? { x: 400, y: 250, radius: 120 }
+        : { x: 400, y: 550, radius: 120 };
+
+      const startY = pTargetZone.y + (Math.random() - 0.5) * pTargetZone.radius * 2;
       return {
         id: i,
-        x: targetZone.x + (Math.random() - 0.5) * targetZone.radius * 2,
+        x: pTargetZone.x + (Math.random() - 0.5) * pTargetZone.radius * 2,
         y: startY,
         speed: 0.1 + Math.random() * 0.3,
         angle: Math.random() * Math.PI * 2,
@@ -230,18 +226,7 @@ export const DigitalTwin: React.FC = () => {
             )}
           </div>
 
-          {/* ESCALATORS CONCOURSE CONNECTIONS */}
-          <div className="absolute top-[350px] left-[350px] w-[40px] h-[100px] bg-zinc-800" style={{ transform: 'translateZ(20px)', border: '1px solid #333' }}>
-             {/* Escalator steps */}
-             {Array.from({length: 10}).map((_, i) => (
-                <div key={i} className={`w-full h-[2px] mt-[8px] ${hasEscalatorFailure ? 'bg-red-500' : 'bg-zinc-600'}`} />
-             ))}
-             {hasEscalatorFailure && (
-               <div className="absolute -top-12 -left-16 bg-red-900/80 border border-red-500 px-3 py-1 rounded text-red-100 text-[10px] font-bold whitespace-nowrap" style={{ transform: 'rotateX(-55deg) rotateZ(30deg)' }}>
-                 ESCALATOR B FAILURE
-               </div>
-             )}
-          </div>
+
 
           {/* MEDICAL EMERGENCY CORRIDOR */}
           {hasMedicalEmergency && (
