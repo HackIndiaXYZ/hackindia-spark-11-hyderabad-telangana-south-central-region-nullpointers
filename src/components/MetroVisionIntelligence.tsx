@@ -5,6 +5,7 @@ import {
   Play, Pause
 } from 'lucide-react';
 import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
+import { useAppState } from '../context/AppStateContext';
 
 interface TrackedPassenger {
   id: string;
@@ -21,6 +22,7 @@ interface TrackedPassenger {
 }
 
 export const MetroVisionIntelligence: React.FC = () => {
+  const { setActiveTab } = useAppState();
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showZonalGrid, setShowZonalGrid] = useState<boolean>(true);
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
@@ -461,13 +463,21 @@ export const MetroVisionIntelligence: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowExplainModal(true)}
-                className="w-full mt-2 py-2 bg-[#27272a] hover:bg-[#3f3f46] text-slate-200 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-                Inspect Pipeline
-              </button>
+              <div className="flex gap-2 w-full mt-2">
+                <button
+                  onClick={() => setShowExplainModal(true)}
+                  className="flex-1 py-2 bg-[#27272a] hover:bg-[#3f3f46] text-slate-200 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  Inspect Pipeline
+                </button>
+                <button
+                  onClick={() => setActiveTab('decision-center')}
+                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-md transition-colors flex items-center justify-center cursor-pointer shadow-lg shadow-indigo-900/20"
+                >
+                  Take Action →
+                </button>
+              </div>
             </div>
           </div>
 
