@@ -4,7 +4,7 @@ import sops from '../data/sops.json';
 // Initialize the Groq client.
 // WARNING: Using the API key on the client side is purely for hackathon prototyping.
 const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
+  apiKey: import.meta.env.VITE_GROQ_API_KEY || 'missing_key',
   dangerouslyAllowBrowser: true // Required to run in the browser
 });
 
