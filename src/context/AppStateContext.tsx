@@ -195,7 +195,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [approvalLogs, setApprovalLogs] = useState<string[]>([]);
   const [isApproving, setIsApproving] = useState<boolean>(false);
 
-  const [activeTab, setActiveTab] = useState<'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('vision-intelligence');
+  const [activeTab, setActiveTab] = useState<'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('overview');
   const [lineageModalData, setLineageModalData] = useState<LineageData | null>(null);
 
   // Live Generative State
