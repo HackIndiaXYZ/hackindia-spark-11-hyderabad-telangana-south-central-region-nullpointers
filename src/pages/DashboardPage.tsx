@@ -42,7 +42,6 @@ export const DashboardPage: React.FC = () => {
           { id: 'vision-intelligence', label: 'Metro Vision Intelligence', icon: Camera, highlight: true },
           { id: 'overview', label: 'Overview', icon: LayoutDashboard },
           { id: 'data-pipeline', label: 'Data Pipeline', icon: Database },
-          { id: 'digital-twin', label: 'Digital Twin', icon: MapIcon },
           { id: 'decision-center', label: 'Decision Center', icon: Zap },
           { id: 'replay', label: 'Replay', icon: RotateCcw },
           { id: 'settings', label: 'Settings', icon: Settings },
@@ -118,73 +117,11 @@ export const DashboardPage: React.FC = () => {
             {/* Narrative Overview Flow */}
             <div className="flex-1 flex gap-4 h-[600px]">
               
-              {/* Step 1: Health & Pipeline */}
-              <div className="flex-[1] glass-panel p-6 flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                  <Database className="w-4 h-4 text-[#10B981]" />
-                  1. Data Pipeline
-                </h3>
-                <div className="flex-1 bg-[#09090b] rounded-lg border border-[#27272a] flex flex-col p-4 gap-4 overflow-hidden relative">
-                  {/* Pipeline Metrics Mini */}
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div className="bg-[#18181b] p-2 rounded border border-[#27272a]">
-                      <div className="text-[9px] text-slate-500 font-bold uppercase">Events/sec</div>
-                      <div className="text-sm font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
-                    </div>
-                    <div className="bg-[#18181b] p-2 rounded border border-[#27272a]">
-                      <div className="text-[9px] text-slate-500 font-bold uppercase">Latency</div>
-                      <div className="text-sm font-bold text-blue-400">{pipelineMetrics.avgLatency}ms</div>
-                    </div>
-                  </div>
-
-                  {/* Latest Event Mini */}
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-[#27272a] pb-1">Latest Telemetry</div>
-                  
-                  {lastIngestedPacket ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-blue-400">{lastIngestedPacket.time}</span>
-                        <span className="text-[9px] font-bold text-blue-300 bg-blue-500/20 px-1.5 py-0.5 rounded border border-blue-500/30 uppercase">
-                          {lastIngestedPacket.source}
-                        </span>
-                      </div>
-                      <div className="text-xs text-white font-semibold line-clamp-2 leading-relaxed">
-                        {lastIngestedPacket.message}
-                      </div>
-                      
-                      {/* AI Pulse Indicator */}
-                      <div className="mt-2 flex items-center justify-between bg-[#18181b] p-2 rounded border border-[#27272a]">
-                         <span className="text-[9px] text-slate-400 uppercase font-bold">AI Inference Pipeline</span>
-                         <div className="flex gap-2 items-center">
-                           <span className="text-[8px] text-indigo-400 font-mono tracking-widest">{currentPulseModule || 'IDLE'}</span>
-                           <div className={`w-1.5 h-1.5 rounded-full ${currentPulseModule ? 'bg-indigo-500 animate-ping' : 'bg-slate-600'}`} />
-                         </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center text-xs text-slate-500 font-mono">
-                      Awaiting Stream...
-                    </div>
-                  )}
-
-                  <button 
-                    onClick={() => setActiveTab('data-pipeline')}
-                    className="mt-auto w-full py-2 bg-[#27272a] hover:bg-[#3f3f46] rounded text-xs font-bold text-slate-300 transition-colors"
-                  >
-                    View Full Pipeline
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center text-[#3f3f46]">
-                <ArrowRight className="w-6 h-6" />
-              </div>
-
-              {/* Step 2: Digital Twin Observation */}
-              <div className="flex-[2] glass-panel p-4 flex flex-col gap-4 relative overflow-hidden">
+              {/* Step 1: Digital Twin Observation */}
+              <div className="flex-[3] glass-panel p-4 flex flex-col gap-4 relative overflow-hidden">
                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 z-10 absolute top-4 left-6">
                   <MapIcon className="w-4 h-4 text-[#3B82F6]" />
-                  2. Digital Twin Observation
+                  1. Digital Twin Observation
                 </h3>
                 <div className="flex-1 mt-8 w-full rounded-lg overflow-hidden border border-[#27272a]">
                   <DigitalTwin />
@@ -199,7 +136,7 @@ export const DashboardPage: React.FC = () => {
               <div className="flex-[1] glass-panel p-6 flex flex-col gap-4">
                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                   <Zap className="w-4 h-4 text-[#F59E0B]" />
-                  3. Decision Intelligence
+                  2. Decision Intelligence
                 </h3>
                 <div className="flex-1 bg-[#09090b] rounded-lg border border-[#27272a] flex flex-col items-center justify-center p-4 text-center">
                    <div className="w-12 h-12 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-4">
