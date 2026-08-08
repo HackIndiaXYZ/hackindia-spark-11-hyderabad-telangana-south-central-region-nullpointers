@@ -65,7 +65,7 @@ const ROLES: RoleOption[] = [
 
 export const LandingPage: React.FC = () => {
   const { setRole } = useAppState();
-  const [showRoleSelector, setShowRoleSelector] = useState(false);
+  const [showRoleSelector, setShowRoleSelector] = useState(true);
 
   const containerVariants = {
     hidden: { opacity: 0 },

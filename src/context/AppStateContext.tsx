@@ -195,7 +195,25 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [approvalLogs, setApprovalLogs] = useState<string[]>([]);
   const [isApproving, setIsApproving] = useState<boolean>(false);
 
-  const [activeTab, setActiveTab] = useState<'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>('overview');
+  const [activeTab, setActiveTabState] = useState<'vision-intelligence' | 'overview' | 'data-pipeline' | 'digital-twin' | 'decision-center' | 'replay' | 'settings'>(
+    (window.location.hash.replace('#', '') as any) || 'overview'
+  );
+
+  const setActiveTab = (tab: any) => {
+    window.location.hash = tab;
+    setActiveTabState(tab);
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['vision-intelligence', 'overview', 'data-pipeline', 'digital-twin', 'decision-center', 'replay', 'settings'].includes(hash)) {
+        setActiveTabState(hash as any);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
   const [lineageModalData, setLineageModalData] = useState<LineageData | null>(null);
 
   // Live Generative State
