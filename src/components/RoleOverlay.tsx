@@ -68,7 +68,7 @@ export const RoleOverlay: React.FC = () => {
               </button>
             </span>
             <span className="text-2xl font-bold text-white">{standsPct}%</span>
-            <span className="text-[9px] font-mono text-white/40 block mt-0.5">{(telemetry.crowd.totalInside * 0.7).toLocaleString()} / 80k Seats</span>
+            <span className="text-[9px] font-mono text-white/40 block mt-0.5">{(telemetry.crowd.standsDensity * 80000).toLocaleString()} / 80k Seats</span>
           </div>
           <div className="w-16 h-16 flex items-center justify-center relative">
             <div className="absolute inset-0 rounded-full border-4 border-white/5" />

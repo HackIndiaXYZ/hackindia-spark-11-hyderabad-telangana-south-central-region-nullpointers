@@ -4,7 +4,9 @@ import { Zap, Users, CheckCircle, XCircle, AlertTriangle, ArrowRight, ShieldChec
 import { WhyThisDecisionModal } from '../components/common/WhyThisDecisionModal';
 
 export const DecisionCenterPage: React.FC = () => {
-  const { approveIntervention, isIntervened, isApproving } = useAppState();
+  const { approveIntervention, isIntervened, isApproving, telemetry } = useAppState();
+
+  if (!telemetry) return null;
 
   const [dispatchStates, setDispatchStates] = useState<Record<string, boolean>>({});
   const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
@@ -161,9 +163,9 @@ export const DecisionCenterPage: React.FC = () => {
                     <div className="flex flex-col gap-2">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Reasoning Chain</span>
                       <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside marker:text-indigo-500">
-                        <li>CCTV (YOLOv11) detected 127 pax on Platform 3</li>
+                        <li>CCTV (YOLOv11) detected {Math.floor(telemetry.crowd.totalInside * 0.08)} pax on Platform 3</li>
                         <li>Escalator B Failure (IoT Model) reduced capacity</li>
-                        <li>Train Delay (+3m) increases accumulation rate</li>
+                        <li>Train Delay (+{telemetry.transport.metroIntervalMin}m) increases accumulation rate</li>
                         <li>Fusion Engine predicts critical bottleneck in 4 mins</li>
                       </ul>
                     </div>
@@ -186,9 +188,9 @@ export const DecisionCenterPage: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-slate-300">Platform Density</span>
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-bold text-[#EF4444]">91%</span>
+                        <span className="text-lg font-bold text-[#EF4444]">{Math.round(telemetry.crowd.standsDensity * 100)}%</span>
                         <ArrowRight className="w-4 h-4 text-slate-500" />
-                        <span className="text-lg font-bold text-[#10B981]">74%</span>
+                        <span className="text-lg font-bold text-[#10B981]">{Math.max(0, Math.round(telemetry.crowd.standsDensity * 100) - 17)}%</span>
                       </div>
                     </div>
 

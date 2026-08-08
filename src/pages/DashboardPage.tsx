@@ -25,10 +25,14 @@ export const DashboardPage: React.FC = () => {
   } = useAppState();
 
   if (!telemetry) return null;
-  // Compute some basic stats for the header
-  const activeIncidents = telemetry.incidents?.length || (activeScenario !== 'normal' ? 3 : 0);
+  const activeIncidents = telemetry.incidents?.length || 0;
   const predictions = activeScenario !== 'normal' ? 2 : 0;
   const recommendations = activeScenario !== 'normal' ? 1 : 0;
+
+  const health = telemetry.operationalHealth;
+  const healthColor = health < 50 ? 'text-red-500' : health < 80 ? 'text-amber-500' : 'text-[#10B981]';
+  const healthText = health < 50 ? 'Critical' : health < 80 ? 'Fair' : 'Excellent';
+  const HealthIcon = health < 50 ? AlertTriangle : Activity;
 
   return (
     <div className="w-full min-h-screen bg-[#09090b] text-slate-200 flex flex-col p-4 md:p-6 select-none font-sans">
@@ -84,12 +88,12 @@ export const DashboardPage: React.FC = () => {
 
               <div className="flex items-center gap-6 glass-panel px-6 py-3">
                 <div className="flex items-center gap-4 border-r border-[#27272a] pr-6">
-                  <Activity className="w-8 h-8 text-[#10B981]" />
+                  <HealthIcon className={`w-8 h-8 ${healthColor}`} />
                   <div>
                     <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Operational Health</div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-[#10B981]">{telemetry.operationalHealth}</span>
-                      <span className="text-sm font-medium text-[#10B981]">Excellent</span>
+                      <span className={`text-2xl font-bold ${healthColor}`}>{health}</span>
+                      <span className={`text-sm font-medium ${healthColor}`}>{healthText}</span>
                     </div>
                   </div>
                 </div>
