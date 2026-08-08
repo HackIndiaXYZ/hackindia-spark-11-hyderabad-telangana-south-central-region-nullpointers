@@ -317,8 +317,8 @@ export const DigitalTwin: React.FC = () => {
           <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mb-1">
             System Status
           </span>
-          <span className={`text-lg font-semibold ${telemetry.riskLevel > 0.4 ? 'text-red-500 animate-pulse' : 'text-emerald-500'}`}>
-            {telemetry.riskLevel > 0.4 ? 'CRITICAL' : 'NOMINAL'}
+          <span className={`text-lg font-semibold ${(telemetry.riskLevel > 0.4 || isCritical) ? 'text-red-500 animate-pulse' : 'text-emerald-500'}`}>
+            {(telemetry.riskLevel > 0.4 || isCritical) ? 'CRITICAL' : 'NOMINAL'}
           </span>
         </div>
       </div>
