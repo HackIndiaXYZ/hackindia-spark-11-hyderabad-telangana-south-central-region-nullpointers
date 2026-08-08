@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Camera, Eye, Activity, TrendingUp, 
-  HelpCircle, Shield, Layers,
+  HelpCircle, Layers,
   Play, Pause
 } from 'lucide-react';
 import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
