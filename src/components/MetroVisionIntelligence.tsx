@@ -5,7 +5,7 @@ import {
   Play, Pause
 } from 'lucide-react';
 import { WhyThisDecisionModal } from './common/WhyThisDecisionModal';
-import { useAppState } from '../context/AppStateContext';
+import { useAppState, SCENARIO_DATA } from '../context/AppStateContext';
 
 interface TrackedPassenger {
   id: string;
@@ -22,7 +22,7 @@ interface TrackedPassenger {
 }
 
 export const MetroVisionIntelligence: React.FC = () => {
-  const { setActiveTab } = useAppState();
+  const { setActiveTab, telemetry, activeScenario } = useAppState();
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showZonalGrid, setShowZonalGrid] = useState<boolean>(true);
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
@@ -169,14 +169,14 @@ export const MetroVisionIntelligence: React.FC = () => {
             setPassengers(updatedSwarm);
 
             // Dynamically update analytics dashboard to reflect high density
-            if (Math.random() > 0.9) {
+            if (Math.random() > 0.9 && telemetry) {
                 const count = updatedSwarm.length;
-                setPassengerCount(count + Math.floor(Math.random() * 25));
-                setPlatformOccupancy(+(82 + Math.random() * 8).toFixed(1));
+                setPassengerCount(Math.floor(telemetry.crowd.totalInside * 0.005) + count);
+                setPlatformOccupancy(Math.round(telemetry.crowd.standsDensity * 100));
                 setQueueLength(+(45 + Math.random() * 10).toFixed(1));
-                setWalkingSpeed(+(0.8 + Math.random() * 0.3).toFixed(2));
-                setCrowdDensity(+(3.2 + Math.random() * 0.5).toFixed(1));
-                setCongestionScore(85 + Math.floor(Math.random() * 12));
+                setWalkingSpeed(telemetry.crowd.flowRate > 80 ? 1.4 : 0.8);
+                setCrowdDensity(+(telemetry.crowd.standsDensity * 5).toFixed(1));
+                setCongestionScore(100 - telemetry.operationalHealth);
             }
         }
       }
@@ -504,16 +504,12 @@ export const MetroVisionIntelligence: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            {[
-              { name: 'Entry Gates', occ: 42, risk: 'Low', trend: '→', status: 'normal' },
-              { name: 'Ticket Hall', occ: 38, risk: 'Low', trend: '→', status: 'normal' },
-              { name: 'Escalators', occ: 64, risk: 'Mod', trend: '↑', status: 'warning' },
-              { name: 'Lift Area', occ: 28, risk: 'Low', trend: '→', status: 'normal' },
-              { name: 'Platform 3', occ: 84, risk: 'Crit', trend: '↑', status: 'critical' },
-              { name: 'Exit B', occ: 52, risk: 'Mod', trend: '↑', status: 'warning' },
-            ].map((zone, i) => {
-              const isCritical = zone.status === 'critical';
-              const isWarning = zone.status === 'warning';
+            {telemetry?.gates?.slice(0, 6).map((gate: any, i: number) => {
+              const occ = Math.round(gate.occupancy * 100);
+              const isCritical = occ >= 80;
+              const isWarning = occ >= 60 && occ < 80;
+              const trend = isCritical ? '↑' : isWarning ? '↗' : '→';
+
               return (
                 <div 
                   key={i} 
@@ -526,13 +522,13 @@ export const MetroVisionIntelligence: React.FC = () => {
                   }`}
                 >
                   <div className="flex justify-between items-center text-[9px] font-semibold uppercase">
-                    <span className="truncate">{zone.name}</span>
+                    <span className="truncate">Gate {gate.id}</span>
                   </div>
                   <div className="flex justify-between items-baseline font-sans">
                     <span className={`text-lg font-bold ${isCritical ? 'text-red-400' : isWarning ? 'text-amber-400' : 'text-slate-200'}`}>
-                      {zone.occ}<span className="text-[10px] text-slate-500">%</span>
+                      {occ}<span className="text-[10px] text-slate-500">%</span>
                     </span>
-                    <span className="text-xs">{zone.trend}</span>
+                    <span className="text-xs">{trend}</span>
                   </div>
                 </div>
               );
@@ -553,13 +549,27 @@ export const MetroVisionIntelligence: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] flex flex-col gap-2 font-mono text-xs text-slate-400 h-full">
+          <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] flex flex-col gap-2 font-mono text-xs text-slate-400 h-full overflow-y-auto max-h-[200px]">
             <ul className="space-y-2 list-none tracking-tight">
-              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Crowd density aggregated via <strong className="text-slate-300 font-medium">Heatmap & Zonal Arrays</strong>.</span></li>
-              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Grid Sector 0-1 experiencing <strong className="text-slate-300 font-medium">elevated occupancy</strong>.</span></li>
-              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Flow fields indicate <strong className="text-slate-300 font-medium">strong directional pull</strong> towards Platform edge.</span></li>
-              <li className="flex gap-2 items-start"><span className="text-slate-500">▸</span><span>Walking speed reduced by <strong className="text-slate-300 font-medium">18%</strong> in high-density zones.</span></li>
-              <li className="flex gap-2 items-start text-red-400"><span className="mt-0.5">▸</span><span className="font-semibold">Predicted severe congestion within 4 minutes.</span></li>
+              {telemetry?.incidents && telemetry.incidents.length > 0 ? (
+                telemetry.incidents.map((inc: any, i: number) => (
+                  <li key={i} className={`flex gap-2 items-start ${inc.severity === 'HIGH' ? 'text-red-400' : 'text-amber-400'}`}>
+                    <span className="mt-0.5">▸</span>
+                    <span className="font-semibold">{inc.description}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="flex gap-2 items-start text-emerald-400">
+                  <span className="mt-0.5">▸</span>
+                  <span className="font-semibold">No critical incidents detected. Crowd flow is nominal.</span>
+                </li>
+              )}
+              {activeScenario && SCENARIO_DATA[activeScenario] && (
+                <li className="flex gap-2 items-start mt-2 border-t border-[#27272a] pt-2">
+                  <span className="text-slate-500">▸</span>
+                  <span className="text-slate-300 font-medium">Context: {SCENARIO_DATA[activeScenario].briefing}</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>
