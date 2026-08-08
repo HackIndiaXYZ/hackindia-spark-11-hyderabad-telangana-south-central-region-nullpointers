@@ -342,7 +342,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
 
                   {/* HUD Overlay text */}
                   <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center text-[9px] font-mono text-white/80 bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
-                    <span>CAM-04 // AMEERPET PLATFORM 3</span>
+                    <span>CAM-04 // RAIDURG PLATFORM 3</span>
                     <span>FRAME #1482</span>
                   </div>
                 </div>
@@ -392,7 +392,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
             <div className="p-4 rounded-xl bg-[#09090b] border border-[#27272a] flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>8 / 8 Stages Verified across live Ameerpet CCTV Feed</span>
+                <span>8 / 8 Stages Verified across live Raidurg CCTV Feed</span>
               </div>
               <div className="flex gap-2">
                 <button

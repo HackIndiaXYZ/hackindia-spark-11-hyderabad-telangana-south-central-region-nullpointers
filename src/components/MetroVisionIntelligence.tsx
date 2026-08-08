@@ -218,7 +218,7 @@ export const MetroVisionIntelligence: React.FC = () => {
               </span>
             </div>
             <h1 className="text-xl font-semibold text-slate-200 tracking-tight">
-              Ameerpet Station • Platform 3 Feed
+              Raidurg Station • Platform 3 Feed
             </h1>
           </div>
         </div>
