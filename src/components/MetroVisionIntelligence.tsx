@@ -436,51 +436,6 @@ export const MetroVisionIntelligence: React.FC = () => {
         {/* RIGHT / SIDEBAR: ACTION & LIVE METRICS (5 COLS) */}
         <div className="lg:col-span-5 flex flex-col gap-4">
           
-          {/* FUSION DECISION (CLEAN ALERT) */}
-          <div className="bg-[#18181b] p-5 rounded-lg border border-[#27272a] flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-[#27272a] pb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-indigo-400" />
-                <h3 className="text-sm font-semibold text-slate-200">Fusion Decision</h3>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 uppercase">OCC Directive</span>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="text-[11px] text-slate-400 uppercase font-semibold">Recommended Action</div>
-              <div className="text-lg text-slate-200 leading-snug">
-                Deploy <strong className="font-medium text-indigo-300">two supervisors</strong> to Platform 3 & <strong className="font-medium text-indigo-300">Open Exit C</strong>
-              </div>
-
-              <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] mt-2">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold block mb-2">Source Weights</span>
-                <div className="grid grid-cols-5 gap-2 text-center text-xs font-mono">
-                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">AI</span><span className="text-cyan-400">47%</span></div>
-                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">AFC</span><span className="text-emerald-400">21%</span></div>
-                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">ATS</span><span className="text-yellow-400">16%</span></div>
-                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">WXR</span><span className="text-blue-400">9%</span></div>
-                  <div className="flex flex-col"><span className="text-slate-500 text-[9px]">SEC</span><span className="text-purple-400">7%</span></div>
-                </div>
-              </div>
-
-              <div className="flex gap-2 w-full mt-2">
-                <button
-                  onClick={() => setShowExplainModal(true)}
-                  className="flex-1 py-2 bg-[#27272a] hover:bg-[#3f3f46] text-slate-200 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  Inspect Pipeline
-                </button>
-                <button
-                  onClick={() => setActiveTab('decision-center')}
-                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-md transition-colors flex items-center justify-center cursor-pointer shadow-lg shadow-indigo-900/20"
-                >
-                  Take Action →
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* LIVE METRICS PANEL */}
           <div className="bg-[#18181b] p-5 rounded-lg border border-[#27272a] flex flex-col gap-4 flex-1">
             <div className="flex justify-between items-center border-b border-[#27272a] pb-3">
@@ -494,7 +449,7 @@ export const MetroVisionIntelligence: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 mb-2">
               {[
                 { label: 'Passenger Count', val: passengerCount, unit: 'pax', color: 'text-cyan-400', progress: Math.min(100, (passengerCount / 300) * 100) },
                 { label: 'Platform Occ.', val: platformOccupancy, unit: '%', color: 'text-orange-400', progress: platformOccupancy },
@@ -514,6 +469,22 @@ export const MetroVisionIntelligence: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="flex gap-3 w-full mt-auto pt-2 border-t border-[#27272a]">
+              <button
+                onClick={() => setShowExplainModal(true)}
+                className="flex-1 py-2.5 bg-[#27272a] hover:bg-[#3f3f46] text-slate-200 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Inspect Pipeline
+              </button>
+              <button
+                onClick={() => setActiveTab('decision-center')}
+                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-md transition-colors flex items-center justify-center cursor-pointer shadow-lg shadow-indigo-900/20"
+              >
+                Take Action →
+              </button>
             </div>
           </div>
         </div>
