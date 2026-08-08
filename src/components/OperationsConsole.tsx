@@ -395,7 +395,7 @@ export const OperationsConsole: React.FC = () => {
       <WhyThisDecisionModal
         isOpen={showExplainModal}
         onClose={() => setShowExplainModal(false)}
-        recommendationTitle={mitigation?.title || "Deploy Two Supervisors to Platform 2 & Open Exit C"}
+        recommendationTitle={mitigation?.title || "Deploy Two Supervisors to Platform 3 & Open Exit C"}
         confidence={adjustedConfidence}
         videoSrc="/Crowd-at-Ameerpet-Metro-Station.mp4"
       />

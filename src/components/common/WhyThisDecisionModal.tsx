@@ -16,7 +16,7 @@ interface WhyThisDecisionModalProps {
 export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
   isOpen,
   onClose,
-  recommendationTitle = "Deploy Two Supervisors to Platform 2 & Open Exit C",
+  recommendationTitle = "Deploy Two Supervisors to Platform 3 & Open Exit C",
   confidence = 96,
   videoSrc = "/Crowd-at-Ameerpet-Metro-Station.mp4"
 }) => {
@@ -29,16 +29,16 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
       id: 'raw-frame',
       stage: 1,
       title: 'Raw CCTV Frame Ingestion',
-      subtitle: 'CAM-04 Ameerpet Metro Station - Platform 2',
+      subtitle: 'CAM-04 Ameerpet Metro Station - Platform 3',
       icon: Camera,
       badge: 'INPUT FEED',
       badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       latency: '4ms',
       model: 'RTSP Stream / H.264 Decoder',
-      description: 'High-definition 1080p surveillance video stream captured at 30 FPS from Platform 2 overhang camera.',
+      description: 'High-definition 1080p surveillance video stream captured at 30 FPS from Platform 3 overhang camera.',
       metrics: [
         { label: 'Camera ID', val: 'CAM-04' },
-        { label: 'Location', val: 'Ameerpet Platform 2' },
+        { label: 'Location', val: 'Ameerpet Platform 3' },
         { label: 'Resolution', val: '1920x1080 @ 30 FPS' },
         { label: 'Signal Quality', val: '99.8% (Nominal)' }
       ]
@@ -89,11 +89,11 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
       badgeColor: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
       latency: '6ms',
       model: 'MCNN Density Field Map',
-      description: 'Spatial density mapping calculates 3.8 passengers per m² at Platform 2 boarding edge, breaching yellow safety threshold.',
+      description: 'Spatial density mapping calculates 3.8 passengers per m² at Platform 3 boarding edge, breaching yellow safety threshold.',
       metrics: [
         { label: 'Platform Occupancy', val: '78.4% Capacity' },
         { label: 'Peak Density', val: '3.8 pax/m²' },
-        { label: 'Critical Zone', val: 'Platform 2 South' },
+        { label: 'Critical Zone', val: 'Platform 3 South' },
         { label: 'Safety Index', val: 'Elevated (Risk Level 0.74)' }
       ]
     },
@@ -107,9 +107,9 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
       badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
       latency: '11ms',
       model: 'DeepFlow Directional Kernel',
-      description: 'Directional vector extraction reveals 61% passenger movement towards Platform 2 boarding area with bottlenecks forming near Exit B.',
+      description: 'Directional vector extraction reveals 61% passenger movement towards Platform 3 boarding area with bottlenecks forming near Exit B.',
       metrics: [
-        { label: 'Dominant Flow', val: '→ Platform 2 (61%)' },
+        { label: 'Dominant Flow', val: '→ Platform 3 (61%)' },
         { label: 'Exit Egress', val: '← Exit B (19%)' },
         { label: 'Escalator Flow', val: '↑ Escalators (13%)' },
         { label: 'Concourse Flow', val: '↓ Concourse (7%)' }
@@ -161,9 +161,9 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
       badgeColor: 'bg-emerald-500/30 text-emerald-300 border-emerald-500/50 shadow-sm',
       latency: '5ms',
       model: 'OCC Rules & Safety Dispatch Matrix',
-      description: 'Generates high-priority OCC operational plan: Deploy two supervisors to Platform 2 and open Exit C to reroute incoming passenger crowd.',
+      description: 'Generates high-priority OCC operational plan: Deploy two supervisors to Platform 3 and open Exit C to reroute incoming passenger crowd.',
       metrics: [
-        { label: 'Target Sector', val: 'Platform 2 & Exit C' },
+        { label: 'Target Sector', val: 'Platform 3 & Exit C' },
         { label: 'Required Action', val: 'Deploy Staff + Open Gate' },
         { label: 'Expected Relief', val: 'Risk drops to 24%' },
         { label: 'Approval Status', val: 'Awaiting Sign-off' }
@@ -342,7 +342,7 @@ export const WhyThisDecisionModal: React.FC<WhyThisDecisionModalProps> = ({
 
                   {/* HUD Overlay text */}
                   <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center text-[9px] font-mono text-white/80 bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
-                    <span>CAM-04 // AMEERPET PLATFORM 2</span>
+                    <span>CAM-04 // AMEERPET PLATFORM 3</span>
                     <span>FRAME #1482</span>
                   </div>
                 </div>

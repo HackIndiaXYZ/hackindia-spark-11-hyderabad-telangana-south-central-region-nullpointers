@@ -138,12 +138,12 @@ const NARRATIVE_SEQUENCE: SequenceEvent[] = [
   },
   { 
     source: 'Metro ATS', message: 'Blue Line Delayed by 3 min', type: 'critical', affectedModules: ['Context Fusion', 'Prediction', 'Decision Center'], 
-    rawInput: 'Blue Line: Running -> Delay +3 min', aiModel: 'Transport Simulation', extractedInsights: 'Expected Passenger Accumulation: Platform 2 Current 76% -> Expected 89% ETA 4 min', contextFusion: 'Combined with Weather and Traffic surge', prediction: 'Platform Overcrowding imminent', decision: 'Deploy Platform Supervisor',
+    rawInput: 'Blue Line: Running -> Delay +3 min', aiModel: 'Transport Simulation', extractedInsights: 'Expected Passenger Accumulation: Platform 3 Current 76% -> Expected 89% ETA 4 min', contextFusion: 'Combined with Weather and Traffic surge', prediction: 'Platform Overcrowding imminent', decision: 'Deploy Platform Supervisor',
     logic: (tel) => { tel.transport.metroIntervalMin += 3; tel.transport.metroStatus = 'DELAYED'; tel.crowd.standsDensity += 0.05; } 
   },
   { 
     source: 'CCTV Computer Vision', message: 'Density Spikes at Exit B', type: 'warning', affectedModules: ['Platform Occupancy', 'Digital Twin'], 
-    rawInput: 'Live CCTV Feed (Platform 2)', aiModel: 'YOLOv11 Person Detection', extractedInsights: 'People: 127, Avg Speed: 0.8 m/s, Queue Growing: YES, Zone: Exit B (Confidence 96%)', contextFusion: 'Overlapped with ATS train delay data', prediction: 'Stampede risk at Exit B if flow unchanged', decision: 'Open Exit C',
+    rawInput: 'Live CCTV Feed (Platform 3)', aiModel: 'YOLOv11 Person Detection', extractedInsights: 'People: 127, Avg Speed: 0.8 m/s, Queue Growing: YES, Zone: Exit B (Confidence 96%)', contextFusion: 'Overlapped with ATS train delay data', prediction: 'Stampede risk at Exit B if flow unchanged', decision: 'Open Exit C',
     logic: (tel, ctx) => { tel.crowd.standsDensity = 0.84; tel.operationalHealth -= 4; tel.riskLevel += 0.05; ctx.setMetrics({lat: 120, qs: 5, eps: 44}); } 
   },
   { 
@@ -152,8 +152,8 @@ const NARRATIVE_SEQUENCE: SequenceEvent[] = [
     logic: (tel) => { tel.crowd.totalInside += 41; tel.crowd.concourseDensity += 0.05; tel.crowd.standsDensity += 0.02; } 
   },
   { 
-    source: 'Staff GPS', message: 'Supervisor Assigned to Platform 2', type: 'info', affectedModules: ['Resource Dispatch', 'Digital Twin'], 
-    rawInput: 'Supervisor Amit Current Position: Platform 1', aiModel: 'AI Routing Algorithm', extractedInsights: 'Nearest Incident: Platform 2, Walking Time: 46 sec', contextFusion: 'Matched with Decision Center task', prediction: 'Arrival in <1 min', decision: 'Dispatch Supervisor Amit',
+    source: 'Staff GPS', message: 'Supervisor Assigned to Platform 3', type: 'info', affectedModules: ['Resource Dispatch', 'Digital Twin'], 
+    rawInput: 'Supervisor Amit Current Position: Platform 1', aiModel: 'AI Routing Algorithm', extractedInsights: 'Nearest Incident: Platform 3, Walking Time: 46 sec', contextFusion: 'Matched with Decision Center task', prediction: 'Arrival in <1 min', decision: 'Dispatch Supervisor Amit',
     logic: (_tel, ctx) => { ctx.setResourceState('Supervisor Amit', 'Assigned'); setTimeout(() => ctx.setResourceState('Supervisor Amit', 'Travelling'), 1000); } 
   },
   { 

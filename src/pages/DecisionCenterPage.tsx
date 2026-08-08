@@ -14,7 +14,7 @@ export const DecisionCenterPage: React.FC = () => {
   };
 
   const officers = [
-    { id: 'rahul', name: 'Officer Rahul', role: 'Crowd Control', location: 'Platform 2', eta: '90 sec', idle: !dispatchStates['rahul'] },
+    { id: 'rahul', name: 'Officer Rahul', role: 'Crowd Control', location: 'Platform 3', eta: '90 sec', idle: !dispatchStates['rahul'] },
     { id: 'priya', name: 'Officer Priya', role: 'Medical Ops', location: 'Concourse A', eta: '2 min', idle: !dispatchStates['priya'] },
     { id: 'amit', name: 'Sgt Amit', role: 'Tactical', location: 'Gate B', eta: '1 min', idle: !dispatchStates['amit'] },
     { id: 'sneha', name: 'Officer Sneha', role: 'Evacuation', location: 'Exit C', eta: '45 sec', idle: !dispatchStates['sneha'] },
@@ -39,7 +39,7 @@ export const DecisionCenterPage: React.FC = () => {
                 <span className="text-[10px] uppercase font-bold tracking-wider text-[#EF4444]">High Priority</span>
                 <span className="text-[10px] font-mono text-slate-400">Predicted • 6 min</span>
               </div>
-              <div className="font-bold text-slate-200 text-sm">Platform 2 Congestion</div>
+              <div className="font-bold text-slate-200 text-sm">Platform 3 Congestion</div>
             </div>
 
             <div className="flex flex-col gap-2 border-b border-[#27272a] pb-4">
@@ -161,7 +161,7 @@ export const DecisionCenterPage: React.FC = () => {
                     <div className="flex flex-col gap-2">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Reasoning Chain</span>
                       <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside marker:text-indigo-500">
-                        <li>CCTV (YOLOv11) detected 127 pax on Platform 2</li>
+                        <li>CCTV (YOLOv11) detected 127 pax on Platform 3</li>
                         <li>Escalator B Failure (IoT Model) reduced capacity</li>
                         <li>Train Delay (+3m) increases accumulation rate</li>
                         <li>Fusion Engine predicts critical bottleneck in 4 mins</li>

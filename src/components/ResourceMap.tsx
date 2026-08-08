@@ -8,7 +8,7 @@ export const ResourceMap: React.FC = () => {
     const s = resourceStates['Supervisor Amit'] || 'Idle';
     if (s === 'Assigned') return { status: '🟡 Dispatched', loc: 'ETA 4 min', col: 'text-[#F59E0B]' };
     if (s === 'Travelling') return { status: '🟡 En Route', loc: 'ETA 1 min', col: 'text-[#3B82F6]' };
-    if (s === 'Arrived') return { status: '🟢 Active', loc: 'At Platform 2', col: 'text-[#10B981]' };
+    if (s === 'Arrived') return { status: '🟢 Active', loc: 'At Platform 3', col: 'text-[#10B981]' };
     return { status: 'Idle', loc: '25 m away', col: 'text-[#9CA3AF]' };
   };
   

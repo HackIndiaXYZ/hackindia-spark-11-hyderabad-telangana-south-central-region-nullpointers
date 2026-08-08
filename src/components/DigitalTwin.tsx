@@ -34,7 +34,7 @@ export const DigitalTwin: React.FC = () => {
     
     if (telemetry.crowd.standsDensity > 0.70) {
       numParticles = 250 + (telemetry.crowd.standsDensity - 0.7) * 400; // Higher density
-      targetZone = { x: 400, y: 550, radius: 100 }; // Cluster at Platform 2 (South)
+      targetZone = { x: 400, y: 550, radius: 100 }; // Cluster at Platform 3 (South)
     }
 
     if (hasRain && !isCritical) {
@@ -199,7 +199,7 @@ export const DigitalTwin: React.FC = () => {
             </div>
           </div>
 
-          {/* PLATFORM 2 (South) LAYER - Elevated & Dynamic */}
+          {/* PLATFORM 3 (South) LAYER - Elevated & Dynamic */}
           <div 
             className={`absolute top-[450px] left-[200px] w-[400px] h-[200px] rounded-lg transition-all duration-1000 ${
               isCritical ? 'bg-red-950/40 border-red-500/50' : 'bg-[#18181b]'
@@ -217,7 +217,7 @@ export const DigitalTwin: React.FC = () => {
             <div className={`absolute top-0 right-[-20px] w-[20px] h-full origin-left ${isCritical ? 'bg-red-950/60' : 'bg-zinc-950'}`} style={{ transform: 'rotateY(90deg)' }} />
 
             <div className={`absolute top-4 left-4 font-mono text-xl font-bold tracking-widest uppercase transition-colors ${isCritical ? 'text-red-400' : 'text-zinc-500'}`}>
-              Platform 2 {isCritical && '(CRITICAL)'}
+              Platform 3 {isCritical && '(CRITICAL)'}
             </div>
 
             {/* Context Tooltip pops up in 3D space when highlighted */}

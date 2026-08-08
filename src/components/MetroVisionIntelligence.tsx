@@ -218,7 +218,7 @@ export const MetroVisionIntelligence: React.FC = () => {
               </span>
             </div>
             <h1 className="text-xl font-semibold text-slate-200 tracking-tight">
-              Ameerpet Station • Platform 2 Feed
+              Ameerpet Station • Platform 3 Feed
             </h1>
           </div>
         </div>
@@ -361,7 +361,7 @@ export const MetroVisionIntelligence: React.FC = () => {
               <div className="flex items-center gap-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono">
                 <span className="font-bold text-white tracking-wider">CAM-04</span>
                 <span className="text-slate-400">|</span>
-                <span className="text-cyan-400 font-semibold">Platform 2</span>
+                <span className="text-cyan-400 font-semibold">Platform 3</span>
                 <span className="text-slate-400">|</span>
                 <span className="flex items-center gap-1.5 text-red-400 font-bold">
                   <span className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
@@ -447,7 +447,7 @@ export const MetroVisionIntelligence: React.FC = () => {
             <div className="flex flex-col gap-2">
               <div className="text-[11px] text-slate-400 uppercase font-semibold">Recommended Action</div>
               <div className="text-lg text-slate-200 leading-snug">
-                Deploy <strong className="font-medium text-indigo-300">two supervisors</strong> to Platform 2 & <strong className="font-medium text-indigo-300">Open Exit C</strong>
+                Deploy <strong className="font-medium text-indigo-300">two supervisors</strong> to Platform 3 & <strong className="font-medium text-indigo-300">Open Exit C</strong>
               </div>
 
               <div className="bg-[#09090b] p-3 rounded-md border border-[#27272a] mt-2">
@@ -528,7 +528,7 @@ export const MetroVisionIntelligence: React.FC = () => {
               { name: 'Ticket Hall', occ: 38, risk: 'Low', trend: '→', status: 'normal' },
               { name: 'Escalators', occ: 64, risk: 'Mod', trend: '↑', status: 'warning' },
               { name: 'Lift Area', occ: 28, risk: 'Low', trend: '→', status: 'normal' },
-              { name: 'Platform 2', occ: 84, risk: 'Crit', trend: '↑', status: 'critical' },
+              { name: 'Platform 3', occ: 84, risk: 'Crit', trend: '↑', status: 'critical' },
               { name: 'Exit B', occ: 52, risk: 'Mod', trend: '↑', status: 'warning' },
             ].map((zone, i) => {
               const isCritical = zone.status === 'critical';
@@ -589,7 +589,7 @@ export const MetroVisionIntelligence: React.FC = () => {
       <WhyThisDecisionModal
         isOpen={showExplainModal}
         onClose={() => setShowExplainModal(false)}
-        recommendationTitle="Deploy Two Supervisors to Platform 2 & Open Exit C"
+        recommendationTitle="Deploy Two Supervisors to Platform 3 & Open Exit C"
         confidence={96}
         videoSrc="/Crowd-at-Ameerpet-Metro-Station.mp4"
       />

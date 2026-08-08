@@ -18,7 +18,7 @@ const MetroATSVisualizer = () => {
   ]);
 
   const [logs, setLogs] = useState<Array<{ time: string; train: string; event: string; status: string }>>([
-    { time: '05:02:40', train: 'TRN-402', event: 'Arrived at Secunderabad Platform 2', status: 'INFO' },
+    { time: '05:02:40', train: 'TRN-402', event: 'Arrived at Secunderabad Platform 3', status: 'INFO' },
     { time: '05:02:25', train: 'TRN-119', event: 'Cleared Signal Interlock BLK-17A', status: 'SUCCESS' },
     { time: '05:02:10', train: 'TRN-305', event: 'Speed curve adjusted for station approach', status: 'INFO' },
     { time: '05:01:55', train: 'TRN-208', event: 'Automatic Train Protection (ATP) signal hold', status: 'WARN' },
@@ -372,13 +372,13 @@ const LiftVisualizer = () => {
 const StaffGPSVisualizer = () => {
   const staff = [
     { name: 'Officer Vikram', role: 'Security Control', zone: 'Concourse A', bat: '94%', status: 'IDLE' },
-    { name: 'Responder Priya', role: 'Medical Squad 1', zone: 'Platform 2', bat: '88%', status: 'EN ROUTE' },
+    { name: 'Responder Priya', role: 'Medical Squad 1', zone: 'Platform 3', bat: '88%', status: 'EN ROUTE' },
     { name: 'Helper Suresh', role: 'Passenger Assist', zone: 'Platform 1', bat: '78%', status: 'ARRIVED' },
     { name: 'Supervisor Amit', role: 'Operations', zone: 'Station Command', bat: '92%', status: 'IDLE' },
   ];
 
   const gpsLogs = [
-    { time: '05:22:30', name: 'Responder Priya', event: 'Dispatched to Platform 2 (Emergency Alert)', status: 'INFO' },
+    { time: '05:22:30', name: 'Responder Priya', event: 'Dispatched to Platform 3 (Emergency Alert)', status: 'INFO' },
     { time: '05:21:45', name: 'Helper Suresh', event: 'Stationary position check nominal', status: 'SUCCESS' },
     { time: '05:20:10', name: 'Officer Vikram', event: 'Patrol routing update received', status: 'SUCCESS' },
   ];
@@ -439,7 +439,7 @@ const StaffGPSVisualizer = () => {
 
 const MedicalIncidentSystemVisualizer = () => {
   const incidents = [
-    { id: 'MED-01', type: 'Heatstroke', location: 'Platform 2 East', status: 'DISPATCHED', squad: 'Squad Alpha' },
+    { id: 'MED-01', type: 'Heatstroke', location: 'Platform 3 East', status: 'DISPATCHED', squad: 'Squad Alpha' },
     { id: 'MED-02', type: 'Slip & Fall', location: 'Escalator B Hall', status: 'RESPONDED', squad: 'Squad Bravo' },
   ];
 
