@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
-import { AlertTriangle, Crosshair } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 // Particle type for crowd visualization
 type Particle = {
