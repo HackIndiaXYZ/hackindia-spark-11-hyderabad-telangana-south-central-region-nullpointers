@@ -183,3 +183,70 @@ Guidelines:
     return fallback;
   }
 }
+
+/**
+ * Generates dynamic event insights via Groq RAG based on the live ingestion stream event.
+ */
+export async function generateEventInsights(eventDetails: { source: string, message: string }, scenarioName: string, telemetry: any): Promise<any> {
+  const fallback = {
+    rawInput: `Fallback Input [${eventDetails.source}]`,
+    aiModel: `Fallback Model`,
+    extractedInsights: `Fallback Insight for: ${eventDetails.message}`,
+    contextFusion: `Fallback Context Fusion`,
+    prediction: `Fallback Prediction`,
+    decision: `Monitor Situation`
+  };
+
+  if (!import.meta.env.VITE_GROQ_API_KEY || import.meta.env.VITE_GROQ_API_KEY === 'your_groq_api_key_here') {
+    return fallback;
+  }
+
+  const retrievedContext = retrieveRelevantSOPs(eventDetails.source + " " + eventDetails.message);
+
+  const systemPrompt = `You are the CROWDOS Data Intelligence Engine. You process live ingestion stream events and output insights.
+You MUST respond ONLY with a JSON object containing EXACTLY these string keys: 'rawInput', 'aiModel', 'extractedInsights', 'contextFusion', 'prediction', and 'decision'.
+Do NOT wrap the JSON in Markdown formatting like \`\`\`json. Start directly with the { character.
+
+Use the following Standard Operating Procedures (SOPs) as context to inform your insights:
+--- START OF SOP CONTEXT ---
+${retrievedContext}
+--- END OF SOP CONTEXT ---
+
+Format requirements:
+- 'rawInput': A realistic mock of the raw sensor/API data string (e.g. "Rain: 82%, Wind: 18 km/h").
+- 'aiModel': The name of the AI model used to process this (e.g. "YOLOv11 Person Detection" or "Time Series Forecast").
+- 'extractedInsights': A 1-sentence analytical observation.
+- 'contextFusion': How this correlates with the active scenario.
+- 'prediction': A 1-sentence predictive outcome.
+- 'decision': A recommended 1-sentence action.`;
+
+  const userPrompt = `Live Event:
+- Source: ${eventDetails.source}
+- Message: ${eventDetails.message}
+
+Current Telemetry stats:
+- Active Scenario: ${scenarioName}
+- Operational Health: ${telemetry.operationalHealth}%
+- Risk Level: ${Math.round(telemetry.riskLevel * 100)}%`;
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.2, 
+      max_tokens: 400,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) return fallback;
+    
+    return JSON.parse(content);
+  } catch (error: any) {
+    console.error("Groq API Error in generateEventInsights:", error);
+    return fallback;
+  }
+}

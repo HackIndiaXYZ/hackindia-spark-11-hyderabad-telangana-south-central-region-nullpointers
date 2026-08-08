@@ -7,6 +7,7 @@ import medicalEmergencyData from '../../public/mock-data/medical-emergency.json'
 import gateFailureData from '../../public/mock-data/gate-failure.json';
 import vipArrivalData from '../../public/mock-data/vip-arrival.json';
 import powerFailureData from '../../public/mock-data/power-failure.json';
+import { generateEventInsights } from '../services/groqService';
 
 export const SCENARIO_DATA: Record<string, any> = {
   'normal': normalData,
@@ -343,9 +344,19 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
 
-    const tickEngine = () => {
+    const tickEngine = async () => {
       // Process one event from the sequence
-      const evt = NARRATIVE_SEQUENCE[sequenceIndexRef.current];
+      const baseEvt = NARRATIVE_SEQUENCE[sequenceIndexRef.current];
+      
+      // Fetch dynamic insights via Groq RAG
+      const dynamicInsights = await generateEventInsights(
+        { source: baseEvt.source, message: baseEvt.message }, 
+        activeScenario, 
+        telemetry
+      );
+
+      // Merge dynamic insights over static defaults
+      const evt = { ...baseEvt, ...dynamicInsights };
       
       // Update telemetry context
       setTelemetry((prevTel: any) => {
