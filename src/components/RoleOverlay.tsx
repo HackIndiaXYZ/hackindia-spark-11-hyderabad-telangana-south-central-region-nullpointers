@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from '../context/AppStateContext';
 import { LINEAGE_REGISTRY } from '../services/lineageRegistry';
-import { AlertTriangle, Heart, HelpCircle } from 'lucide-react';
+import { AlertTriangle, Heart, HelpCircle, Loader2 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, 
   Tooltip, BarChart, Bar 
 } from 'recharts';
+import { getDynamicScenarioPriorities } from '../services/groqService';
 
 
 export const RoleOverlay: React.FC = () => {
   const { currentRole, telemetry, setLineageModalData, activeScenario } = useAppState();
+  const [dynamicPriorities, setDynamicPriorities] = useState<{critical: string[], warning: string[], normal: string[]}>({
+    critical: [], warning: [], normal: ['All venue telemetry streams nominal']
+  });
+  const [isGeneratingPriorities, setIsGeneratingPriorities] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPriorities = async () => {
+      setIsGeneratingPriorities(true);
+      const priorities = await getDynamicScenarioPriorities(activeScenario, telemetry);
+      if (isMounted) {
+        setDynamicPriorities(priorities);
+        setIsGeneratingPriorities(false);
+      }
+    };
+    fetchPriorities();
+    return () => { isMounted = false; };
+  }, [activeScenario, telemetry?.operationalHealth, telemetry?.riskLevel]);
 
   if (!telemetry) return null;
 
@@ -296,51 +315,19 @@ export const RoleOverlay: React.FC = () => {
 
   // Dynamic Priority Panel helper based on the active scenario
   const renderPrioritiesPanel = () => {
-    let criticalItems: string[] = [];
-    let warningItems: string[] = [];
-    let normalItems: string[] = [];
-
-    switch (activeScenario) {
-      case 'heavy-rain':
-        criticalItems = ['Gate B concourse capacity exceeded (96%)'];
-        warningItems = ['Plaza vehicle arrival delays (+8m)', 'Concourse water pooling hazard rising'];
-        normalItems = ['Transit metro services operating nominal', 'Medical triage response ready'];
-        break;
-      case 'metro-delay':
-        criticalItems = ['Commuter backup active at East Plaza terminal'];
-        warningItems = ['Transit signaling timeout (ATS latency feed)'];
-        normalItems = ['Weather clear', 'Gate scanners fully operational'];
-        break;
-      case 'medical-emergency':
-        criticalItems = ['Active cardiac alert dispatch in Sector C Stands'];
-        warningItems = ['Medical response crew transit delay (+45s)'];
-        normalItems = ['Stadium access gates secure', 'Transit networks nominal'];
-        break;
-      case 'gate-failure':
-        criticalItems = ['Gate D turnstile database reader offline'];
-        warningItems = ['Gate D plaza queue backing up (8k count)'];
-        normalItems = ['Transit schedules nominal', 'Weather clear'];
-        break;
-      case 'vip-arrival':
-        criticalItems = [];
-        warningItems = ['VIP convoy arrival security sweep active'];
-        normalItems = ['All gates operating nominal', 'Stands crowd flow steady'];
-        break;
-      case 'power-failure':
-        criticalItems = ['Security RFID database gateway blackout'];
-        warningItems = ['Citizen reports: Dark corridor Stairwell A'];
-        normalItems = ['Emergency power diesel generator activated'];
-        break;
-      default:
-        criticalItems = [];
-        warningItems = [];
-        normalItems = ['All venue telemetry streams nominal', 'Weather clear', 'Transit systems on schedule'];
-        break;
-    }
+    const { critical: criticalItems, warning: warningItems, normal: normalItems } = dynamicPriorities;
 
     return (
-      <div className="border-b border-zinc-800 pb-4 mb-4 text-left">
-        <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Priority Action Center</h4>
+      <div className="border-b border-zinc-800 pb-4 mb-4 text-left min-h-[120px]">
+        <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center justify-between">
+          <span>Priority Action Center</span>
+          {isGeneratingPriorities && (
+            <span className="flex items-center gap-1 text-indigo-400">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              Generating RAG Analysis...
+            </span>
+          )}
+        </h4>
         
         {/* Critical Alerts */}
         {criticalItems.length > 0 && (

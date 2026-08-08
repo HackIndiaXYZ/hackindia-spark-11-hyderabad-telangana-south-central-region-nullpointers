@@ -41,7 +41,7 @@ export const DashboardPage: React.FC = () => {
           { id: 'data-pipeline', label: 'Data Pipeline', icon: Database },
           { id: 'decision-center', label: 'Decision Center', icon: Zap },
           { id: 'replay', label: 'Replay', icon: RotateCcw },
-          { id: 'settings', label: 'Settings', icon: Settings },
+          { id: 'settings', label: 'Simulation Control', icon: Settings },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -192,7 +192,7 @@ export const DashboardPage: React.FC = () => {
               <ScenarioSimulator />
             </div>
             <div className="glass-panel p-6">
-               <h2 className="text-lg font-bold mb-4 text-white">Role Settings</h2>
+               <h2 className="text-lg font-bold mb-4 text-white">Dynamic Scenario Briefing</h2>
                <RoleOverlay />
             </div>
           </div>

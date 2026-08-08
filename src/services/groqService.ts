@@ -114,3 +114,72 @@ Keep the output extremely concise (exactly 2 lines/paragraphs, no conversational
     return `CONNECTION ERROR: Failed to analyze source. ${error.message}`;
   }
 }
+
+/**
+ * Generates dynamic priorities based on the scenario and telemetry using RAG.
+ */
+export async function getDynamicScenarioPriorities(scenarioName: string, telemetry: any): Promise<{ critical: string[], warning: string[], normal: string[] }> {
+  const fallback = {
+    critical: ['Dynamic analysis offline'],
+    warning: ['Using fallback priorities'],
+    normal: ['System online']
+  };
+
+  if (!import.meta.env.VITE_GROQ_API_KEY || import.meta.env.VITE_GROQ_API_KEY === 'your_groq_api_key_here') {
+    return fallback;
+  }
+
+  const retrievedContext = retrieveRelevantSOPs(scenarioName);
+
+  const systemPrompt = `You are CROWDOS Decision Intelligence. Analyze the active scenario and telemetry to determine operational priorities.
+You MUST respond ONLY with a JSON object containing three arrays of strings: 'critical', 'warning', and 'normal'.
+Do NOT wrap the JSON in Markdown formatting like \`\`\`json or \`\`\`. Start directly with the { character.
+
+Use the following Standard Operating Procedures (SOPs) as context to inform your priorities:
+--- START OF SOP CONTEXT ---
+${retrievedContext}
+--- END OF SOP CONTEXT ---
+
+Guidelines:
+- 'critical': Immediate life-safety or severe operational failures.
+- 'warning': Developing issues, delays, or high-risk thresholds.
+- 'normal': Systems operating nominally.
+- Keep each priority item as a concise 1-sentence statement (e.g. "Gate B capacity exceeded at 95%").
+- Generate at least 1-2 items per category if applicable.`;
+
+  const userPrompt = `Telemetry stats:
+- Active Scenario: ${scenarioName}
+- Operational Health: ${telemetry.operationalHealth}%
+- Risk Level: ${Math.round(telemetry.riskLevel * 100)}%
+- Crowd Inside: ${telemetry.crowd.totalInside} (Stands density: ${Math.round(telemetry.crowd.standsDensity * 100)}%, Concourse: ${Math.round(telemetry.crowd.concourseDensity * 100)}%)
+- Inbound flow rate: ${telemetry.crowd.flowRate} p/m
+- Active Incidents: ${telemetry.medical.activeIncidents} medical, ${telemetry.security.activeAlerts || 0} security.
+- Transport: Metro ${telemetry.transport.metroStatus}, Bus Terminal queue: ${telemetry.transport.busTerminalQueue} pax.
+- Weather: ${telemetry.weather.condition}, ${telemetry.weather.temp}°C.`;
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.1, 
+      max_tokens: 400,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) return fallback;
+    
+    const parsed = JSON.parse(content);
+    return {
+      critical: Array.isArray(parsed.critical) ? parsed.critical : [],
+      warning: Array.isArray(parsed.warning) ? parsed.warning : [],
+      normal: Array.isArray(parsed.normal) ? parsed.normal : []
+    };
+  } catch (error: any) {
+    console.error("Groq API Error in getDynamicScenarioPriorities:", error);
+    return fallback;
+  }
+}
