@@ -21,10 +21,7 @@ export const DashboardPage: React.FC = () => {
     setActiveTab,
     lineageModalData,
     setLineageModalData,
-    activeScenario,
-    pipelineMetrics,
-    lastIngestedPacket,
-    currentPulseModule
+    activeScenario
   } = useAppState();
 
   if (!telemetry) return null;
