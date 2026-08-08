@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAppState } from '../context/AppStateContext';
 import type { IngestFeed } from '../context/AppStateContext';
-import { Server, Activity, Clock, Database, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Server, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SourcePreviewModal } from '../components/common/SourcePreviewModal';
 
 export const DataPipelinePage: React.FC = () => {
-  const { getIngestFeeds, pipelineMetrics, lastIngestedPacket, liveEventsLog } = useAppState();
+  const { getIngestFeeds, lastIngestedPacket, liveEventsLog } = useAppState();
   const feeds = getIngestFeeds();
   const [selectedPreviewFeed, setSelectedPreviewFeed] = useState<IngestFeed | null>(null);
   const [viewOffset, setViewOffset] = useState(0);
@@ -85,8 +85,8 @@ export const DataPipelinePage: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 mt-6">
       <SourcePreviewModal feed={selectedPreviewFeed} onClose={() => setSelectedPreviewFeed(null)} />
       
-      {/* Top section: Two columns of feeds */}
-      <div className="grid grid-cols-2 gap-12">
+      {/* Top section: Feeds */}
+      <div className="max-w-3xl mx-auto w-full">
         <div className="flex flex-col gap-8">
           {/* Live Ingestion Stream */}
           <div className="glass-panel p-6 border-l-4 border-l-[#3B82F6] relative overflow-hidden flex flex-col gap-4">
@@ -171,49 +171,7 @@ export const DataPipelinePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right side: Pipeline Health and Data Flow */}
-        <div className="flex flex-col gap-8">
-          
-          {/* Pipeline Health */}
-          <div className="glass-panel p-6">
-            <h2 className="text-lg font-bold text-slate-200 mb-6 flex items-center gap-3">
-              <Activity className="w-5 h-5 text-[#3B82F6]" />
-              Pipeline Health
-            </h2>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Queue Size</div>
-                <div className="text-3xl font-bold text-[#10B981]">{pipelineMetrics.queueSize}</div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
-                  Healthy
-                </div>
-              </div>
-              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Average Latency</div>
-                <div className="text-3xl font-bold text-[#3B82F6]">{pipelineMetrics.avgLatency} ms</div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
-                  <Clock className="w-3 h-3" /> P99: {pipelineMetrics.avgLatency + 85}ms
-                </div>
-              </div>
-              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Events / Sec</div>
-                <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.eventsPerSec}</div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-[#10B981] font-mono">
-                  +12% vs avg
-                </div>
-              </div>
-              <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Messages Processed</div>
-                <div className="text-3xl font-bold text-slate-200">{pipelineMetrics.packetsProcessed.toLocaleString()}</div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
-                  <Database className="w-3 h-3" /> Last 1hr
-                </div>
-              </div>
-            </div>
-          </div>
 
-
-        </div>
       </div>
     </div>
   );
